@@ -1,7 +1,9 @@
 using LocationGuesser.Api.Services;
+using LocationGuesser.Core.Data;
+using LocationGuesser.Core.Data.Abstractions;
+using LocationGuesser.Core.Domain;
 using LocationGuesser.Core.Options;
 using LocationGuesser.Core.Services;
-using LocationGuesser.Core.Services.Abstractions;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -22,7 +24,8 @@ app.MapGet("/",
 using (var scope = app.Services.CreateScope())
 {
     var repository = scope.ServiceProvider.GetRequiredService<IImageSetRepository>();
-    await repository.GetImageSetAsync(Guid.NewGuid(), default);
+    await repository.AddImageSetAsync(new ImageSet(Guid.NewGuid(), "TestTitle", "TestDescription", "TestTags"),
+        default);
 }
 
 app.Run();
