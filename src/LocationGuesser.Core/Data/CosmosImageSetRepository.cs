@@ -28,7 +28,7 @@ public class CosmosImageSetRepository : IImageSetRepository, IDisposable
         var container = database.GetContainer(_options.ContainerName);
         try
         {
-            var item = await container.ReadItemAsync<CosmosImageSet>(id.ToString(), new PartitionKey(id.ToString()),
+            var item = await container.ReadItemAsync<CosmosImageSet>(id.ToString(), new PartitionKey("IMAGESETS"),
                 cancellationToken: cancellationToken);
             if (item.StatusCode == HttpStatusCode.NotFound)
             {

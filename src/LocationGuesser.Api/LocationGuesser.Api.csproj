@@ -8,15 +8,15 @@
   </PropertyGroup>
 
     <ItemGroup>
-        <Protobuf Include="Protos\greet.proto" GrpcServices="Server" />
-    </ItemGroup>
-
-    <ItemGroup>
         <PackageReference Include="Grpc.AspNetCore" Version="2.49.0" />
     </ItemGroup>
 
     <ItemGroup>
       <ProjectReference Include="..\LocationGuesser.Core\LocationGuesser.Core.csproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <Protobuf Include="Protos\imageset.proto" />
     </ItemGroup>
 
 </Project>
