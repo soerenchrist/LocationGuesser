@@ -26,6 +26,12 @@ using (var scope = app.Services.CreateScope())
     var repository = scope.ServiceProvider.GetRequiredService<IImageSetRepository>();
     await repository.AddImageSetAsync(new ImageSet(Guid.NewGuid(), "TestTitle", "TestDescription", "TestTags"),
         default);
+
+    var results = await repository.ListImageSetsAsync(default);
+    foreach (var result in results.Value)
+    {
+        Console.WriteLine(result);
+    }
 }
 
 app.Run();

@@ -19,8 +19,8 @@ public class ImageSetService
         return _repository.GetImageSetAsync(id, cancellationToken);
     }
 
-    public async Task<List<ImageSet>> ListImageSetsAsync(CancellationToken cancellationToken)
+    public Task<Result<List<ImageSet>>> ListImageSetsAsync(CancellationToken cancellationToken)
     {
-        return await _repository.ListImageSetsAsync(cancellationToken);
+        return _repository.ListImageSetsAsync(cancellationToken);
     }
 }

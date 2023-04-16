@@ -43,9 +43,33 @@ public class CosmosImageSetRepository : IImageSetRepository, IDisposable
         }
     }
 
-    public Task<List<ImageSet>> ListImageSetsAsync(CancellationToken cancellationToken)
+    public async Task<Result<List<ImageSet>>> ListImageSetsAsync(CancellationToken cancellationToken)
     {
-        throw new NotImplementedException();
+        var database = _client.GetDatabase(_options.DatabaseName);
+        var container = database.GetContainer(_options.ContainerName);
+        try
+        {
+            var query = new QueryDefinition("SELECT * FROM c where c.type = 'ImageSet'");
+
+            using FeedIterator<ImageSet> feed = container.GetItemQueryIterator<ImageSet>(
+                queryDefinition: query
+            );
+            var items = new List<ImageSet>();
+            while (feed.HasMoreResults)
+            {
+                FeedResponse<ImageSet> response = await feed.ReadNextAsync();
+                foreach (var item in response)
+                {
+                    items.Add(item);
+                }
+            }
+
+            return Result.Ok(items);
+        }
+        catch (CosmosException ex)
+        {
+            return Result.Fail(ex.Message);
+        }
     }
 
     public async Task<Result> AddImageSetAsync(ImageSet imageSet, CancellationToken cancellationToken)
@@ -55,7 +79,7 @@ public class CosmosImageSetRepository : IImageSetRepository, IDisposable
         try
         {
             var response = await container.CreateItemAsync(CosmosImageSet.FromImageSet(imageSet),
-                new PartitionKey(imageSet.Id.ToString()), cancellationToken: cancellationToken);
+                cancellationToken: cancellationToken);
             if (response.StatusCode != HttpStatusCode.Created)
             {
                 Result.Fail($"Failed to create image set with status code {response.StatusCode}");
