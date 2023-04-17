@@ -2,8 +2,14 @@ using FluentValidation;
 using LocationGuesser.Api.Endpoints;
 using LocationGuesser.Core;
 using LocationGuesser.Core.Options;
+using Microsoft.OpenApi.Models;
 
 var builder = WebApplication.CreateBuilder(args);
+
+builder.Services.AddSwaggerGen(c =>
+{
+    c.SwaggerDoc("v1", new OpenApiInfo { Title = "LocationGuesser API", Version = "v1" });
+});
 
 builder.Services.AddValidatorsFromAssemblyContaining<Program>();
 builder.Services.Configure<BlobOptions>(options => builder.Configuration.Bind("Blob", options));
@@ -20,6 +26,12 @@ if (applicationInsightsConnection != null)
 }
 
 var app = builder.Build();
+app.UseSwagger();
+app.UseSwaggerUI(c =>
+{
+    c.SwaggerEndpoint("/swagger/v1/swagger.json", "LocationGuesser API v1");
+});
+app.UseStaticFiles();
 app.MapImageSetEndpoints();
 
 app.Run();
