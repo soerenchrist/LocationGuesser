@@ -12,6 +12,7 @@ public class CosmosImageSet
     [JsonProperty("tags")] public required string Tags { get; init; }
     [JsonProperty("lowerYearRange")] public required int LowerYearRange { get; init; }
     [JsonProperty("upperYearRange")] public required int UpperYearRange { get; init; }
+    [JsonProperty("imageCount")] public required int ImageCount { get; init; }
     [JsonProperty("type")] public string Type => "ImageSet";
 
     private CosmosImageSet()
@@ -27,12 +28,13 @@ public class CosmosImageSet
             Description = imageSet.Description,
             Tags = imageSet.Tags,
             LowerYearRange = imageSet.LowerYearRange,
-            UpperYearRange = imageSet.UpperYearRange
+            UpperYearRange = imageSet.UpperYearRange,
+            ImageCount = imageSet.ImageCount,
         };
     }
 
     public ImageSet ToImageSet()
     {
-        return new(Id, Title, Description, Tags, LowerYearRange, UpperYearRange);
+        return new(Id, Title, Description, Tags, LowerYearRange, UpperYearRange, ImageCount);
     }
 }

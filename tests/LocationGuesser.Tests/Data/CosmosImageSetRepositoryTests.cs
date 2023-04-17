@@ -65,7 +65,7 @@ public class CosmosImageSetRepositoryTests
     {
 
         var id = Guid.NewGuid();
-        var imageSet = new ImageSet(id, "Title", "Description", "Tags", 1900, 2000);
+        var imageSet = CreateImageSet(id);
         var taskResult = CreateResponse(HttpStatusCode.OK, imageSet);
         _container.ReadItemAsync<CosmosImageSet>(id.ToString(), new PartitionKey(PartitionKey), default)
             .ReturnsForAnyArgs(Task.FromResult(taskResult));
@@ -119,8 +119,8 @@ public class CosmosImageSetRepositoryTests
     [Fact]
     public async Task ListImageSetsAsync_ReturnsResults_WhenContainerReturnsFeed()
     {
-        var imageSet1 = new ImageSet(Guid.NewGuid(), "Title1", "description1", "Tags1", 1900, 2000);
-        var imageSet2 = new ImageSet(Guid.NewGuid(), "Title2", "description2", "Tags2", 1900, 2000);
+        var imageSet1 = CreateImageSet(title: "Title1");
+        var imageSet2 = CreateImageSet(title: "Title2");
         var iterator = CreateFeedIterator(new List<CosmosImageSet>{
             CosmosImageSet.FromImageSet(imageSet1),
             CosmosImageSet.FromImageSet(imageSet2)
@@ -142,7 +142,7 @@ public class CosmosImageSetRepositoryTests
         _container.When(x => x.CreateItemAsync<CosmosImageSet>(Arg.Any<CosmosImageSet>(), default))
             .Throw(new CosmosException("Something went wrong", HttpStatusCode.InternalServerError, 500, "", 10));
 
-        var result = await _cut.AddImageSetAsync(new ImageSet(Guid.Empty, "", "", "", 1900, 2000), default);
+        var result = await _cut.AddImageSetAsync(CreateImageSet(), default);
 
         result.IsFailed.Should().BeTrue();
     }
@@ -154,7 +154,7 @@ public class CosmosImageSetRepositoryTests
         _container.CreateItemAsync<CosmosImageSet>(Arg.Any<CosmosImageSet>(), cancellationToken: default)
             .ReturnsForAnyArgs(Task.FromResult(actionResponse));
 
-        var result = await _cut.AddImageSetAsync(new ImageSet(Guid.Empty, "", "", "", 1900, 2000), default);
+        var result = await _cut.AddImageSetAsync(CreateImageSet(), default);
 
         result.IsFailed.Should().BeTrue();
     }
@@ -162,11 +162,12 @@ public class CosmosImageSetRepositoryTests
     [Fact]
     public async Task AddImageSetAsync_ReturnsOk_WhenContainerReturnsValidStatusCode()
     {
-        var actionResponse = CreateResponse(HttpStatusCode.Created, new ImageSet(Guid.NewGuid(), "", "", "", 1900, 2000));
+        var imageSet = CreateImageSet();
+        var actionResponse = CreateResponse(HttpStatusCode.Created, imageSet);
         _container.CreateItemAsync<CosmosImageSet>(Arg.Any<CosmosImageSet>(), cancellationToken: default)
             .ReturnsForAnyArgs(Task.FromResult(actionResponse));
 
-        var result = await _cut.AddImageSetAsync(new ImageSet(Guid.Empty, "", "", "", 1900, 2000), default);
+        var result = await _cut.AddImageSetAsync(imageSet, default);
 
         result.IsSuccess.Should().BeTrue();
     }
@@ -210,5 +211,9 @@ public class CosmosImageSetRepositoryTests
         substitute.GetEnumerator().Returns(new List<CosmosImageSet> { imageSet }.GetEnumerator());
 
         return substitute;
+    }
+    private ImageSet CreateImageSet(Guid guid = default, string title = "Title", string description = "Description")
+    {
+        return new ImageSet(guid, "Title", "Description", "Tags", 1900, 2000, 10);
     }
 }
