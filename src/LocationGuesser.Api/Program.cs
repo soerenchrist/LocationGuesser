@@ -6,6 +6,7 @@ using Microsoft.OpenApi.Models;
 
 var builder = WebApplication.CreateBuilder(args);
 
+builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(c =>
 {
     c.SwaggerDoc("v1", new OpenApiInfo { Title = "LocationGuesser API", Version = "v1" });
@@ -26,12 +27,17 @@ if (applicationInsightsConnection != null)
 }
 
 var app = builder.Build();
-app.UseSwagger();
-app.UseSwaggerUI(c =>
+if (app.Environment.IsDevelopment())
 {
-    c.SwaggerEndpoint("/swagger/v1/swagger.json", "LocationGuesser API v1");
-});
+    app.UseSwagger();
+    app.UseSwaggerUI(c =>
+    {
+        c.SwaggerEndpoint("/swagger/v1/swagger.json", "LocationGuesser API v1");
+    });
+}
 app.UseStaticFiles();
+app.UseHttpsRedirection();
+app.UseRouting();
 app.MapImageSetEndpoints();
 
 app.Run();

@@ -5,6 +5,7 @@ using LocationGuesser.Api.Extensions;
 using LocationGuesser.Core.Data.Abstractions;
 using LocationGuesser.Core.Domain;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.OpenApi;
 
 namespace LocationGuesser.Api.Endpoints;
 
@@ -26,7 +27,7 @@ public static class ImageSetEndpoints
                 Result<List<ImageSet>> { IsSuccess: true } r => Results.Ok(r.Value),
                 _ => Results.StatusCode(500)
             };
-        });
+        }).WithName("GetImagesets").WithOpenApi();
 
         group.MapGet("{id:guid}", async (
             [FromRoute] Guid id,
