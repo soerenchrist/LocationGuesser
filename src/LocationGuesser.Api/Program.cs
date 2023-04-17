@@ -10,6 +10,15 @@ builder.Services.Configure<BlobOptions>(options => builder.Configuration.Bind("B
 builder.Services.Configure<CosmosDbOptions>(options => builder.Configuration.Bind("Cosmos", options));
 builder.Services.AddCoreDependencies();
 
+var applicationInsightsConnection = builder.Configuration.GetConnectionString("APPLICATIONINSIGHTS_CONNECTION_STRING");
+if (applicationInsightsConnection != null)
+{
+    builder.Logging.AddApplicationInsights(configureTelemetryConfiguration: config =>
+    {
+        config.ConnectionString = applicationInsightsConnection;
+    }, configureApplicationInsightsLoggerOptions: options => { });
+}
+
 var app = builder.Build();
 app.MapImageSetEndpoints();
 
