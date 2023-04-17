@@ -24,6 +24,7 @@ if (applicationInsightsConnection != null)
     {
         config.ConnectionString = applicationInsightsConnection;
     }, configureApplicationInsightsLoggerOptions: options => { });
+    builder.Services.AddApplicationInsightsTelemetry();
 }
 
 var app = builder.Build();
@@ -37,8 +38,8 @@ if (app.Environment.IsDevelopment())
 }
 app.UseStaticFiles();
 app.UseHttpsRedirection();
-app.UseRouting();
 app.MapImageSetEndpoints();
+app.MapGet("/health", () => "OK");
 
 app.Run();
 /*

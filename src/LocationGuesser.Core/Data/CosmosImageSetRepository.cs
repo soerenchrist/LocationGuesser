@@ -12,8 +12,9 @@ public class CosmosImageSetRepository : IImageSetRepository
 {
     private readonly ICosmosDbContainer _container;
     private readonly ILogger<CosmosImageSetRepository> _logger;
+
     public CosmosImageSetRepository(ICosmosDbContainer container,
-    ILogger<CosmosImageSetRepository> logger)
+        ILogger<CosmosImageSetRepository> logger)
     {
         _container = container;
         _logger = logger;
@@ -95,6 +96,27 @@ public class CosmosImageSetRepository : IImageSetRepository
             {
                 return Result.Fail($"Unknown error with status code {response.StatusCode}");
             }
+
+            return Result.Ok();
+        }
+        catch (CosmosException ex)
+        {
+            return Result.Fail(ex.Message);
+        }
+    }
+
+    public async Task<Result> DeleteImageSetAsync(Guid id, CancellationToken cancellationToken)
+    {
+        try
+        {
+            var response = await _container.DeleteItemAsync<CosmosImageSet>(id.ToString(),
+                new PartitionKey("IMAGESETS"),
+                cancellationToken: cancellationToken);
+            if (response.StatusCode != HttpStatusCode.OK)
+            {
+                return Result.Fail($"Unknown error occured with status code {response.StatusCode}");
+            }
+
             return Result.Ok();
         }
         catch (CosmosException ex)

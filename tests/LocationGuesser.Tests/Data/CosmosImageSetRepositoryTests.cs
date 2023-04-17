@@ -25,7 +25,8 @@ public class CosmosImageSetRepositoryTests
     {
         var id = Guid.NewGuid();
         _container.When(x => x.ReadItemAsync<CosmosImageSet>(id.ToString(), new PartitionKey(PartitionKey), default))
-            .Throw(new CosmosException("Something went wrong", System.Net.HttpStatusCode.InternalServerError, 500, "", 10));
+            .Throw(new CosmosException("Something went wrong", System.Net.HttpStatusCode.InternalServerError, 500, "",
+                10));
 
         var result = await _cut.GetImageSetAsync(id, default);
 
@@ -50,7 +51,6 @@ public class CosmosImageSetRepositoryTests
     [Fact]
     public async Task GetImageSetAsync_ShouldReturnFail_WhenStatusCodeIsOtherThanNotFoundOrOk()
     {
-
         var id = Guid.NewGuid();
         var taskResult = CreateResponse(HttpStatusCode.InternalServerError);
         _container.ReadItemAsync<CosmosImageSet>(id.ToString(), new PartitionKey(PartitionKey), default)
@@ -64,7 +64,6 @@ public class CosmosImageSetRepositoryTests
     [Fact]
     public async Task GetImageSetAsync_ShouldReturnOkObject_WhenStatusCodeIsOkAndHasObject()
     {
-
         var id = Guid.NewGuid();
         var imageSet = CreateImageSet(id);
         var taskResult = CreateResponse(HttpStatusCode.OK, imageSet);
@@ -81,7 +80,6 @@ public class CosmosImageSetRepositoryTests
     [Fact]
     public async Task GetImageSetAsync_ShouldReturnNull_WhenStatusCodeIsOkButHasNoData()
     {
-
         var id = Guid.NewGuid();
         var taskResult = CreateResponse(HttpStatusCode.OK);
         _container.ReadItemAsync<CosmosImageSet>(id.ToString(), new PartitionKey(PartitionKey), default)
@@ -97,7 +95,8 @@ public class CosmosImageSetRepositoryTests
     public async Task ListImageSetsAsync_ShouldReturnFail_WhenCosmosDbThrowsError()
     {
         _container.When(x => x.GetItemQueryIterator<CosmosImageSet>(Arg.Any<QueryDefinition>()))
-            .Throw(new CosmosException("Something went wrong", System.Net.HttpStatusCode.InternalServerError, 500, "", 10));
+            .Throw(new CosmosException("Something went wrong", System.Net.HttpStatusCode.InternalServerError, 500, "",
+                10));
 
         var result = await _cut.ListImageSetsAsync(default);
 
@@ -122,7 +121,8 @@ public class CosmosImageSetRepositoryTests
     {
         var imageSet1 = CreateImageSet(title: "Title1");
         var imageSet2 = CreateImageSet(title: "Title2");
-        var iterator = CreateFeedIterator(new List<CosmosImageSet>{
+        var iterator = CreateFeedIterator(new List<CosmosImageSet>
+        {
             CosmosImageSet.FromImageSet(imageSet1),
             CosmosImageSet.FromImageSet(imageSet2)
         });
@@ -208,6 +208,41 @@ public class CosmosImageSetRepositoryTests
         result.IsSuccess.Should().BeTrue();
     }
 
+    [Fact]
+    public async Task DeleteImageSetAsync_ReturnsFail_WhenContainerThrowsException()
+    {
+        _container.When(x => x.DeleteItemAsync<CosmosImageSet>(Arg.Any<string>(), Arg.Any<PartitionKey>(), default))
+            .Throw(new CosmosException("Something went wrong", HttpStatusCode.InternalServerError, 500, "", 10));
+
+        var result = await _cut.DeleteImageSetAsync(Guid.NewGuid(), default);
+
+        result.IsFailed.Should().BeTrue();
+    }
+
+    [Fact]
+    public async Task DeleteImageSetAsync_ReturnsFail_WhenContainerReturnsInvalidStatus()
+    {
+        var response = CreateResponse(HttpStatusCode.InternalServerError);
+        _container.DeleteItemAsync<CosmosImageSet>(Arg.Any<string>(), Arg.Any<PartitionKey>(), default)
+            .Returns(Task.FromResult(response));
+
+        var result = await _cut.DeleteImageSetAsync(Guid.NewGuid(), default);
+
+        result.IsFailed.Should().BeTrue();
+    }
+    
+    [Fact]
+    public async Task DeleteImageSetAsync_ReturnsOk_WhenContainerReturnsOkStatus()
+    {
+        var response = CreateResponse(HttpStatusCode.OK);
+        _container.DeleteItemAsync<CosmosImageSet>(Arg.Any<string>(), Arg.Any<PartitionKey>(), default)
+            .Returns(Task.FromResult(response));
+
+        var result = await _cut.DeleteImageSetAsync(Guid.NewGuid(), default);
+
+        result.IsSuccess.Should().BeTrue();
+    }
+
     private ItemResponse<CosmosImageSet> CreateResponse(HttpStatusCode statusCode, ImageSet? result = null)
     {
         var substitute = Substitute.For<ItemResponse<CosmosImageSet>>();
@@ -216,6 +251,7 @@ public class CosmosImageSetRepositoryTests
         {
             substitute.Resource.Returns(CosmosImageSet.FromImageSet(result));
         }
+
         return substitute;
     }
 
@@ -248,6 +284,7 @@ public class CosmosImageSetRepositoryTests
 
         return substitute;
     }
+
     private ImageSet CreateImageSet(Guid guid = default, string title = "Title", string description = "Description")
     {
         return new ImageSet(guid, "Title", "Description", "Tags", 1900, 2000, 10);

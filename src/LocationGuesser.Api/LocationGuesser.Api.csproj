@@ -4,18 +4,18 @@
         <TargetFramework>net7.0</TargetFramework>
         <Nullable>enable</Nullable>
         <ImplicitUsings>enable</ImplicitUsings>
-      <UserSecretsId>e46da4ba-5da9-49ea-a355-19bc3e5294c8</UserSecretsId>
-  </PropertyGroup>
+        <UserSecretsId>e46da4ba-5da9-49ea-a355-19bc3e5294c8</UserSecretsId>
+    </PropertyGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\LocationGuesser.Core\LocationGuesser.Core.csproj" />
+        <ProjectReference Include="..\LocationGuesser.Core\LocationGuesser.Core.csproj" />
     </ItemGroup>
 
     <ItemGroup>
-      <PackageReference Include="FluentValidation" Version="11.5.2" />
-      <PackageReference Include="FluentValidation.DependencyInjectionExtensions" Version="11.5.2" />
-      <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="7.0.5" />
-      <PackageReference Include="Microsoft.Extensions.Logging.ApplicationInsights" Version="2.21.0" />
-      <PackageReference Include="Swashbuckle.AspNetCore" Version="6.5.0" />
+        <PackageReference Include="FluentValidation" Version="11.5.2" />
+        <PackageReference Include="FluentValidation.DependencyInjectionExtensions" Version="11.5.2" />
+        <PackageReference Include="Microsoft.ApplicationInsights.AspNetCore" Version="2.21.0" />
+        <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="7.0.5" />
+        <PackageReference Include="Swashbuckle.AspNetCore" Version="6.5.0" />
     </ItemGroup>
 </Project>

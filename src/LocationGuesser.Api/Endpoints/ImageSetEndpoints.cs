@@ -1,11 +1,8 @@
-using FluentResults;
 using FluentValidation;
 using LocationGuesser.Api.Contracts;
 using LocationGuesser.Api.Extensions;
 using LocationGuesser.Core.Data.Abstractions;
-using LocationGuesser.Core.Domain;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.OpenApi;
 
 namespace LocationGuesser.Api.Endpoints;
 
@@ -24,7 +21,7 @@ public static class ImageSetEndpoints
             return result switch
             {
                 { IsSuccess: true, Value: null } => Results.NotFound(),
-                Result<List<ImageSet>> { IsSuccess: true } r => Results.Ok(r.Value),
+                { IsSuccess: true } r => Results.Ok(r.Value),
                 _ => Results.StatusCode(500)
             };
         }).WithName("GetImagesets").WithOpenApi();
@@ -39,7 +36,7 @@ public static class ImageSetEndpoints
             return result switch
             {
                 { IsSuccess: true, Value: null } => Results.NotFound(),
-                Result<ImageSet> { IsSuccess: true } r => Results.Ok(r.Value),
+                { IsSuccess: true } r => Results.Ok(r.Value),
                 _ => result.ToErrorResponse()
             };
         });
@@ -61,10 +58,22 @@ public static class ImageSetEndpoints
             {
                 return result.ToErrorResponse();
             }
-            else
+
+            return Results.Created($"/api/imagesets/{imageSet.Id}", null);
+        });
+
+        group.MapDelete("{id:guid}", async (
+            [FromRoute] Guid id,
+            [FromServices] IImageSetRepository imageSetRepository,
+            CancellationToken cancellationToken) =>
+        {
+            var result = await imageSetRepository.GetImageSetAsync(id, cancellationToken);
+            if (result.IsFailed)
             {
-                return Results.Created($"/api/imagesets/{imageSet.Id}", null);
+                return result.ToErrorResponse();
             }
+
+            return Results.NoContent();
         });
     }
 }
