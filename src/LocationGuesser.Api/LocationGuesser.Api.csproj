@@ -8,16 +8,11 @@
   </PropertyGroup>
 
     <ItemGroup>
-        <PackageReference Include="Grpc.AspNetCore" Version="2.49.0" />
-        <PackageReference Include="Azure.Storage.Blobs" Version="12.16.0" />
-    </ItemGroup>
-
-    <ItemGroup>
       <ProjectReference Include="..\LocationGuesser.Core\LocationGuesser.Core.csproj" />
     </ItemGroup>
 
     <ItemGroup>
-      <Protobuf Include="Protos\imageset.proto" />
+      <PackageReference Include="FluentValidation" Version="11.5.2" />
+      <PackageReference Include="FluentValidation.DependencyInjectionExtensions" Version="11.5.2" />
     </ItemGroup>
-
 </Project>
