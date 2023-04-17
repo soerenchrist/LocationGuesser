@@ -53,5 +53,5 @@ jobs:
         with:
           app-name: 'locationguesserdev'
           slot-name: 'Production'
-          publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_3100C1296EF548C78A34C4DFB8B12774 }}
+          publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_258540C9529444A38998E87AE667A00E }}
           package: .
