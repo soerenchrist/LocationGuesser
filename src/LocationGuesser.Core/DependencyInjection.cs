@@ -11,6 +11,7 @@ public static class DependencyInjection
         services.AddScoped<IImageSetRepository, CosmosImageSetRepository>();
         services.AddScoped<IImageRepository, CosmosImageRepository>();
         services.AddScoped<ICosmosDbContainer, CosmosDbContainer>();
+        services.AddScoped<IBlobContainer, AzureBlobContainer>();
     }
 
 }
