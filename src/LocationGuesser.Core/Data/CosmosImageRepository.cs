@@ -1,6 +1,7 @@
 using System.Net;
 using FluentResults;
 using LocationGuesser.Core.Data.Abstractions;
+using LocationGuesser.Core.Data.Dtos;
 using LocationGuesser.Core.Domain;
 using Microsoft.Azure.Cosmos;
 using Microsoft.Extensions.Logging;

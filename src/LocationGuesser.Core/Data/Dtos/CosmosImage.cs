@@ -1,7 +1,7 @@
 using LocationGuesser.Core.Domain;
 using Newtonsoft.Json;
 
-namespace LocationGuesser.Core.Data;
+namespace LocationGuesser.Core.Data.Dtos;
 
 public class CosmosImage
 {

@@ -4,6 +4,7 @@ using LocationGuesser.Core.Data.Abstractions;
 using LocationGuesser.Core.Domain;
 using LocationGuesser.Tests.Utils;
 using Microsoft.Azure.Cosmos;
+using LocationGuesser.Core.Data.Dtos;
 
 namespace LocationGuesser.Tests.Data;
 
