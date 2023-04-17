@@ -1,5 +1,7 @@
 using LocationGuesser.Core.Data;
 using LocationGuesser.Core.Data.Abstractions;
+using LocationGuesser.Core.Services;
+using LocationGuesser.Core.Services.Abstractions;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace LocationGuesser.Core;
@@ -12,6 +14,8 @@ public static class DependencyInjection
         services.AddScoped<IImageRepository, CosmosImageRepository>();
         services.AddScoped<ICosmosDbContainer, CosmosDbContainer>();
         services.AddScoped<IBlobContainer, AzureBlobContainer>();
+        services.AddScoped<IBlobRepository, BlobRepository>();
+        services.AddScoped<IImageService, ImageService>();
     }
 
 }

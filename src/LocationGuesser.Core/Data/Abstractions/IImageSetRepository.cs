@@ -8,4 +8,5 @@ public interface IImageSetRepository
     Task<Result<ImageSet?>> GetImageSetAsync(Guid id, CancellationToken cancellationToken);
     Task<Result<List<ImageSet>>> ListImageSetsAsync(CancellationToken cancellationToken);
     Task<Result> AddImageSetAsync(ImageSet imageSet, CancellationToken cancellationToken);
+    Task<Result> UpdateImageSetAsync(ImageSet imageSet, CancellationToken cancellationToken);
 }

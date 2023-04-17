@@ -19,6 +19,12 @@ public class AzureBlobContainer : IBlobContainer
         _containerClient = _blobServiceClient.GetBlobContainerClient(options.ContainerName);
     }
 
+    public Task DeleteAsync(string filename, CancellationToken cancellationToken)
+    {
+        var client = _containerClient.GetBlobClient(filename);
+        return client.DeleteIfExistsAsync(cancellationToken: cancellationToken);
+    }
+
     public async Task<BlobContentInfo> UploadAsync(string filename, Stream fileStream, CancellationToken cancellationToken, bool replace = false)
     {
         var client = _containerClient.GetBlobClient(filename);

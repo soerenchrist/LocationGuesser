@@ -85,4 +85,21 @@ public class CosmosImageSetRepository : IImageSetRepository
 
         return Result.Ok();
     }
+
+    public async Task<Result> UpdateImageSetAsync(ImageSet imageSet, CancellationToken cancellationToken)
+    {
+        try
+        {
+            var response = await _container.UpsertItemAsync(CosmosImageSet.FromImageSet(imageSet), cancellationToken);
+            if (response.StatusCode != HttpStatusCode.OK)
+            {
+                return Result.Fail($"Unknown error with status code {response.StatusCode}");
+            }
+            return Result.Ok();
+        }
+        catch (CosmosException ex)
+        {
+            return Result.Fail(ex.Message);
+        }
+    }
 }

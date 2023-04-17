@@ -20,6 +20,40 @@ public class CosmosImageRepository : IImageRepository
         _logger = logger;
     }
 
+    public async Task<Result> AddImageAsync(Image image, CancellationToken cancellationToken)
+    {
+        try
+        {
+            var response = await _container.CreateItemAsync(CosmosImage.FromImage(image), cancellationToken);
+            return response.StatusCode switch
+            {
+                HttpStatusCode.Created or HttpStatusCode.OK => Result.Ok(),
+                _ => Result.Fail($"Unexpected status code {response.StatusCode}"),
+            };
+        }
+        catch (CosmosException ex)
+        {
+            return Result.Fail(ex.Message);
+        }
+    }
+
+    public async Task<Result> DeleteImageAsync(Image image, CancellationToken cancellationToken)
+    {
+        try
+        {
+            var response = await _container.DeleteItemAsync<CosmosImage>(image.Number.ToString(), new PartitionKey(image.SetId.ToString()), cancellationToken);
+            return response.StatusCode switch
+            {
+                HttpStatusCode.OK or HttpStatusCode.NoContent => Result.Ok(),
+                _ => Result.Fail($"Unknown error with status code {response.StatusCode}"),
+            };
+        }
+        catch (CosmosException ex)
+        {
+            return Result.Fail(ex.Message);
+        }
+    }
+
     public async Task<Result<Image?>> GetImageAsync(Guid setId, int number, CancellationToken cancellationToken)
     {
         try

@@ -173,6 +173,41 @@ public class CosmosImageSetRepositoryTests
         result.IsSuccess.Should().BeTrue();
     }
 
+    [Fact]
+    public async Task UpdateImageSetAsync_ReturnsFail_WhenContainerThrowsException()
+    {
+        _container.When(x => x.UpsertItemAsync<CosmosImageSet>(Arg.Any<CosmosImageSet>(), default))
+            .Throw(new CosmosException("Something went wrong", HttpStatusCode.InternalServerError, 500, "", 10));
+
+        var result = await _cut.UpdateImageSetAsync(CreateImageSet(), default);
+
+        result.IsFailed.Should().BeTrue();
+    }
+
+    [Fact]
+    public async Task UpdateImageSetAsync_ReturnsFail_WhenContainerReturnsErrorStatus()
+    {
+        var cosmosResponse = CreateResponse(HttpStatusCode.InternalServerError);
+        _container.UpsertItemAsync<CosmosImageSet>(Arg.Any<CosmosImageSet>(), default)
+            .Returns(Task.FromResult(cosmosResponse));
+
+        var result = await _cut.UpdateImageSetAsync(CreateImageSet(), default);
+
+        result.IsFailed.Should().BeTrue();
+    }
+
+    [Fact]
+    public async Task UpdateImageSetAsync_ReturnsOk_WhenContainerReturnsSuccessStatus()
+    {
+        var cosmosResponse = CreateResponse(HttpStatusCode.OK, CreateImageSet());
+        _container.UpsertItemAsync<CosmosImageSet>(Arg.Any<CosmosImageSet>(), default)
+            .Returns(Task.FromResult(cosmosResponse));
+
+        var result = await _cut.UpdateImageSetAsync(CreateImageSet(), default);
+
+        result.IsSuccess.Should().BeTrue();
+    }
+
     private ItemResponse<CosmosImageSet> CreateResponse(HttpStatusCode statusCode, ImageSet? result = null)
     {
         var substitute = Substitute.For<ItemResponse<CosmosImageSet>>();

@@ -35,6 +35,16 @@ internal class CosmosDbContainer : ICosmosDbContainer, IDisposable
         return _container.ReadItemAsync<T>(id, partitionKey, cancellationToken: cancellationToken);
     }
 
+    public Task<ItemResponse<T>> UpsertItemAsync<T>(T item, CancellationToken cancellationToken)
+    {
+        return _container.UpsertItemAsync<T>(item, cancellationToken: cancellationToken);
+    }
+
+    public Task<ItemResponse<T>> DeleteItemAsync<T>(string id, PartitionKey partitionKey, CancellationToken cancellationToken)
+    {
+        return _container.DeleteItemAsync<T>(id, partitionKey, cancellationToken: cancellationToken);
+    }
+
     public void Dispose()
     {
         _client.Dispose();
