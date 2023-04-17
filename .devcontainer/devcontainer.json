@@ -1,0 +1,12 @@
+{
+	"image": "mcr.microsoft.com/devcontainers/universal:2",
+	"features": {
+		"ghcr.io/devcontainers/features/azure-cli:1": {
+			"version": "latest"
+		},
+		"ghcr.io/rchaganti/vsc-devcontainer-features/azurebicep:1": {},
+		"ghcr.io/jlaundry/devcontainer-features/azure-functions-core-tools:1": {
+			"version": "latest"
+		}
+	}
+}

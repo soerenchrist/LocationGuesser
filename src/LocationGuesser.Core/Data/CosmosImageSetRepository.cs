@@ -1,41 +1,37 @@
 using System.Net;
-using Azure.Identity;
 using FluentResults;
 using LocationGuesser.Core.Data.Abstractions;
 using LocationGuesser.Core.Domain;
-using LocationGuesser.Core.Options;
 using Microsoft.Azure.Cosmos;
-using Microsoft.Extensions.Options;
+using Microsoft.Extensions.Logging;
 
 namespace LocationGuesser.Core.Data;
 
-public class CosmosImageSetRepository : IImageSetRepository, IDisposable
+public class CosmosImageSetRepository : IImageSetRepository
 {
-    private readonly CosmosClient _client;
-    private readonly CosmosDbOptions _options;
-
-    public CosmosImageSetRepository(IOptions<CosmosDbOptions> cosmosDbOptions)
+    private readonly ICosmosDbContainer _container;
+    private readonly ILogger<CosmosImageSetRepository> _logger;
+    public CosmosImageSetRepository(ICosmosDbContainer container,
+    ILogger<CosmosImageSetRepository> logger)
     {
-        _options = cosmosDbOptions.Value;
-        _client = new CosmosClient(
-            _options.Endpoint,
-            tokenCredential: new DefaultAzureCredential());
+        _container = container;
+        _logger = logger;
     }
 
     public async Task<Result<ImageSet?>> GetImageSetAsync(Guid id, CancellationToken cancellationToken)
     {
-        var database = _client.GetDatabase(_options.DatabaseName);
-        var container = database.GetContainer(_options.ContainerName);
         try
         {
-            var item = await container.ReadItemAsync<CosmosImageSet>(id.ToString(), new PartitionKey("IMAGESETS"),
+            var item = await _container.ReadItemAsync<CosmosImageSet>(id.ToString(), new PartitionKey("IMAGESETS"),
                 cancellationToken: cancellationToken);
-            if (item.StatusCode == HttpStatusCode.NotFound)
-            {
-                return Result.Ok<ImageSet?>(null);
-            }
 
-            return item.Resource.ToImageSet();
+            return (item.StatusCode, item.Resource) switch
+            {
+                (HttpStatusCode.NotFound, _) => Result.Ok<ImageSet?>(null),
+                (HttpStatusCode.OK, null) => Result.Ok<ImageSet?>(null),
+                (HttpStatusCode.OK, CosmosImageSet resource) => resource.ToImageSet(),
+                _ => Result.Fail($"Unknown error occured with status code {item.StatusCode}")
+            };
         }
         catch (CosmosException ex)
         {
@@ -45,22 +41,20 @@ public class CosmosImageSetRepository : IImageSetRepository, IDisposable
 
     public async Task<Result<List<ImageSet>>> ListImageSetsAsync(CancellationToken cancellationToken)
     {
-        var database = _client.GetDatabase(_options.DatabaseName);
-        var container = database.GetContainer(_options.ContainerName);
         try
         {
             var query = new QueryDefinition("SELECT * FROM c where c.type = 'ImageSet'");
 
-            using FeedIterator<ImageSet> feed = container.GetItemQueryIterator<ImageSet>(
+            using FeedIterator<CosmosImageSet> feed = _container.GetItemQueryIterator<CosmosImageSet>(
                 queryDefinition: query
             );
             var items = new List<ImageSet>();
             while (feed.HasMoreResults)
             {
-                FeedResponse<ImageSet> response = await feed.ReadNextAsync();
+                FeedResponse<CosmosImageSet> response = await feed.ReadNextAsync();
                 foreach (var item in response)
                 {
-                    items.Add(item);
+                    items.Add(item.ToImageSet());
                 }
             }
 
@@ -74,15 +68,13 @@ public class CosmosImageSetRepository : IImageSetRepository, IDisposable
 
     public async Task<Result> AddImageSetAsync(ImageSet imageSet, CancellationToken cancellationToken)
     {
-        var database = _client.GetDatabase(_options.DatabaseName);
-        var container = database.GetContainer(_options.ContainerName);
         try
         {
-            var response = await container.CreateItemAsync(CosmosImageSet.FromImageSet(imageSet),
+            var response = await _container.CreateItemAsync(CosmosImageSet.FromImageSet(imageSet),
                 cancellationToken: cancellationToken);
             if (response.StatusCode != HttpStatusCode.Created)
             {
-                Result.Fail($"Failed to create image set with status code {response.StatusCode}");
+                return Result.Fail($"Failed to create image set with status code {response.StatusCode}");
             }
         }
         catch (CosmosException ex)
@@ -91,10 +83,5 @@ public class CosmosImageSetRepository : IImageSetRepository, IDisposable
         }
 
         return Result.Ok();
-    }
-
-    public void Dispose()
-    {
-        _client.Dispose();
     }
 }
