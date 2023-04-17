@@ -12,6 +12,7 @@ public class CosmosImageSetRepository : IImageSetRepository
 {
     private readonly ICosmosDbContainer _container;
     private readonly ILogger<CosmosImageSetRepository> _logger;
+    private const string PartitionKey = "IMAGESETS";
 
     public CosmosImageSetRepository(ICosmosDbContainer container,
         ILogger<CosmosImageSetRepository> logger)
@@ -24,7 +25,7 @@ public class CosmosImageSetRepository : IImageSetRepository
     {
         try
         {
-            var item = await _container.ReadItemAsync<CosmosImageSet>(id.ToString(), new PartitionKey("IMAGESETS"),
+            var item = await _container.ReadItemAsync<CosmosImageSet>(id.ToString(), new PartitionKey(PartitionKey),
                 cancellationToken: cancellationToken);
 
             return (item.StatusCode, item.Resource) switch
@@ -110,7 +111,7 @@ public class CosmosImageSetRepository : IImageSetRepository
         try
         {
             var response = await _container.DeleteItemAsync<CosmosImageSet>(id.ToString(),
-                new PartitionKey("IMAGESETS"),
+                new PartitionKey(PartitionKey),
                 cancellationToken: cancellationToken);
             if (response.StatusCode != HttpStatusCode.OK)
             {
