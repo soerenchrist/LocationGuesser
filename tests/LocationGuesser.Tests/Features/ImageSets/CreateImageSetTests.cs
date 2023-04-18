@@ -1,6 +1,8 @@
 using FluentResults;
 using LocationGuesser.Api.Contracts;
 using LocationGuesser.Api.Features.ImageSets;
+using LocationGuesser.Api.Mappings;
+using LocationGuesser.Api.Validators;
 using LocationGuesser.Core.Data.Abstractions;
 using LocationGuesser.Core.Domain;
 using LocationGuesser.Core.Domain.Errors;
@@ -13,7 +15,7 @@ public class CreateImageSetTests
     private readonly IImageSetRepository _repository = Substitute.For<IImageSetRepository>();
     public CreateImageSetTests()
     {
-        var validator = new CreateImageSetContractValidator();
+        var validator = new ImageSetValidator();
         _cut = new CreateImageSetCommandHandler(validator, _repository);
     }
 
@@ -26,15 +28,7 @@ public class CreateImageSetTests
     public async Task Handler_ShouldReturnValidationErrorResult_WhenImageSetIsInvalid(string title,
         string description, string tags, int lower, int upper)
     {
-        var command = new CreateImageSetContract
-        {
-            Title = title,
-            Description = description,
-            Tags = tags,
-            LowerYearRange = lower,
-            UpperYearRange = upper
-        };
-
+        var command = new CreateImageSetCommand(title, description, tags, lower, upper);
         var result = await _cut.Handle(command, default);
 
         result.Errors.Any(x => x is ValidationError).Should().BeTrue();
@@ -43,16 +37,9 @@ public class CreateImageSetTests
     [Fact]
     public async Task Handler_ShouldAddImageSetToRepository_WhenImageIsValid()
     {
-        var command = new CreateImageSetContract
-        {
-            Title = "Title",
-            Description = "Description",
-            LowerYearRange = 1900,
-            UpperYearRange = 2000,
-            Tags = "Tags"
-        };
+        var command = new CreateImageSetCommand("Title", "Description", "Tags", 1900, 2000);
         _repository.AddImageSetAsync(Arg.Any<ImageSet>(), default)
-            .ReturnsForAnyArgs(Task.FromResult(Result.Ok(command.ToImageSet())));
+            .ReturnsForAnyArgs(Task.FromResult(Result.Ok(command.ToDomain())));
 
         var result = await _cut.Handle(command, default);
         await _repository.Received().AddImageSetAsync(Arg.Is<ImageSet>(x =>
@@ -63,14 +50,7 @@ public class CreateImageSetTests
     [Fact]
     public async Task Handle_ShouldReturnErrorResult_WhenAddingToRepoFails()
     {
-        var command = new CreateImageSetContract
-        {
-            Title = "Title",
-            Description = "Description",
-            LowerYearRange = 1900,
-            UpperYearRange = 2000,
-            Tags = "Tags"
-        };
+        var command = new CreateImageSetCommand("Title", "Description", "Tags", 1900, 2000);
         _repository.AddImageSetAsync(Arg.Any<ImageSet>(), default)
             .ReturnsForAnyArgs(Task.FromResult(Result.Fail<ImageSet>("Something failed")));
 
@@ -83,16 +63,9 @@ public class CreateImageSetTests
     [Fact]
     public async Task Handle_ShouldReturnOkResultWithImageSet_WhenAddingToRepoSucceeds()
     {
-        var command = new CreateImageSetContract
-        {
-            Title = "Title",
-            Description = "Description",
-            LowerYearRange = 1900,
-            UpperYearRange = 2000,
-            Tags = "Tags"
-        };
+        var command = new CreateImageSetCommand("Title", "Description", "Tags", 1900, 2000);
         _repository.AddImageSetAsync(Arg.Any<ImageSet>(), default)
-            .ReturnsForAnyArgs(Task.FromResult(Result.Ok(command.ToImageSet())));
+            .ReturnsForAnyArgs(Task.FromResult(Result.Ok(command.ToDomain())));
 
         var result = await _cut.Handle(command, default);
 

@@ -1,5 +1,6 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
+# 
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{AD67D958-E4E5-4A44-ABB6-93FFF6F83C8A}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{087292DC-BE90-4B79-A206-DD58B648B0A2}"
@@ -10,6 +11,12 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LocationGuesser.Core", "src
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LocationGuesser.Tests", "tests\LocationGuesser.Tests\LocationGuesser.Tests.csproj", "{C65BA7A6-9452-4ECA-97D0-AC4B67046397}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LocationGuesser.Blazor.Tests", "tests\LocationGuesser.Blazor.Tests\LocationGuesser.Blazor.Tests.csproj", "{71F2C6AE-8279-4F33-8727-4E506EEF5535}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LocationGuesser.Blazor", "src\LocationGuesser.Blazor\LocationGuesser.Blazor.csproj", "{6772FC0A-9952-489E-B93A-F3A776DD5FDE}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LocationGuesser.Core.Contracts", "src\LocationGuesser.Core.Contracts\LocationGuesser.Core.Contracts.csproj", "{7090CED4-9580-4099-9D12-EF0B8A82E390}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -19,6 +26,9 @@ Global
 		{98F0CD60-90B4-4D8A-A7E0-8C4BD3EA5F2B} = {AD67D958-E4E5-4A44-ABB6-93FFF6F83C8A}
 		{05975F70-4DC1-4A3E-91D8-91E33AE99590} = {AD67D958-E4E5-4A44-ABB6-93FFF6F83C8A}
 		{C65BA7A6-9452-4ECA-97D0-AC4B67046397} = {087292DC-BE90-4B79-A206-DD58B648B0A2}
+		{71F2C6AE-8279-4F33-8727-4E506EEF5535} = {087292DC-BE90-4B79-A206-DD58B648B0A2}
+		{6772FC0A-9952-489E-B93A-F3A776DD5FDE} = {AD67D958-E4E5-4A44-ABB6-93FFF6F83C8A}
+		{7090CED4-9580-4099-9D12-EF0B8A82E390} = {AD67D958-E4E5-4A44-ABB6-93FFF6F83C8A}
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
 		{98F0CD60-90B4-4D8A-A7E0-8C4BD3EA5F2B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
@@ -33,5 +43,17 @@ Global
 		{C65BA7A6-9452-4ECA-97D0-AC4B67046397}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{C65BA7A6-9452-4ECA-97D0-AC4B67046397}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{C65BA7A6-9452-4ECA-97D0-AC4B67046397}.Release|Any CPU.Build.0 = Release|Any CPU
+		{71F2C6AE-8279-4F33-8727-4E506EEF5535}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{71F2C6AE-8279-4F33-8727-4E506EEF5535}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{71F2C6AE-8279-4F33-8727-4E506EEF5535}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{71F2C6AE-8279-4F33-8727-4E506EEF5535}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6772FC0A-9952-489E-B93A-F3A776DD5FDE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6772FC0A-9952-489E-B93A-F3A776DD5FDE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6772FC0A-9952-489E-B93A-F3A776DD5FDE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6772FC0A-9952-489E-B93A-F3A776DD5FDE}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7090CED4-9580-4099-9D12-EF0B8A82E390}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7090CED4-9580-4099-9D12-EF0B8A82E390}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7090CED4-9580-4099-9D12-EF0B8A82E390}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7090CED4-9580-4099-9D12-EF0B8A82E390}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal

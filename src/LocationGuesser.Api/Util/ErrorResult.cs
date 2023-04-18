@@ -2,7 +2,7 @@ using System.Net.Mime;
 using System.Text;
 using System.Text.Json;
 
-namespace LocationGuesser.Api.Contracts;
+namespace LocationGuesser.Api.Util;
 
 public class ErrorResult : IResult
 {

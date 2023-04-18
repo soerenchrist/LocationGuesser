@@ -3,7 +3,8 @@ using FluentValidation;
 using LocationGuesser.Api.Contracts;
 using LocationGuesser.Api.Extensions;
 using LocationGuesser.Api.Features.ImageSets;
-using LocationGuesser.Core.Data.Abstractions;
+using LocationGuesser.Api.Mappings;
+using LocationGuesser.Core.Contracts;
 using LocationGuesser.Core.Domain;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
@@ -24,7 +25,7 @@ public static class ImageSetEndpoints
             var result = await mediator.Send<Result<List<ImageSet>>>(new ListImageSetsQuery(), cancellationToken);
             if (result.IsSuccess)
             {
-                var contracts = result.Value.Select(ImageSetContract.FromImageSet);
+                var contracts = result.Value.Select(x => x.ToContract());
                 return Results.Ok(contracts);
             }
             else
@@ -42,24 +43,25 @@ public static class ImageSetEndpoints
             var query = new GetImageSetQuery(id);
             var result = await mediator.Send<Result<ImageSet>>(query);
             if (result.IsFailed) return result.ToErrorResponse();
-            var contract = ImageSetContract.FromImageSet(result.Value);
+            var contract = result.Value.ToContract();
             return Results.Ok(contract);
         });
 
         group.MapPost("/", async (
-            [FromBody] CreateImageSetContract imageSetContract,
+            [FromBody] CreateImageSetContract request,
             [FromServices] IMediator mediator,
             CancellationToken cancellationToken
         ) =>
         {
-            var result = await mediator.Send<Result<ImageSet>>(imageSetContract, cancellationToken);
+            var command = new CreateImageSetCommand(request.Title, request.Description, request.Tags, request.LowerYearRange, request.UpperYearRange);
+            var result = await mediator.Send<Result<ImageSet>>(command, cancellationToken);
 
             if (result.IsFailed)
             {
                 return result.ToErrorResponse();
             }
 
-            var contract = ImageSetContract.FromImageSet(result.Value);
+            var contract = result.Value.ToContract();
 
             return Results.Created($"/api/imagesets/{result.Value.Id}", contract);
         });

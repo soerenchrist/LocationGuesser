@@ -1,5 +1,6 @@
 using FluentResults;
 using LocationGuesser.Api.Contracts;
+using LocationGuesser.Api.Util;
 using LocationGuesser.Core.Domain.Errors;
 
 namespace LocationGuesser.Api.Extensions;

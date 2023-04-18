@@ -1,27 +1,12 @@
-using FluentResults;
 using FluentValidation;
 using LocationGuesser.Core.Domain;
-using MediatR;
 
-namespace LocationGuesser.Api.Contracts;
+namespace LocationGuesser.Api.Validators;
 
-public class CreateImageSetContract : IRequest<Result<ImageSet>>
+
+public class ImageSetValidator : AbstractValidator<ImageSet>
 {
-    public required string Title { get; init; }
-    public required string Description { get; init; }
-    public required string Tags { get; init; }
-    public required int LowerYearRange { get; init; }
-    public required int UpperYearRange { get; init; }
-
-    public ImageSet ToImageSet()
-    {
-        return new ImageSet(Guid.NewGuid(), Title, Description, Tags, LowerYearRange, UpperYearRange, 0);
-    }
-}
-
-public class CreateImageSetContractValidator : AbstractValidator<CreateImageSetContract>
-{
-    public CreateImageSetContractValidator()
+    public ImageSetValidator()
     {
         RuleFor(x => x.Title)
             .MinimumLength(3)

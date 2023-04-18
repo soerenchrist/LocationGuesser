@@ -1,33 +1,36 @@
 using FluentResults;
 using FluentValidation;
-using LocationGuesser.Api.Contracts;
 using LocationGuesser.Api.Extensions;
+using LocationGuesser.Api.Mappings;
 using LocationGuesser.Core.Data.Abstractions;
 using LocationGuesser.Core.Domain;
 using MediatR;
 
 namespace LocationGuesser.Api.Features.ImageSets;
 
-public class CreateImageSetCommandHandler : IRequestHandler<CreateImageSetContract, Result<ImageSet>>
+public record CreateImageSetCommand(string Title, string Description, string Tags, int LowerYearRange, int UpperYearRange) : IRequest<Result<ImageSet>>;
+
+public class CreateImageSetCommandHandler : IRequestHandler<CreateImageSetCommand, Result<ImageSet>>
 {
-    private readonly IValidator<CreateImageSetContract> _validator;
+    private readonly IValidator<ImageSet> _validator;
     private readonly IImageSetRepository _imageSetRepository;
-    public CreateImageSetCommandHandler(IValidator<CreateImageSetContract> validator,
+    public CreateImageSetCommandHandler(IValidator<ImageSet> validator,
         IImageSetRepository imageSetRepository)
     {
         _validator = validator;
         _imageSetRepository = imageSetRepository;
     }
 
-    public async Task<Result<ImageSet>> Handle(CreateImageSetContract message, CancellationToken cancellationToken)
+    public async Task<Result<ImageSet>> Handle(CreateImageSetCommand message, CancellationToken cancellationToken)
     {
-        var validationResult = await _validator.ValidateAsync(message);
+        var imageSet = message.ToDomain();
+        var validationResult = await _validator.ValidateAsync(imageSet);
         if (!validationResult.IsValid)
         {
             return validationResult.ToResult<ImageSet>();
         }
 
-        var result = await _imageSetRepository.AddImageSetAsync(message.ToImageSet(), default);
+        var result = await _imageSetRepository.AddImageSetAsync(imageSet, default);
         return result;
     }
 }
