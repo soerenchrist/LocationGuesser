@@ -43,16 +43,11 @@ public class CosmosImageRepository : IImageRepository
         try
         {
             var response = await _container.DeleteItemAsync<CosmosImage>(image.Number.ToString(), new PartitionKey(image.SetId.ToString()), cancellationToken);
-            return response.StatusCode switch
-            {
-                HttpStatusCode.OK or HttpStatusCode.NoContent => Result.Ok(),
-                HttpStatusCode.NotFound => Result.Fail(CreateNotFoundError(image.SetId, image.Number)),
-                _ => Result.Fail($"Unknown error with status code {response.StatusCode}"),
-            };
+            return Result.Ok();
         }
         catch (CosmosException ex)
         {
-            return Result.Fail(ex.Message);
+            return MatchExceptionToResult(image.SetId, image.Number, ex);
         }
     }
 
@@ -61,18 +56,34 @@ public class CosmosImageRepository : IImageRepository
         try
         {
             var response = await _container.ReadItemAsync<CosmosImage>(number.ToString(), new PartitionKey(setId.ToString()), cancellationToken);
-            return (response.StatusCode, response.Resource) switch
+            return response.Resource switch
             {
-                (HttpStatusCode.NotFound, _) => Result.Fail<Image>(CreateNotFoundError(setId, number)),
-                (HttpStatusCode.OK, null) => Result.Fail<Image>(CreateNotFoundError(setId, number)),
-                (HttpStatusCode.OK, CosmosImage image) => Result.Ok<Image>(image.ToImage()),
-                _ => Result.Fail($"Unknown error with status code {response.StatusCode}"),
+                null => Result.Fail(CreateNotFoundError(setId, number)),
+                CosmosImage image => Result.Ok(image.ToImage())
             };
         }
         catch (CosmosException ex)
         {
-            return Result.Fail<Image>(ex.Message);
+            return MatchExceptionToImageResult(setId, number, ex);
         }
+    }
+
+    private Result<Image> MatchExceptionToImageResult(Guid setId, int number, CosmosException ex)
+    {
+        return ex.StatusCode switch
+        {
+            HttpStatusCode.NotFound => Result.Fail(CreateNotFoundError(setId, number)),
+            _ => Result.Fail<Image>(ex.Message)
+        };
+    }
+
+    private Result MatchExceptionToResult(Guid setId, int number, CosmosException ex)
+    {
+        return ex.StatusCode switch
+        {
+            HttpStatusCode.NotFound => Result.Fail(CreateNotFoundError(setId, number)),
+            _ => Result.Fail(ex.Message)
+        };
     }
 
     private NotFoundError CreateNotFoundError(Guid setId, int number)
