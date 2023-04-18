@@ -1,0 +1,11 @@
+﻿@page "/"
+@inherits MvvmComponentBase<IndexPageViewModel>
+
+<div class="text-center px-3">
+    <h1 class="my-4 text-6xl text-white font-extrabold leading-tight">LocationGuesser</h1>
+    <h4 class="text-md">Select a set to play</h4>
+    @if (Bind(x => x.IsLoading))
+    {
+        <p>Loading</p>
+    }
+</div>
