@@ -27,6 +27,7 @@
 
     <ItemGroup>
       <ProjectReference Include="..\..\src\LocationGuesser.Core\LocationGuesser.Core.csproj" />
+      <ProjectReference Include="..\..\src\LocationGuesser.Api\LocationGuesser.Api.csproj" />
     </ItemGroup>
 
 </Project>
