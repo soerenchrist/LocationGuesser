@@ -9,6 +9,7 @@
 
     <ItemGroup>
         <ProjectReference Include="..\LocationGuesser.Core\LocationGuesser.Core.csproj" />
+        <ProjectReference Include="..\LocationGuesser.Blazor\LocationGuesser.Blazor.csproj" />
     </ItemGroup>
 
     <ItemGroup>
@@ -16,6 +17,7 @@
         <PackageReference Include="FluentValidation.DependencyInjectionExtensions" Version="11.5.2" />
         <PackageReference Include="Mediatr" Version="12.0.1" />
         <PackageReference Include="Microsoft.ApplicationInsights.AspNetCore" Version="2.21.0" />
+        <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.Server" Version="7.0.5" />
         <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="7.0.5" />
         <PackageReference Include="Swashbuckle.AspNetCore" Version="6.5.0" />
     </ItemGroup>

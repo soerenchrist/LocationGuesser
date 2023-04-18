@@ -42,6 +42,7 @@ if (applicationInsightsConnection != null)
 var app = builder.Build();
 if (app.Environment.IsDevelopment())
 {
+    app.UseWebAssemblyDebugging();
     app.UseDeveloperExceptionPage();
     app.UseSwagger();
     app.UseSwaggerUI(c =>
@@ -49,8 +50,12 @@ if (app.Environment.IsDevelopment())
         c.SwaggerEndpoint("/swagger/v1/swagger.json", "LocationGuesser API v1");
     });
 }
-app.UseStaticFiles();
+app.UseBlazorFrameworkFiles();
+app.MapFallbackToFile("index.html");
+
 app.UseHttpsRedirection();
+app.UseStaticFiles();
+
 app.MapImageSetEndpoints();
 app.MapGet("/health", () => Results.Ok());
 
