@@ -26,7 +26,8 @@ public class CosmosImageRepositoryTests
     {
         var setId = Guid.NewGuid();
         var number = 3;
-        _container.When(x => x.ReadItemAsync<CosmosImage>(number.ToString(), new PartitionKey(setId.ToString()), default))
+        _container.When(x =>
+                x.ReadItemAsync<CosmosImage>(number.ToString(), new PartitionKey(setId.ToString()), default))
             .Throw(new CosmosException("Something went wrong", HttpStatusCode.InternalServerError, 500, "", 10));
 
         var result = await _cut.GetImageAsync(setId, number, default);
@@ -39,7 +40,8 @@ public class CosmosImageRepositoryTests
     {
         var setId = Guid.NewGuid();
         var number = 3;
-        _container.When(x => x.ReadItemAsync<CosmosImage>(number.ToString(), new PartitionKey(setId.ToString()), default))
+        _container.When(x =>
+                x.ReadItemAsync<CosmosImage>(number.ToString(), new PartitionKey(setId.ToString()), default))
             .Throw(new AuthenticationFailedException("Failed"));
 
         var result = await _cut.GetImageAsync(setId, number, default);
@@ -52,7 +54,8 @@ public class CosmosImageRepositoryTests
     {
         var setId = Guid.NewGuid();
         var number = 3;
-        _container.When(x => x.ReadItemAsync<CosmosImage>(number.ToString(), new PartitionKey(setId.ToString()), default))
+        _container.When(x =>
+                x.ReadItemAsync<CosmosImage>(number.ToString(), new PartitionKey(setId.ToString()), default))
             .Throw(new CosmosException("Not found", HttpStatusCode.NotFound, 404, "", 10));
 
         var result = await _cut.GetImageAsync(setId, number, default);
@@ -162,7 +165,8 @@ public class CosmosImageRepositoryTests
         var image = CreateImage();
 
         var response = CreateResponse(HttpStatusCode.OK, image);
-        _container.DeleteItemAsync<CosmosImage>(image.Number.ToString(), new PartitionKey(image.SetId.ToString()), default)
+        _container.DeleteItemAsync<CosmosImage>(image.Number.ToString(), new PartitionKey(image.SetId.ToString()),
+                default)
             .ReturnsForAnyArgs(Task.FromResult(response));
 
         var result = await _cut.DeleteImageAsync(image, default);
@@ -175,7 +179,9 @@ public class CosmosImageRepositoryTests
     {
         var image = CreateImage();
 
-        _container.When(x => x.DeleteItemAsync<CosmosImage>(image.Number.ToString(), new PartitionKey(image.SetId.ToString()), default))
+        _container.When(x =>
+                x.DeleteItemAsync<CosmosImage>(image.Number.ToString(), new PartitionKey(image.SetId.ToString()),
+                    default))
             .Throw(new CosmosException("Something went wrong", HttpStatusCode.InternalServerError, 500, "", 10));
 
         var result = await _cut.DeleteImageAsync(image, default);
@@ -188,7 +194,9 @@ public class CosmosImageRepositoryTests
     {
         var image = CreateImage();
 
-        _container.When(x => x.DeleteItemAsync<CosmosImage>(image.Number.ToString(), new PartitionKey(image.SetId.ToString()), default))
+        _container.When(x =>
+                x.DeleteItemAsync<CosmosImage>(image.Number.ToString(), new PartitionKey(image.SetId.ToString()),
+                    default))
             .Throw(new CosmosException("Something went wrong", HttpStatusCode.NotFound, 404, "", 10));
 
         var result = await _cut.DeleteImageAsync(image, default);
@@ -209,6 +217,64 @@ public class CosmosImageRepositoryTests
         result.IsFailed.Should().BeTrue();
     }
 
+    [Fact]
+    public async Task ListImagesAsync_ShouldReturnFail_WhenContainerThrowsAuthenticationFailed()
+    {
+        _container.When(x => x.GetItemQueryIterator<CosmosImage>(Arg.Any<QueryDefinition>()))
+            .Throw(new AuthenticationFailedException("Failed"));
+
+        var result = await _cut.ListImagesAsync(Guid.NewGuid(), default);
+
+        result.IsFailed.Should().BeTrue();
+    }
+
+    [Fact]
+    public async Task ListImagesAsync_ShouldReturnFail_WhenContainerThrowsCosmosException()
+    {
+        _container.When(x => x.GetItemQueryIterator<CosmosImage>(Arg.Any<QueryDefinition>()))
+            .Throw(new CosmosException("Failed", HttpStatusCode.InternalServerError, 500, "", 10));
+
+        var result = await _cut.ListImagesAsync(Guid.NewGuid(), default);
+
+        result.IsFailed.Should().BeTrue();
+    }
+
+    [Fact]
+    public async Task ListImagesAsync_ShouldReturnEmptyList_WhenContainerReturnsEmptyFeed()
+    {
+        var emptyFeed = CreateFeedIterator(new List<CosmosImage>());
+        _container.GetItemQueryIterator<CosmosImage>(Arg.Any<QueryDefinition>())
+            .ReturnsForAnyArgs(emptyFeed);
+
+        var results = await _cut.ListImagesAsync(Guid.NewGuid(), default);
+        results.IsSuccess.Should().BeTrue();
+        results.Value.Should().BeEmpty();
+    }
+
+    [Fact]
+    public async Task ListImagesAsync_ShouldReturnImages_WhenContainerReturnsFeed()
+    {
+        var image1 = CreateImage();
+        var image2 = CreateImage();
+        var image3 = CreateImage();
+        var feed = CreateFeedIterator(new List<CosmosImage>
+        {
+            CosmosImage.FromImage(image1),
+            CosmosImage.FromImage(image2),
+            CosmosImage.FromImage(image3),
+        });
+        _container.GetItemQueryIterator<CosmosImage>(Arg.Any<QueryDefinition>())
+            .Returns(feed);
+
+        var results = await _cut.ListImagesAsync(Guid.NewGuid(), default);
+        results.IsSuccess.Should().BeTrue();
+        results.Value.Should().HaveCount(3);
+        results.Value.Should().BeEquivalentTo(new List<Image>()
+        {
+            image1, image2, image3
+        });
+    }
+
     private Image CreateImage()
     {
         return new Image(Guid.NewGuid(), 1, 2000, 49, 10, "Description", "License");
@@ -222,6 +288,37 @@ public class CosmosImageRepositoryTests
         {
             substitute.Resource.Returns(CosmosImage.FromImage(result));
         }
+
+        return substitute;
+    }
+
+    private FeedIterator<CosmosImage> CreateFeedIterator(List<CosmosImage> list)
+    {
+        var substitute = Substitute.For<FeedIterator<CosmosImage>>();
+        if (list.Count == 0)
+        {
+            substitute.HasMoreResults.Returns(false);
+        }
+        else
+        {
+            var hasMoreItems = list.Skip(1).Select(_ => true).ToList();
+            hasMoreItems.Add(false);
+            var items = list.Skip(1).Select(CreateFeedResponse).ToList();
+            items.Add(null!);
+            var first = CreateFeedResponse(list[0]);
+
+            substitute.ReadNextAsync().Returns(first, items.ToArray());
+            substitute.HasMoreResults.Returns(true, hasMoreItems.ToArray());
+        }
+
+        return substitute;
+    }
+
+    private FeedResponse<CosmosImage> CreateFeedResponse(CosmosImage image)
+    {
+        var substitute = Substitute.For<FeedResponse<CosmosImage>>();
+        substitute.GetEnumerator().Returns(new List<CosmosImage> { image }.GetEnumerator());
+
         return substitute;
     }
 }

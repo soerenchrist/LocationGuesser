@@ -59,7 +59,7 @@ public class CosmosImageSetRepository : IImageSetRepository
             var items = new List<ImageSet>();
             while (feed.HasMoreResults)
             {
-                FeedResponse<CosmosImageSet> response = await feed.ReadNextAsync();
+                FeedResponse<CosmosImageSet> response = await feed.ReadNextAsync(cancellationToken);
                 foreach (var item in response)
                 {
                     items.Add(item.ToImageSet());

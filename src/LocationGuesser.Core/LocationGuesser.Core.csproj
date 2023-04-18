@@ -17,6 +17,6 @@
     </ItemGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\LocationGuesser.Core.Domain\LocationGuesser.Core.Domain.csproj" />
+      <ProjectReference Include="../LocationGuesser.Core.Domain/LocationGuesser.Core.Domain.csproj" />
     </ItemGroup>
 </Project>

@@ -47,7 +47,8 @@ public class CosmosImageRepository : IImageRepository
     {
         try
         {
-            var response = await _container.DeleteItemAsync<CosmosImage>(image.Number.ToString(), new PartitionKey(image.SetId.ToString()), cancellationToken);
+            await _container.DeleteItemAsync<CosmosImage>(image.Number.ToString(),
+                new PartitionKey(image.SetId.ToString()), cancellationToken);
             return Result.Ok();
         }
         catch (CosmosException ex)
@@ -60,15 +61,47 @@ public class CosmosImageRepository : IImageRepository
         }
     }
 
+    public async Task<Result<List<Image>>> ListImagesAsync(Guid setId, CancellationToken cancellationToken)
+    {
+        try
+        {
+            var query = new QueryDefinition("SELECT * FROM c WHERE c.setId = @setId")
+                .WithParameter("@setId", setId.ToString());
+            var feed = _container.GetItemQueryIterator<CosmosImage>(query);
+            var items = new List<Image>();
+            while (feed.HasMoreResults)
+            {
+                var response = await feed.ReadNextAsync(cancellationToken);
+                foreach (var item in response)
+                {
+                    items.Add(item.ToImage());
+                }
+            }
+
+            return Result.Ok(items);
+        }
+        catch (CosmosException ex)
+        {
+            return Result.Fail<List<Image>>("Unknown error with status code " + ex.StatusCode);
+        }
+        catch (AuthenticationFailedException)
+        {
+            return Result.Fail<List<Image>>("Failed to authenticate against CosmosDB");
+        }
+
+        throw new NotImplementedException();
+    }
+
     public async Task<Result<Image>> GetImageAsync(Guid setId, int number, CancellationToken cancellationToken)
     {
         try
         {
-            var response = await _container.ReadItemAsync<CosmosImage>(number.ToString(), new PartitionKey(setId.ToString()), cancellationToken);
+            var response = await _container.ReadItemAsync<CosmosImage>(number.ToString(),
+                new PartitionKey(setId.ToString()), cancellationToken);
             return response.Resource switch
             {
                 null => Result.Fail(CreateNotFoundError(setId, number)),
-                CosmosImage image => Result.Ok(image.ToImage())
+                var image => Result.Ok(image.ToImage())
             };
         }
         catch (CosmosException ex)
