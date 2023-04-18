@@ -5,6 +5,7 @@ using LocationGuesser.Core.Domain;
 using LocationGuesser.Core.Data.Dtos;
 using Microsoft.Azure.Cosmos;
 using Microsoft.Extensions.Logging;
+using LocationGuesser.Core.Domain.Errors;
 
 namespace LocationGuesser.Core.Data;
 
@@ -21,7 +22,7 @@ public class CosmosImageSetRepository : IImageSetRepository
         _logger = logger;
     }
 
-    public async Task<Result<ImageSet?>> GetImageSetAsync(Guid id, CancellationToken cancellationToken)
+    public async Task<Result<ImageSet>> GetImageSetAsync(Guid id, CancellationToken cancellationToken)
     {
         try
         {
@@ -30,8 +31,8 @@ public class CosmosImageSetRepository : IImageSetRepository
 
             return (item.StatusCode, item.Resource) switch
             {
-                (HttpStatusCode.NotFound, _) => Result.Ok<ImageSet?>(null),
-                (HttpStatusCode.OK, null) => Result.Ok<ImageSet?>(null),
+                (HttpStatusCode.NotFound, _) => Result.Fail<ImageSet>(CreateNotFoundError(id)),
+                (HttpStatusCode.OK, null) => Result.Fail<ImageSet>(CreateNotFoundError(id)),
                 (HttpStatusCode.OK, CosmosImageSet resource) => resource.ToImageSet(),
                 _ => Result.Fail($"Unknown error occured with status code {item.StatusCode}")
             };
@@ -93,12 +94,12 @@ public class CosmosImageSetRepository : IImageSetRepository
         try
         {
             var response = await _container.UpsertItemAsync(CosmosImageSet.FromImageSet(imageSet), cancellationToken);
-            if (response.StatusCode != HttpStatusCode.OK)
+            return response.StatusCode switch
             {
-                return Result.Fail($"Unknown error with status code {response.StatusCode}");
-            }
-
-            return Result.Ok();
+                HttpStatusCode.OK or HttpStatusCode.NoContent => Result.Ok(),
+                HttpStatusCode.NotFound => Result.Fail(CreateNotFoundError(imageSet.Id)),
+                _ => Result.Fail($"Unknown error occured with status code {response.StatusCode}")
+            };
         }
         catch (CosmosException ex)
         {
@@ -113,16 +114,21 @@ public class CosmosImageSetRepository : IImageSetRepository
             var response = await _container.DeleteItemAsync<CosmosImageSet>(id.ToString(),
                 new PartitionKey(PartitionKey),
                 cancellationToken: cancellationToken);
-            if (response.StatusCode != HttpStatusCode.OK)
+            return response.StatusCode switch
             {
-                return Result.Fail($"Unknown error occured with status code {response.StatusCode}");
-            }
-
-            return Result.Ok();
+                HttpStatusCode.OK or HttpStatusCode.NoContent => Result.Ok(),
+                HttpStatusCode.NotFound => Result.Fail(CreateNotFoundError(id)),
+                _ => Result.Fail($"Unknown error occured with status code {response.StatusCode}")
+            };
         }
         catch (CosmosException ex)
         {
             return Result.Fail(ex.Message);
         }
+    }
+
+    private NotFoundError CreateNotFoundError(Guid id)
+    {
+        return new NotFoundError($"ImageSet with id {id} not found");
     }
 }

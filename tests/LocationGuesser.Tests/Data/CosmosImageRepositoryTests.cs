@@ -5,6 +5,7 @@ using LocationGuesser.Core.Domain;
 using LocationGuesser.Tests.Utils;
 using Microsoft.Azure.Cosmos;
 using LocationGuesser.Core.Data.Dtos;
+using LocationGuesser.Core.Domain.Errors;
 
 namespace LocationGuesser.Tests.Data;
 
@@ -46,7 +47,7 @@ public class CosmosImageRepositoryTests
     }
 
     [Fact]
-    public async Task GetImageAsync_ShouldReturnNull_WhenCosmosReturnsOkWithNullResult()
+    public async Task GetImageAsync_ShouldReturnNotFoundError_WhenCosmosReturnsOkWithNullResult()
     {
         var setId = Guid.NewGuid();
         var number = 3;
@@ -56,12 +57,12 @@ public class CosmosImageRepositoryTests
 
         var result = await _cut.GetImageAsync(setId, number, default);
 
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Should().BeNull();
+        result.IsFailed.Should().BeTrue();
+        result.Errors.First().Should().BeEquivalentTo(new NotFoundError($"Image {number} in {setId} not found"));
     }
 
     [Fact]
-    public async Task GetImageAsync_ShouldReturnNull_WhenCosmosReturnsNotFound()
+    public async Task GetImageAsync_ShouldReturnNotFoundError_WhenCosmosReturnsNotFound()
     {
         var setId = Guid.NewGuid();
         var number = 3;
@@ -71,8 +72,8 @@ public class CosmosImageRepositoryTests
 
         var result = await _cut.GetImageAsync(setId, number, default);
 
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Should().BeNull();
+        result.IsFailed.Should().BeTrue();
+        result.Errors.First().Should().BeEquivalentTo(new NotFoundError($"Image {number} in {setId} not found"));
     }
 
     [Fact]
@@ -154,6 +155,21 @@ public class CosmosImageRepositoryTests
         var result = await _cut.DeleteImageAsync(image, default);
 
         result.IsFailed.Should().BeTrue();
+    }
+
+    [Fact]
+    public async Task DeleteImageAsync_ShouldReturnNotFound_WhenCosmosReturnsNotFound()
+    {
+        var image = CreateImage();
+        
+        var response = CreateResponse(HttpStatusCode.NotFound);
+        _container.DeleteItemAsync<CosmosImage>(image.Number.ToString(), new PartitionKey(image.SetId.ToString()), default)
+            .Returns(Task.FromResult(response));
+
+        var result = await _cut.DeleteImageAsync(image, default);
+
+        result.IsFailed.Should().BeTrue();
+        result.Errors.First().Should().BeEquivalentTo(new NotFoundError($"Image {image.Number} in {image.SetId} not found"));
     }
 
     [Fact]

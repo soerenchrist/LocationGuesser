@@ -5,6 +5,7 @@ using LocationGuesser.Core.Domain;
 using LocationGuesser.Tests.Utils;
 using Microsoft.Azure.Cosmos;
 using LocationGuesser.Core.Data.Dtos;
+using LocationGuesser.Core.Domain.Errors;
 
 namespace LocationGuesser.Tests.Data;
 
@@ -35,7 +36,7 @@ public class CosmosImageSetRepositoryTests
     }
 
     [Fact]
-    public async Task GetImageSetAsync_ShouldReturnNullResult_WhenStatusCodeIsNotFound()
+    public async Task GetImageSetAsync_ShouldReturnNotFoundError_WhenStatusCodeIsNotFound()
     {
         var id = Guid.NewGuid();
         var taskResult = CreateResponse(HttpStatusCode.NotFound);
@@ -44,8 +45,8 @@ public class CosmosImageSetRepositoryTests
 
         var result = await _cut.GetImageSetAsync(id, default);
 
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Should().BeNull();
+        result.IsFailed.Should().BeTrue();
+        result.Errors.First().Should().BeOfType<NotFoundError>();
     }
 
     [Fact]
@@ -87,8 +88,8 @@ public class CosmosImageSetRepositoryTests
 
         var result = await _cut.GetImageSetAsync(id, default);
 
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Should().BeNull();
+        result.IsFailed.Should().BeTrue();
+        result.Errors.First().Should().BeOfType<NotFoundError>();
     }
 
     [Fact]
@@ -197,6 +198,19 @@ public class CosmosImageSetRepositoryTests
     }
 
     [Fact]
+    public async Task UpdateImageSetAsync_ReturnsNotFoundError_WhenContainerReturnsNotFoundStatus()
+    {
+        var cosmosResponse = CreateResponse(HttpStatusCode.NotFound);
+        _container.UpsertItemAsync<CosmosImageSet>(Arg.Any<CosmosImageSet>(), default)
+            .ReturnsForAnyArgs(Task.FromResult(cosmosResponse));
+
+        var result = await _cut.UpdateImageSetAsync(CreateImageSet(), default);
+
+        result.IsFailed.Should().BeTrue();
+        result.Errors.First().Should().BeOfType<NotFoundError>();
+    }
+
+    [Fact]
     public async Task UpdateImageSetAsync_ReturnsOk_WhenContainerReturnsSuccessStatus()
     {
         var cosmosResponse = CreateResponse(HttpStatusCode.OK, CreateImageSet());
@@ -230,7 +244,21 @@ public class CosmosImageSetRepositoryTests
 
         result.IsFailed.Should().BeTrue();
     }
-    
+
+    [Fact]
+    public async Task DeleteImageSetAsync_ReturnsNotFoundError_WhenContainerReturnsNotFoundStatus()
+    {
+        var imageSet = CreateImageSet();
+        var cosmosResponse = CreateResponse(HttpStatusCode.NotFound);
+        _container.DeleteItemAsync<CosmosImageSet>(Arg.Any<string>(), Arg.Any<PartitionKey>(), default)
+            .ReturnsForAnyArgs(Task.FromResult(cosmosResponse));
+
+        var result = await _cut.DeleteImageSetAsync(imageSet.Id, default);
+
+        result.IsFailed.Should().BeTrue();
+        result.Errors.First().Should().BeOfType<NotFoundError>();
+    }
+
     [Fact]
     public async Task DeleteImageSetAsync_ReturnsOk_WhenContainerReturnsOkStatus()
     {

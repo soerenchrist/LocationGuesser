@@ -3,6 +3,7 @@ using FluentResults;
 using LocationGuesser.Core.Data.Abstractions;
 using LocationGuesser.Core.Data.Dtos;
 using LocationGuesser.Core.Domain;
+using LocationGuesser.Core.Domain.Errors;
 using Microsoft.Azure.Cosmos;
 using Microsoft.Extensions.Logging;
 
@@ -45,6 +46,7 @@ public class CosmosImageRepository : IImageRepository
             return response.StatusCode switch
             {
                 HttpStatusCode.OK or HttpStatusCode.NoContent => Result.Ok(),
+                HttpStatusCode.NotFound => Result.Fail(CreateNotFoundError(image.SetId, image.Number)),
                 _ => Result.Fail($"Unknown error with status code {response.StatusCode}"),
             };
         }
@@ -54,22 +56,27 @@ public class CosmosImageRepository : IImageRepository
         }
     }
 
-    public async Task<Result<Image?>> GetImageAsync(Guid setId, int number, CancellationToken cancellationToken)
+    public async Task<Result<Image>> GetImageAsync(Guid setId, int number, CancellationToken cancellationToken)
     {
         try
         {
             var response = await _container.ReadItemAsync<CosmosImage>(number.ToString(), new PartitionKey(setId.ToString()), cancellationToken);
             return (response.StatusCode, response.Resource) switch
             {
-                (HttpStatusCode.NotFound, _) => Result.Ok<Image?>(null),
-                (HttpStatusCode.OK, null) => Result.Ok<Image?>(null),
-                (HttpStatusCode.OK, CosmosImage image) => Result.Ok<Image?>(image.ToImage()),
+                (HttpStatusCode.NotFound, _) => Result.Fail<Image>(CreateNotFoundError(setId, number)),
+                (HttpStatusCode.OK, null) => Result.Fail<Image>(CreateNotFoundError(setId, number)),
+                (HttpStatusCode.OK, CosmosImage image) => Result.Ok<Image>(image.ToImage()),
                 _ => Result.Fail($"Unknown error with status code {response.StatusCode}"),
             };
         }
         catch (CosmosException ex)
         {
-            return Result.Fail<Image?>(ex.Message);
+            return Result.Fail<Image>(ex.Message);
         }
+    }
+
+    private NotFoundError CreateNotFoundError(Guid setId, int number)
+    {
+        return new NotFoundError($"Image {number} in {setId} not found");
     }
 }
