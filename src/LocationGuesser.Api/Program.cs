@@ -12,12 +12,18 @@ builder.Services.AddSwaggerGen(c =>
     c.SwaggerDoc("v1", new OpenApiInfo { Title = "LocationGuesser API", Version = "v1" });
 });
 
-builder.Services.AddValidatorsFromAssemblyContaining<Program>();
-builder.Services.Configure<BlobOptions>(options => builder.Configuration.Bind("Blob", options));
-builder.Services.Configure<CosmosDbOptions>(options => builder.Configuration.Bind("Cosmos", options));
-builder.Services.AddCoreDependencies();
-builder.Services.AddMediatR(config => config.RegisterServicesFromAssemblyContaining<Program>());
+builder.Services.AddOptions<BlobOptions>()
+    .BindConfiguration("Blob")
+    .ValidateDataAnnotations()
+    .ValidateOnStart();
+builder.Services.AddOptions<CosmosDbOptions>()
+    .BindConfiguration("Cosmos")
+    .ValidateDataAnnotations()
+    .ValidateOnStart();
 
+builder.Services.AddValidatorsFromAssemblyContaining<Program>();
+builder.Services.AddMediatR(config => config.RegisterServicesFromAssemblyContaining<Program>());
+builder.Services.AddCoreDependencies();
 
 var applicationInsightsConnection = builder.Configuration.GetConnectionString("APPLICATIONINSIGHTS_CONNECTION_STRING");
 if (applicationInsightsConnection != null)
@@ -32,6 +38,7 @@ if (applicationInsightsConnection != null)
 var app = builder.Build();
 if (app.Environment.IsDevelopment())
 {
+    app.UseDeveloperExceptionPage();
     app.UseSwagger();
     app.UseSwaggerUI(c =>
     {
@@ -41,7 +48,7 @@ if (app.Environment.IsDevelopment())
 app.UseStaticFiles();
 app.UseHttpsRedirection();
 app.MapImageSetEndpoints();
-app.MapGet("/health", () => "OK");
+app.MapGet("/health", () => Results.Ok());
 
 app.Run();
 /*
