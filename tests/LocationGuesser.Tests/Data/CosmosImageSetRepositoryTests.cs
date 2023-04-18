@@ -7,6 +7,7 @@ using Microsoft.Azure.Cosmos;
 using LocationGuesser.Core.Data.Dtos;
 using LocationGuesser.Core.Domain.Errors;
 using LocationGuesser.Api.Extensions;
+using Azure.Identity;
 
 namespace LocationGuesser.Tests.Data;
 
@@ -48,6 +49,18 @@ public class CosmosImageSetRepositoryTests
 
         result.IsFailed.Should().BeTrue();
         result.IsNotFound().Should().BeTrue();
+    }
+
+    [Fact]
+    public async Task GetImageSetAsync_ShouldReturnFail_WhenContainerReadThrowsAuthenticationFailed()
+    {
+        var id = Guid.NewGuid();
+        _container.When(x => x.ReadItemAsync<CosmosImageSet>(id.ToString(), new PartitionKey(PartitionKey), default))
+            .Throw(new AuthenticationFailedException("Failed"));
+
+        var result = await _cut.GetImageSetAsync(id, default);
+
+        result.IsFailed.Should().BeTrue();
     }
 
     [Fact]
@@ -141,6 +154,17 @@ public class CosmosImageSetRepositoryTests
     }
 
     [Fact]
+    public async Task ListImageSetsAsync_ShouldReturnFail_WhenContainerReadThrowsAuthenticationFailed()
+    {
+        _container.When(x => x.GetItemQueryIterator<CosmosImageSet>(Arg.Any<QueryDefinition>()))
+            .Throw(new AuthenticationFailedException("Failed"));
+
+        var result = await _cut.ListImageSetsAsync(default);
+
+        result.IsFailed.Should().BeTrue();
+    }
+
+    [Fact]
     public async Task AddImageSetAsync_ReturnsFail_WhenContainerThrowsException()
     {
         _container.When(x => x.CreateItemAsync<CosmosImageSet>(Arg.Any<CosmosImageSet>(), default))
@@ -174,6 +198,18 @@ public class CosmosImageSetRepositoryTests
         var result = await _cut.AddImageSetAsync(imageSet, default);
 
         result.IsSuccess.Should().BeTrue();
+    }
+
+    [Fact]
+    public async Task AddImageSetAsync_ShouldReturnFail_WhenContainerReadThrowsAuthenticationFailed()
+    {
+        var imageSet = CreateImageSet();
+        _container.When(x => x.CreateItemAsync<CosmosImageSet>(Arg.Any<CosmosImageSet>(), default))
+            .Throw(new AuthenticationFailedException("Failed"));
+
+        var result = await _cut.AddImageSetAsync(imageSet, default);
+
+        result.IsFailed.Should().BeTrue();
     }
 
     [Fact]
@@ -212,6 +248,18 @@ public class CosmosImageSetRepositoryTests
     }
 
     [Fact]
+    public async Task UpdateImageSetAsync_ShouldReturnFail_WhenContainerReadThrowsAuthenticationFailed()
+    {
+        var imageSet = CreateImageSet();
+        _container.When(x => x.UpsertItemAsync<CosmosImageSet>(Arg.Any<CosmosImageSet>(), default))
+            .Throw(new AuthenticationFailedException("Failed"));
+
+        var result = await _cut.UpdateImageSetAsync(imageSet, default);
+
+        result.IsFailed.Should().BeTrue();
+    }
+
+    [Fact]
     public async Task DeleteImageSetAsync_ReturnsFail_WhenContainerThrowsException()
     {
         _container.When(x => x.DeleteItemAsync<CosmosImageSet>(Arg.Any<string>(), Arg.Any<PartitionKey>(), default))
@@ -244,6 +292,18 @@ public class CosmosImageSetRepositoryTests
         var result = await _cut.DeleteImageSetAsync(Guid.NewGuid(), default);
 
         result.IsSuccess.Should().BeTrue();
+    }
+
+    [Fact]
+    public async Task DeleteImageSetAsync_ShouldReturnFail_WhenContainerReadThrowsAuthenticationFailed()
+    {
+        var imageSet = CreateImageSet();
+        _container.When(x => x.DeleteItemAsync<CosmosImageSet>(Arg.Any<string>(), Arg.Any<PartitionKey>(), default))
+            .Throw(new AuthenticationFailedException("Failed"));
+
+        var result = await _cut.DeleteImageSetAsync(Guid.NewGuid(), default);
+
+        result.IsFailed.Should().BeTrue();
     }
 
     private ItemResponse<CosmosImageSet> CreateResponse(HttpStatusCode statusCode, ImageSet? result = null)

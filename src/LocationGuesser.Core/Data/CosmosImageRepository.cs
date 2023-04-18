@@ -1,4 +1,5 @@
 using System.Net;
+using Azure.Identity;
 using FluentResults;
 using LocationGuesser.Core.Data.Abstractions;
 using LocationGuesser.Core.Data.Dtos;
@@ -36,6 +37,10 @@ public class CosmosImageRepository : IImageRepository
         {
             return Result.Fail(ex.Message);
         }
+        catch (AuthenticationFailedException)
+        {
+            return Result.Fail("Failed to authenticate against CosmosDB");
+        }
     }
 
     public async Task<Result> DeleteImageAsync(Image image, CancellationToken cancellationToken)
@@ -48,6 +53,10 @@ public class CosmosImageRepository : IImageRepository
         catch (CosmosException ex)
         {
             return MatchExceptionToResult(image.SetId, image.Number, ex);
+        }
+        catch (AuthenticationFailedException)
+        {
+            return Result.Fail("Failed to authenticate against CosmosDB");
         }
     }
 
@@ -65,6 +74,10 @@ public class CosmosImageRepository : IImageRepository
         catch (CosmosException ex)
         {
             return MatchExceptionToImageResult(setId, number, ex);
+        }
+        catch (AuthenticationFailedException)
+        {
+            return Result.Fail("Failed to authenticate against CosmosDB");
         }
     }
 

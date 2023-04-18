@@ -6,6 +6,7 @@ using LocationGuesser.Core.Data.Dtos;
 using Microsoft.Azure.Cosmos;
 using Microsoft.Extensions.Logging;
 using LocationGuesser.Core.Domain.Errors;
+using Azure.Identity;
 
 namespace LocationGuesser.Core.Data;
 
@@ -39,6 +40,10 @@ public class CosmosImageSetRepository : IImageSetRepository
         {
             return MatchExceptionToImageSetResult(id, ex);
         }
+        catch (AuthenticationFailedException)
+        {
+            return Result.Fail<ImageSet>("Failed to authenticate with CosmosDB");
+        }
     }
 
 
@@ -67,6 +72,10 @@ public class CosmosImageSetRepository : IImageSetRepository
         {
             return Result.Fail(ex.Message);
         }
+        catch (AuthenticationFailedException)
+        {
+            return Result.Fail("Failed to authenticate with CosmosDB");
+        }
     }
 
     public async Task<Result<ImageSet>> AddImageSetAsync(ImageSet imageSet, CancellationToken cancellationToken)
@@ -84,6 +93,10 @@ public class CosmosImageSetRepository : IImageSetRepository
         {
             return Result.Fail(ex.Message);
         }
+        catch (AuthenticationFailedException)
+        {
+            return Result.Fail("Failed to authenticate with CosmosDB");
+        }
 
         return Result.Ok(imageSet);
     }
@@ -99,6 +112,10 @@ public class CosmosImageSetRepository : IImageSetRepository
         {
             return MatchExceptionToResult(imageSet.Id, ex);
         }
+        catch (AuthenticationFailedException)
+        {
+            return Result.Fail("Failed to authenticate with CosmosDB");
+        }
     }
 
     public async Task<Result> DeleteImageSetAsync(Guid id, CancellationToken cancellationToken)
@@ -113,6 +130,10 @@ public class CosmosImageSetRepository : IImageSetRepository
         catch (CosmosException ex)
         {
             return MatchExceptionToResult(id, ex);
+        }
+        catch (AuthenticationFailedException)
+        {
+            return Result.Fail("Failed to authenticate with CosmosDB");
         }
     }
 

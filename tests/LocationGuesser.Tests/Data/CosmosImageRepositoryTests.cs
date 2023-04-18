@@ -7,6 +7,7 @@ using Microsoft.Azure.Cosmos;
 using LocationGuesser.Core.Data.Dtos;
 using LocationGuesser.Core.Domain.Errors;
 using LocationGuesser.Api.Extensions;
+using Azure.Identity;
 
 namespace LocationGuesser.Tests.Data;
 
@@ -27,6 +28,19 @@ public class CosmosImageRepositoryTests
         var number = 3;
         _container.When(x => x.ReadItemAsync<CosmosImage>(number.ToString(), new PartitionKey(setId.ToString()), default))
             .Throw(new CosmosException("Something went wrong", HttpStatusCode.InternalServerError, 500, "", 10));
+
+        var result = await _cut.GetImageAsync(setId, number, default);
+
+        result.IsFailed.Should().BeTrue();
+    }
+
+    [Fact]
+    public async Task GetImageAsync_ShouldReturnFail_WhenContainerThrowsAuthenticationException()
+    {
+        var setId = Guid.NewGuid();
+        var number = 3;
+        _container.When(x => x.ReadItemAsync<CosmosImage>(number.ToString(), new PartitionKey(setId.ToString()), default))
+            .Throw(new AuthenticationFailedException("Failed"));
 
         var result = await _cut.GetImageAsync(setId, number, default);
 
@@ -105,6 +119,18 @@ public class CosmosImageRepositoryTests
     }
 
     [Fact]
+    public async Task AddImageAsync_ShouldReturnFail_WhenContainerThrowsAuthenticationException()
+    {
+        var image = CreateImage();
+        _container.When(x => x.CreateItemAsync<CosmosImage>(Arg.Any<CosmosImage>(), default))
+            .Throw(new AuthenticationFailedException("Failed"));
+
+        var result = await _cut.AddImageAsync(image, default);
+
+        result.IsFailed.Should().BeTrue();
+    }
+
+    [Fact]
     public async Task AddImageAsync_ShouldReturnFail_WhenCosmosReturnsInvalidStatus()
     {
         var image = CreateImage();
@@ -169,6 +195,18 @@ public class CosmosImageRepositoryTests
 
         result.IsFailed.Should().BeTrue();
         result.IsNotFound().Should().BeTrue();
+    }
+
+    [Fact]
+    public async Task DeleteImageAsync_ShouldReturnFail_WhenContainerThrowsAuthenticationException()
+    {
+        var image = CreateImage();
+        _container.When(x => x.DeleteItemAsync<CosmosImage>(Arg.Any<string>(), Arg.Any<PartitionKey>(), default))
+            .Throw(new AuthenticationFailedException("Failed"));
+
+        var result = await _cut.DeleteImageAsync(image, default);
+
+        result.IsFailed.Should().BeTrue();
     }
 
     private Image CreateImage()
