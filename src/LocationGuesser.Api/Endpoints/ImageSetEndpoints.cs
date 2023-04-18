@@ -2,6 +2,7 @@ using FluentResults;
 using FluentValidation;
 using LocationGuesser.Api.Contracts;
 using LocationGuesser.Api.Extensions;
+using LocationGuesser.Api.Features.ImageSets;
 using LocationGuesser.Core.Data.Abstractions;
 using LocationGuesser.Core.Domain;
 using MediatR;
@@ -31,17 +32,14 @@ public static class ImageSetEndpoints
 
         group.MapGet("{id:guid}", async (
             [FromRoute] Guid id,
-            [FromServices] IImageSetRepository imageSetRepository,
+            [FromServices] IMediator mediator,
             CancellationToken cancellationToken
         ) =>
         {
-            var result = await imageSetRepository.GetImageSetAsync(id, cancellationToken);
-            return result switch
-            {
-                { IsSuccess: true, Value: null } => Results.NotFound(),
-                { IsSuccess: true } r => Results.Ok(r.Value),
-                _ => result.ToErrorResponse()
-            };
+            var query = new GetImageSetQuery(id);
+            var result = await mediator.Send<Result<ImageSet>>(query);
+            if (result.IsFailed) return result.ToErrorResponse();
+            return Results.Ok(result.Value);
         });
 
         group.MapPost("/", async (
