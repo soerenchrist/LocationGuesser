@@ -17,17 +17,20 @@ public static class ImageSetEndpoints
         var group = app.MapGroup("/api/imagesets");
 
         group.MapGet("/", async (
-            [FromServices] IImageSetRepository imageSetRepository,
+            [FromServices] IMediator mediator,
             CancellationToken cancellationToken
         ) =>
         {
-            var result = await imageSetRepository.ListImageSetsAsync(cancellationToken);
-            return result switch
+            var result = await mediator.Send<Result<List<ImageSet>>>(new ListImageSetsQuery(), cancellationToken);
+            if (result.IsSuccess)
             {
-                { IsSuccess: true, Value: null } => Results.NotFound(),
-                { IsSuccess: true } r => Results.Ok(r.Value),
-                _ => Results.StatusCode(500)
-            };
+                var contracts = result.Value.Select(ImageSetContract.FromImageSet);
+                return Results.Ok(contracts);
+            }
+            else
+            {
+                return result.ToErrorResponse();
+            }
         }).WithName("GetImagesets").WithOpenApi();
 
         group.MapGet("{id:guid}", async (
@@ -39,7 +42,8 @@ public static class ImageSetEndpoints
             var query = new GetImageSetQuery(id);
             var result = await mediator.Send<Result<ImageSet>>(query);
             if (result.IsFailed) return result.ToErrorResponse();
-            return Results.Ok(result.Value);
+            var contract = ImageSetContract.FromImageSet(result.Value);
+            return Results.Ok(contract);
         });
 
         group.MapPost("/", async (
@@ -55,15 +59,18 @@ public static class ImageSetEndpoints
                 return result.ToErrorResponse();
             }
 
-            return Results.Created($"/api/imagesets/{result.Value.Id}", result.Value);
+            var contract = ImageSetContract.FromImageSet(result.Value);
+
+            return Results.Created($"/api/imagesets/{result.Value.Id}", contract);
         });
 
         group.MapDelete("{id:guid}", async (
             [FromRoute] Guid id,
-            [FromServices] IImageSetRepository imageSetRepository,
+            [FromServices] IMediator mediator,
             CancellationToken cancellationToken) =>
         {
-            var result = await imageSetRepository.GetImageSetAsync(id, cancellationToken);
+
+            var result = await mediator.Send<Result>(new DeleteImageSetCommand(id), cancellationToken);
             if (result.IsFailed)
             {
                 return result.ToErrorResponse();

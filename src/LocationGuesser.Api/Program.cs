@@ -1,7 +1,11 @@
 using FluentValidation;
 using LocationGuesser.Api.Endpoints;
 using LocationGuesser.Core;
+using LocationGuesser.Core.Data.Abstractions;
+using LocationGuesser.Core.Data.Dtos;
 using LocationGuesser.Core.Options;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.Azure.Cosmos;
 using Microsoft.OpenApi.Models;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -51,13 +55,3 @@ app.MapImageSetEndpoints();
 app.MapGet("/health", () => Results.Ok());
 
 app.Run();
-/*
-
-// Configure the HTTP request pipeline.
-app.MapGrpcService<ImageSetGrpcService>();
-app.MapGet("/",
-    () =>
-        "Communication with gRPC endpoints must be made through a gRPC client. To learn how to create a client, visit: https://go.microsoft.com/fwlink/?linkid=2086909");
-
-app.Run();
-*/
