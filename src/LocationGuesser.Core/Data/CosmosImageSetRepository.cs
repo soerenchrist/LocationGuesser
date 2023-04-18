@@ -29,19 +29,18 @@ public class CosmosImageSetRepository : IImageSetRepository
             var item = await _container.ReadItemAsync<CosmosImageSet>(id.ToString(), new PartitionKey(PartitionKey),
                 cancellationToken: cancellationToken);
 
-            return (item.StatusCode, item.Resource) switch
+            return item.Resource switch
             {
-                (HttpStatusCode.NotFound, _) => Result.Fail<ImageSet>(CreateNotFoundError(id)),
-                (HttpStatusCode.OK, null) => Result.Fail<ImageSet>(CreateNotFoundError(id)),
-                (HttpStatusCode.OK, CosmosImageSet resource) => resource.ToImageSet(),
-                _ => Result.Fail($"Unknown error occured with status code {item.StatusCode}")
+                null => Result.Fail(CreateNotFoundError(id)),
+                CosmosImageSet image => Result.Ok(image.ToImageSet())
             };
         }
         catch (CosmosException ex)
         {
-            return Result.Fail(ex.Message);
+            return MatchExceptionToImageSetResult(id, ex);
         }
     }
+
 
     public async Task<Result<List<ImageSet>>> ListImageSetsAsync(CancellationToken cancellationToken)
     {
@@ -94,16 +93,11 @@ public class CosmosImageSetRepository : IImageSetRepository
         try
         {
             var response = await _container.UpsertItemAsync(CosmosImageSet.FromImageSet(imageSet), cancellationToken);
-            return response.StatusCode switch
-            {
-                HttpStatusCode.OK or HttpStatusCode.NoContent => Result.Ok(),
-                HttpStatusCode.NotFound => Result.Fail(CreateNotFoundError(imageSet.Id)),
-                _ => Result.Fail($"Unknown error occured with status code {response.StatusCode}")
-            };
+            return Result.Ok();
         }
         catch (CosmosException ex)
         {
-            return Result.Fail(ex.Message);
+            return MatchExceptionToResult(imageSet.Id, ex);
         }
     }
 
@@ -114,21 +108,34 @@ public class CosmosImageSetRepository : IImageSetRepository
             var response = await _container.DeleteItemAsync<CosmosImageSet>(id.ToString(),
                 new PartitionKey(PartitionKey),
                 cancellationToken: cancellationToken);
-            return response.StatusCode switch
-            {
-                HttpStatusCode.OK or HttpStatusCode.NoContent => Result.Ok(),
-                HttpStatusCode.NotFound => Result.Fail(CreateNotFoundError(id)),
-                _ => Result.Fail($"Unknown error occured with status code {response.StatusCode}")
-            };
+            return Result.Ok();
         }
         catch (CosmosException ex)
         {
-            return Result.Fail(ex.Message);
+            return MatchExceptionToResult(id, ex);
         }
     }
 
     private NotFoundError CreateNotFoundError(Guid id)
     {
         return new NotFoundError($"ImageSet with id {id} not found");
+    }
+
+    public Result<ImageSet> MatchExceptionToImageSetResult(Guid guid, CosmosException ex)
+    {
+        return ex.StatusCode switch
+        {
+            HttpStatusCode.NotFound => Result.Fail(CreateNotFoundError(guid)),
+            _ => Result.Fail(ex.Message)
+        };
+    }
+
+    public Result MatchExceptionToResult(Guid guid, CosmosException ex)
+    {
+        return ex.StatusCode switch
+        {
+            HttpStatusCode.NotFound => Result.Fail(CreateNotFoundError(guid)),
+            _ => Result.Fail(ex.Message)
+        };
     }
 }
