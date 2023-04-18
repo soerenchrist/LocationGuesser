@@ -11,6 +11,7 @@
         <ProjectReference Include="..\LocationGuesser.Core\LocationGuesser.Core.csproj" />
         <ProjectReference Include="..\LocationGuesser.Blazor\LocationGuesser.Blazor.csproj" />
         <ProjectReference Include="..\LocationGuesser.Core.Contracts\LocationGuesser.Core.Contracts.csproj" />
+        <ProjectReference Include="..\LocationGuesser.Core.Domain\LocationGuesser.Core.Domain.csproj" />
     </ItemGroup>
 
     <ItemGroup>

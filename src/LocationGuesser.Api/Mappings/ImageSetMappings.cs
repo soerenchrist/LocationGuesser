@@ -1,5 +1,5 @@
-using LocationGuesser.Api.Contracts;
 using LocationGuesser.Api.Features.ImageSets;
+using LocationGuesser.Core.Contracts;
 using LocationGuesser.Core.Domain;
 
 namespace LocationGuesser.Api.Mappings;
@@ -16,7 +16,7 @@ public static class ImageSetMappings
             Tags = imageSet.Tags,
             LowerYearRange = imageSet.LowerYearRange,
             UpperYearRange = imageSet.UpperYearRange,
-
+            ImageCount = imageSet.ImageCount
         };
     }
 

@@ -15,6 +15,7 @@
     <PackageReference Include="NSubstitute" Version="5.0.0" />
     <PackageReference Include="RichardSzalay.MockHttp" Version="6.0.0" />
     <PackageReference Include="xunit" Version="2.4.2" />
+    <PackageReference Include="FluentResults" Version="3.15.2" />
     <PackageReference Include="xunit.runner.visualstudio" Version="2.4.5">
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
       <PrivateAssets>all</PrivateAssets>
@@ -27,6 +28,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\src\LocationGuesser.Blazor\LocationGuesser.Blazor.csproj" />
+    <ProjectReference Include="..\..\src\LocationGuesser.Core.Domain\LocationGuesser.Core.Domain.csproj" />
   </ItemGroup>
 
 </Project>

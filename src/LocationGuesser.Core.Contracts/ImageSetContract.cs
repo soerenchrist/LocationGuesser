@@ -1,4 +1,4 @@
-namespace LocationGuesser.Api.Contracts;
+namespace LocationGuesser.Core.Contracts;
 
 public class ImageSetContract
 {
@@ -8,4 +8,5 @@ public class ImageSetContract
     public required string Tags { get; init; }
     public required int LowerYearRange { get; init; }
     public required int UpperYearRange { get; init; }
+    public required int ImageCount { get; init; }
 }

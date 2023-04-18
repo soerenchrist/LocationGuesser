@@ -16,4 +16,7 @@
       <PackageReference Include="Optional" Version="4.0.0" />
     </ItemGroup>
 
+    <ItemGroup>
+      <ProjectReference Include="..\LocationGuesser.Core.Domain\LocationGuesser.Core.Domain.csproj" />
+    </ItemGroup>
 </Project>

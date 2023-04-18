@@ -1,7 +1,7 @@
 using FluentResults;
-using LocationGuesser.Api.Contracts;
 using LocationGuesser.Api.Extensions;
 using LocationGuesser.Api.Util;
+using LocationGuesser.Core.Contracts;
 using LocationGuesser.Core.Domain.Errors;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.HttpResults;

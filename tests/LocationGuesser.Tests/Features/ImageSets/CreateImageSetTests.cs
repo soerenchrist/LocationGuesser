@@ -1,5 +1,4 @@
 using FluentResults;
-using LocationGuesser.Api.Contracts;
 using LocationGuesser.Api.Features.ImageSets;
 using LocationGuesser.Api.Mappings;
 using LocationGuesser.Api.Validators;
