@@ -1,0 +1,15 @@
+<div class="max-w-md mx-8 py-4 px-8 bg-white text-start shadow-lg rounded-lg my-20">
+    <div>
+        <h2 class="text-gray-800 text-3xl font-semibold">@ImageSet.Title</h2>
+        <p class="mt-2 text-gray-600">@ImageSet.Description</p>
+    </div>
+    <div class="flex justify-end mt-4">
+        <a href="/play/@ImageSet.Id" class="text-xl font-medium text-indigo-500 hover:text-indigo-600">Play</a>
+    </div>
+</div>
+
+@code {
+    [Parameter]
+    public ImageSet ImageSet { get; set; } = null!;
+
+}

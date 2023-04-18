@@ -8,4 +8,18 @@
     {
         <p>Loading</p>
     }
+    else if (Bind(x => x.IsError))
+    {
+        <p>Error</p>
+        <p>Something went wrong...</p>
+    }
+    else if (Bind(x => x.ImageSets) != null)
+    {
+        <div class="flex flex-wrap">
+            @foreach (var set in Bind(x => x.ImageSets!))
+            {
+                <ImageSetCard ImageSet="@set" />
+            }
+        </div>
+    }
 </div>
