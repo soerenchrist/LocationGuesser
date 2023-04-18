@@ -16,6 +16,8 @@ builder.Services.AddValidatorsFromAssemblyContaining<Program>();
 builder.Services.Configure<BlobOptions>(options => builder.Configuration.Bind("Blob", options));
 builder.Services.Configure<CosmosDbOptions>(options => builder.Configuration.Bind("Cosmos", options));
 builder.Services.AddCoreDependencies();
+builder.Services.AddMediatR(config => config.RegisterServicesFromAssemblyContaining<Program>());
+
 
 var applicationInsightsConnection = builder.Configuration.GetConnectionString("APPLICATIONINSIGHTS_CONNECTION_STRING");
 if (applicationInsightsConnection != null)

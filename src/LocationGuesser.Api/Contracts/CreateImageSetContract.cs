@@ -1,9 +1,11 @@
+using FluentResults;
 using FluentValidation;
 using LocationGuesser.Core.Domain;
+using MediatR;
 
 namespace LocationGuesser.Api.Contracts;
 
-public class CreateImageSetContract
+public class CreateImageSetContract : IRequest<Result<ImageSet>>
 {
     public required string Title { get; init; }
     public required string Description { get; init; }

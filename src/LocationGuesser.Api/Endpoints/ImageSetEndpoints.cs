@@ -1,7 +1,10 @@
+using FluentResults;
 using FluentValidation;
 using LocationGuesser.Api.Contracts;
 using LocationGuesser.Api.Extensions;
 using LocationGuesser.Core.Data.Abstractions;
+using LocationGuesser.Core.Domain;
+using MediatR;
 using Microsoft.AspNetCore.Mvc;
 
 namespace LocationGuesser.Api.Endpoints;
@@ -43,23 +46,18 @@ public static class ImageSetEndpoints
 
         group.MapPost("/", async (
             [FromBody] CreateImageSetContract imageSetContract,
-            [FromServices] IImageSetRepository imageSetRepository,
-            [FromServices] IValidator<CreateImageSetContract> validator,
+            [FromServices] IMediator mediator,
             CancellationToken cancellationToken
         ) =>
         {
-            var validationResult = await validator.ValidateAsync(imageSetContract);
-            if (!validationResult.IsValid) return validationResult.ToBadRequest();
-
-            var imageSet = imageSetContract.ToImageSet();
-            var result = await imageSetRepository.AddImageSetAsync(imageSet, cancellationToken);
+            var result = await mediator.Send<Result<ImageSet>>(imageSetContract, cancellationToken);
 
             if (result.IsFailed)
             {
                 return result.ToErrorResponse();
             }
 
-            return Results.Created($"/api/imagesets/{imageSet.Id}", null);
+            return Results.Created($"/api/imagesets/{result.Value.Id}", result.Value);
         });
 
         group.MapDelete("{id:guid}", async (

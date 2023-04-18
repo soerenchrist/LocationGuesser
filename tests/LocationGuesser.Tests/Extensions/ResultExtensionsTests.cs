@@ -107,6 +107,16 @@ public class ResultExtensionsTests
         response.Should().BeOfType<ErrorResult>();
     }
 
+    [Fact]
+    public void ToErrorResponse_ShouldReturnBadRequest_WhenResultIsValidationError()
+    {
+        var result = Result.Fail(new ValidationError("Property", "Failed to validate"));
+
+        var response = result.ToErrorResponse();
+
+        response.Should().BeOfType<BadRequest<ErrorResponse>>();
+    }
+
     private HttpContext CreateHttpContext()
     {
         return Substitute.For<HttpContext>();

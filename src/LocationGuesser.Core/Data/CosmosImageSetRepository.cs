@@ -70,7 +70,7 @@ public class CosmosImageSetRepository : IImageSetRepository
         }
     }
 
-    public async Task<Result> AddImageSetAsync(ImageSet imageSet, CancellationToken cancellationToken)
+    public async Task<Result<ImageSet>> AddImageSetAsync(ImageSet imageSet, CancellationToken cancellationToken)
     {
         try
         {
@@ -86,7 +86,7 @@ public class CosmosImageSetRepository : IImageSetRepository
             return Result.Fail(ex.Message);
         }
 
-        return Result.Ok();
+        return Result.Ok(imageSet);
     }
 
     public async Task<Result> UpdateImageSetAsync(ImageSet imageSet, CancellationToken cancellationToken)
