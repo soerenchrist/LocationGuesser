@@ -10,8 +10,11 @@ namespace LocationGuesser.Blazor.Tests.Services;
 public class ImageSetApiServiceTests
 {
     private readonly ImageSetApiService _cut;
-    private MockHttpMessageHandler _mockHttp = new();
-    private JsonSerializerOptions _jsonSerializerOptions = new() { PropertyNamingPolicy = JsonNamingPolicy.CamelCase };
+
+    private readonly JsonSerializerOptions _jsonSerializerOptions =
+        new() { PropertyNamingPolicy = JsonNamingPolicy.CamelCase };
+
+    private readonly MockHttpMessageHandler _mockHttp = new();
 
     public ImageSetApiServiceTests()
     {
@@ -26,7 +29,7 @@ public class ImageSetApiServiceTests
         _mockHttp.When("/api/imagesets")
             .Respond(HttpStatusCode.InternalServerError, "application/json", CreateErrorJson());
 
-        var result = await _cut.ListImageSetsAsync(default);
+        var result = await _cut.ListImageSetsAsync();
 
         result.IsFailed.Should().BeTrue();
     }
@@ -37,7 +40,7 @@ public class ImageSetApiServiceTests
         _mockHttp.When("/api/imagesets")
             .Respond(HttpStatusCode.NotFound, "application/json", CreateErrorJson());
 
-        var result = await _cut.ListImageSetsAsync(default);
+        var result = await _cut.ListImageSetsAsync();
 
         result.IsFailed.Should().BeTrue();
         result.Errors.First().Should().BeOfType<NotFoundError>();
@@ -49,7 +52,7 @@ public class ImageSetApiServiceTests
         _mockHttp.When("/api/imagesets")
             .Respond(HttpStatusCode.OK, "application/json", "[]");
 
-        var result = await _cut.ListImageSetsAsync(default);
+        var result = await _cut.ListImageSetsAsync();
 
         result.IsSuccess.Should().BeTrue();
         result.Value.Should().BeEmpty();
@@ -62,7 +65,7 @@ public class ImageSetApiServiceTests
         _mockHttp.When("/api/imagesets")
             .Respond(HttpStatusCode.OK, "application/json", ToJson(contracts));
 
-        var result = await _cut.ListImageSetsAsync(default);
+        var result = await _cut.ListImageSetsAsync();
 
         result.IsSuccess.Should().BeTrue();
         result.Value.Should().HaveCount(10);
@@ -76,14 +79,14 @@ public class ImageSetApiServiceTests
         _mockHttp.When("/api/imagesets")
             .Respond(HttpStatusCode.OK, "application/json", "invalid json");
 
-        var result = await _cut.ListImageSetsAsync(default);
+        var result = await _cut.ListImageSetsAsync();
 
         result.IsFailed.Should().BeTrue();
     }
 
     private string CreateErrorJson()
     {
-        var error = new ErrorResponse(500, new List<ErrorValue> { new ErrorValue("Something went wrong") });
+        var error = new ErrorResponse(500, new List<ErrorValue> { new("Something went wrong") });
 
         return JsonSerializer.Serialize(error);
     }
@@ -103,6 +106,7 @@ public class ImageSetApiServiceTests
 
         return contracts;
     }
+
     private string ToJson<T>(T data)
     {
         var json = JsonSerializer.Serialize(data, _jsonSerializerOptions);

@@ -27,9 +27,7 @@ public class InMemoryImageRepository : IImageRepository
     public Task<Result> AddImageAsync(Image image, CancellationToken cancellationToken)
     {
         if (_images.Any(x => x.SetId == image.SetId && x.Number == image.Number))
-        {
             return Task.FromResult(Result.Fail("Image already exists"));
-        }
 
         _images.Add(image);
         return Task.FromResult(Result.Ok());
@@ -38,10 +36,7 @@ public class InMemoryImageRepository : IImageRepository
     public Task<Result> DeleteImageAsync(Image image, CancellationToken cancellationToken)
     {
         var existingImage = _images.FirstOrDefault(x => x.SetId == image.SetId && x.Number == image.Number);
-        if (existingImage == null)
-        {
-            return Task.FromResult(Result.Fail(new NotFoundError("Image not found")));
-        }
+        if (existingImage == null) return Task.FromResult(Result.Fail(new NotFoundError("Image not found")));
 
         return Task.FromResult(Result.Ok());
     }

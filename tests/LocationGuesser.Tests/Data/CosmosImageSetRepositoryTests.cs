@@ -1,21 +1,21 @@
 using System.Net;
+using Azure.Identity;
+using LocationGuesser.Api.Extensions;
 using LocationGuesser.Core.Data;
 using LocationGuesser.Core.Data.Abstractions;
+using LocationGuesser.Core.Data.Dtos;
 using LocationGuesser.Core.Domain;
+using LocationGuesser.Core.Domain.Errors;
 using LocationGuesser.Tests.Utils;
 using Microsoft.Azure.Cosmos;
-using LocationGuesser.Core.Data.Dtos;
-using LocationGuesser.Core.Domain.Errors;
-using LocationGuesser.Api.Extensions;
-using Azure.Identity;
 
 namespace LocationGuesser.Tests.Data;
 
 public class CosmosImageSetRepositoryTests
 {
-    private readonly CosmosImageSetRepository _cut;
-    private readonly ICosmosDbContainer _container = Substitute.For<ICosmosDbContainer>();
     private const string PartitionKey = "IMAGESETS";
+    private readonly ICosmosDbContainer _container = Substitute.For<ICosmosDbContainer>();
+    private readonly CosmosImageSetRepository _cut;
 
     public CosmosImageSetRepositoryTests()
     {
@@ -28,7 +28,7 @@ public class CosmosImageSetRepositoryTests
     {
         var id = Guid.NewGuid();
         _container.When(x => x.ReadItemAsync<CosmosImageSet>(id.ToString(), new PartitionKey(PartitionKey), default))
-            .Throw(new CosmosException("Something went wrong", System.Net.HttpStatusCode.InternalServerError, 500, "",
+            .Throw(new CosmosException("Something went wrong", HttpStatusCode.InternalServerError, 500, "",
                 10));
 
         var result = await _cut.GetImageSetAsync(id, default);
@@ -42,7 +42,7 @@ public class CosmosImageSetRepositoryTests
     {
         var id = Guid.NewGuid();
         _container.When(x => x.ReadItemAsync<CosmosImageSet>(id.ToString(), new PartitionKey(PartitionKey), default))
-            .Throw(new CosmosException("NotFound", System.Net.HttpStatusCode.NotFound, 404, "",
+            .Throw(new CosmosException("NotFound", HttpStatusCode.NotFound, 404, "",
                 10));
 
         var result = await _cut.GetImageSetAsync(id, default);
@@ -111,7 +111,7 @@ public class CosmosImageSetRepositoryTests
     public async Task ListImageSetsAsync_ShouldReturnFail_WhenCosmosDbThrowsError()
     {
         _container.When(x => x.GetItemQueryIterator<CosmosImageSet>(Arg.Any<QueryDefinition>()))
-            .Throw(new CosmosException("Something went wrong", System.Net.HttpStatusCode.InternalServerError, 500, "",
+            .Throw(new CosmosException("Something went wrong", HttpStatusCode.InternalServerError, 500, "",
                 10));
 
         var result = await _cut.ListImageSetsAsync(default);
@@ -167,7 +167,7 @@ public class CosmosImageSetRepositoryTests
     [Fact]
     public async Task AddImageSetAsync_ReturnsFail_WhenContainerThrowsException()
     {
-        _container.When(x => x.CreateItemAsync<CosmosImageSet>(Arg.Any<CosmosImageSet>(), default))
+        _container.When(x => x.CreateItemAsync(Arg.Any<CosmosImageSet>(), default))
             .Throw(new CosmosException("Something went wrong", HttpStatusCode.InternalServerError, 500, "", 10));
 
         var result = await _cut.AddImageSetAsync(CreateImageSet(), default);
@@ -179,7 +179,7 @@ public class CosmosImageSetRepositoryTests
     public async Task AddImageSetAsync_ReturnsFail_WhenContainerReturnsInvalidStatusCode()
     {
         var actionResponse = CreateResponse(HttpStatusCode.InternalServerError);
-        _container.CreateItemAsync<CosmosImageSet>(Arg.Any<CosmosImageSet>(), cancellationToken: default)
+        _container.CreateItemAsync(Arg.Any<CosmosImageSet>(), default)
             .ReturnsForAnyArgs(Task.FromResult(actionResponse));
 
         var result = await _cut.AddImageSetAsync(CreateImageSet(), default);
@@ -192,7 +192,7 @@ public class CosmosImageSetRepositoryTests
     {
         var imageSet = CreateImageSet();
         var actionResponse = CreateResponse(HttpStatusCode.Created, imageSet);
-        _container.CreateItemAsync<CosmosImageSet>(Arg.Any<CosmosImageSet>(), cancellationToken: default)
+        _container.CreateItemAsync(Arg.Any<CosmosImageSet>(), default)
             .ReturnsForAnyArgs(Task.FromResult(actionResponse));
 
         var result = await _cut.AddImageSetAsync(imageSet, default);
@@ -204,7 +204,7 @@ public class CosmosImageSetRepositoryTests
     public async Task AddImageSetAsync_ShouldReturnFail_WhenContainerReadThrowsAuthenticationFailed()
     {
         var imageSet = CreateImageSet();
-        _container.When(x => x.CreateItemAsync<CosmosImageSet>(Arg.Any<CosmosImageSet>(), default))
+        _container.When(x => x.CreateItemAsync(Arg.Any<CosmosImageSet>(), default))
             .Throw(new AuthenticationFailedException("Failed"));
 
         var result = await _cut.AddImageSetAsync(imageSet, default);
@@ -215,7 +215,7 @@ public class CosmosImageSetRepositoryTests
     [Fact]
     public async Task UpdateImageSetAsync_ReturnsFail_WhenContainerThrowsException()
     {
-        _container.When(x => x.UpsertItemAsync<CosmosImageSet>(Arg.Any<CosmosImageSet>(), default))
+        _container.When(x => x.UpsertItemAsync(Arg.Any<CosmosImageSet>(), default))
             .Throw(new CosmosException("Something went wrong", HttpStatusCode.InternalServerError, 500, "", 10));
 
         var result = await _cut.UpdateImageSetAsync(CreateImageSet(), default);
@@ -226,7 +226,7 @@ public class CosmosImageSetRepositoryTests
     [Fact]
     public async Task UpdateImageSetAsync_ReturnsNotFound_WhenContainerThrowsExceptionWithNotFoundStatus()
     {
-        _container.When(x => x.UpsertItemAsync<CosmosImageSet>(Arg.Any<CosmosImageSet>(), default))
+        _container.When(x => x.UpsertItemAsync(Arg.Any<CosmosImageSet>(), default))
             .Throw(new CosmosException("Something went wrong", HttpStatusCode.NotFound, 404, "", 10));
 
         var result = await _cut.UpdateImageSetAsync(CreateImageSet(), default);
@@ -239,7 +239,7 @@ public class CosmosImageSetRepositoryTests
     public async Task UpdateImageSetAsync_ReturnsOk_WhenContainerReturnsSuccessStatus()
     {
         var cosmosResponse = CreateResponse(HttpStatusCode.OK, CreateImageSet());
-        _container.UpsertItemAsync<CosmosImageSet>(Arg.Any<CosmosImageSet>(), default)
+        _container.UpsertItemAsync(Arg.Any<CosmosImageSet>(), default)
             .Returns(Task.FromResult(cosmosResponse));
 
         var result = await _cut.UpdateImageSetAsync(CreateImageSet(), default);
@@ -251,7 +251,7 @@ public class CosmosImageSetRepositoryTests
     public async Task UpdateImageSetAsync_ShouldReturnFail_WhenContainerReadThrowsAuthenticationFailed()
     {
         var imageSet = CreateImageSet();
-        _container.When(x => x.UpsertItemAsync<CosmosImageSet>(Arg.Any<CosmosImageSet>(), default))
+        _container.When(x => x.UpsertItemAsync(Arg.Any<CosmosImageSet>(), default))
             .Throw(new AuthenticationFailedException("Failed"));
 
         var result = await _cut.UpdateImageSetAsync(imageSet, default);
@@ -310,10 +310,7 @@ public class CosmosImageSetRepositoryTests
     {
         var substitute = Substitute.For<ItemResponse<CosmosImageSet>>();
         substitute.StatusCode.Returns(statusCode);
-        if (result != null)
-        {
-            substitute.Resource.Returns(CosmosImageSet.FromImageSet(result));
-        }
+        if (result != null) substitute.Resource.Returns(CosmosImageSet.FromImageSet(result));
 
         return substitute;
     }
@@ -333,7 +330,7 @@ public class CosmosImageSetRepositoryTests
             items.Add(null!);
             var first = CreateFeedResponse(list[0]);
 
-            substitute.ReadNextAsync(default).Returns(first, items.ToArray());
+            substitute.ReadNextAsync().Returns(first, items.ToArray());
             substitute.HasMoreResults.Returns(true, hasMoreItems.ToArray());
         }
 

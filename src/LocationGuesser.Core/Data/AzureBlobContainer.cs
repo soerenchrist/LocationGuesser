@@ -25,7 +25,8 @@ public class AzureBlobContainer : IBlobContainer
         return client.DeleteIfExistsAsync(cancellationToken: cancellationToken);
     }
 
-    public async Task<BlobContentInfo> UploadAsync(string filename, Stream fileStream, CancellationToken cancellationToken, bool replace = false)
+    public async Task<BlobContentInfo> UploadAsync(string filename, Stream fileStream,
+        CancellationToken cancellationToken, bool replace = false)
     {
         var client = _containerClient.GetBlobClient(filename);
         return await client.UploadAsync(fileStream, cancellationToken: cancellationToken, overwrite: replace);

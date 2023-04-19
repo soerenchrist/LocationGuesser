@@ -62,8 +62,9 @@ public class ResultExtensionsTests
         var response = (NotFound<ErrorResponse>)result.ToNotFoundResponse();
 
         response.StatusCode.Should().Be(404);
-        response.Value.Should().BeEquivalentTo(new ErrorResponse(404, new List<ErrorValue>{
-            new ErrorValue("Not Found!"),
+        response.Value.Should().BeEquivalentTo(new ErrorResponse(404, new List<ErrorValue>
+        {
+            new("Not Found!")
         }));
     }
 
@@ -76,10 +77,11 @@ public class ResultExtensionsTests
 
         var response = result.Errors.ToErrorsList();
 
-        response.Should().BeEquivalentTo(new List<ErrorValue>{
-            new ErrorValue("Error1"),
-            new ErrorValue("Error2"),
-            new ErrorValue("Error3"),
+        response.Should().BeEquivalentTo(new List<ErrorValue>
+        {
+            new("Error1"),
+            new("Error2"),
+            new("Error3")
         });
     }
 

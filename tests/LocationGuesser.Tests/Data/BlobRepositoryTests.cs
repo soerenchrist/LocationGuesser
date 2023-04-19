@@ -7,8 +7,8 @@ namespace LocationGuesser.Tests.Data;
 
 public class BlobRepositoryTests
 {
-    private readonly BlobRepository _cut;
     private readonly IBlobContainer _container = Substitute.For<IBlobContainer>();
+    private readonly BlobRepository _cut;
 
     public BlobRepositoryTests()
     {

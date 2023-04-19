@@ -11,10 +11,7 @@ public class InMemoryImageSetRepository : IImageSetRepository
 
     public Task<Result<ImageSet>> GetImageSetAsync(Guid id, CancellationToken cancellationToken)
     {
-        if (_images.TryGetValue(id, out var image))
-        {
-            return Task.FromResult(Result.Ok(image));
-        }
+        if (_images.TryGetValue(id, out var image)) return Task.FromResult(Result.Ok(image));
 
         var result = Result.Fail<ImageSet>(new NotFoundError("ImageSet not found"));
         return Task.FromResult(result);

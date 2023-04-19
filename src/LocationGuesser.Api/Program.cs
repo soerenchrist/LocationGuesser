@@ -29,10 +29,8 @@ builder.Services.AddCoreDependencies(useInMemory);
 var applicationInsightsConnection = builder.Configuration.GetConnectionString("APPLICATIONINSIGHTS_CONNECTION_STRING");
 if (applicationInsightsConnection != null)
 {
-    builder.Logging.AddApplicationInsights(configureTelemetryConfiguration: config =>
-    {
-        config.ConnectionString = applicationInsightsConnection;
-    }, configureApplicationInsightsLoggerOptions: options => { });
+    builder.Logging.AddApplicationInsights(config => { config.ConnectionString = applicationInsightsConnection; },
+        options => { });
     builder.Services.AddApplicationInsightsTelemetry();
 }
 
@@ -41,11 +39,9 @@ if (app.Environment.IsDevelopment())
 {
     app.UseWebAssemblyDebugging();
     app.UseSwagger();
-    app.UseSwaggerUI(c =>
-    {
-        c.SwaggerEndpoint("/swagger/v1/swagger.json", "LocationGuesser API v1");
-    });
+    app.UseSwaggerUI(c => { c.SwaggerEndpoint("/swagger/v1/swagger.json", "LocationGuesser API v1"); });
 }
+
 app.UseHttpsRedirection();
 
 app.UseBlazorFrameworkFiles();

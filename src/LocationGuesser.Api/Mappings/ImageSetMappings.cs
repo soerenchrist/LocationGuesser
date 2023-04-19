@@ -22,6 +22,7 @@ public static class ImageSetMappings
 
     public static ImageSet ToDomain(this CreateImageSetCommand command)
     {
-        return new ImageSet(Guid.NewGuid(), command.Title, command.Description, command.Tags, command.LowerYearRange, command.UpperYearRange, 0);
+        return new ImageSet(Guid.NewGuid(), command.Title, command.Description, command.Tags, command.LowerYearRange,
+            command.UpperYearRange, 0);
     }
 }

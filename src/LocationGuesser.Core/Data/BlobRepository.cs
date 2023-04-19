@@ -6,7 +6,7 @@ namespace LocationGuesser.Core.Data;
 
 public class BlobRepository : IBlobRepository
 {
-    private IBlobContainer _container;
+    private readonly IBlobContainer _container;
 
     public BlobRepository(IBlobContainer container)
     {
@@ -18,12 +18,12 @@ public class BlobRepository : IBlobRepository
         try
         {
             await _container.DeleteAsync(filename, cancellationToken);
-
         }
         catch (RequestFailedException ex)
         {
             return Result.Fail(ex.Message);
         }
+
         return Result.Ok();
     }
 
@@ -37,6 +37,7 @@ public class BlobRepository : IBlobRepository
         {
             return Result.Fail(ex.Message);
         }
+
         return Result.Ok();
     }
 }

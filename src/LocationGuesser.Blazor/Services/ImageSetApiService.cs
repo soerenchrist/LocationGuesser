@@ -12,7 +12,8 @@ namespace LocationGuesser.Blazor.Services;
 public class ImageSetApiService : IImageSetApiService
 {
     private readonly HttpClient _httpClient;
-    private readonly JsonSerializerOptions _jsonOptions = new JsonSerializerOptions { PropertyNamingPolicy = JsonNamingPolicy.CamelCase };
+    private readonly JsonSerializerOptions _jsonOptions = new() { PropertyNamingPolicy = JsonNamingPolicy.CamelCase };
+
     public ImageSetApiService(HttpClient httpClient)
     {
         _httpClient = httpClient;
@@ -22,13 +23,11 @@ public class ImageSetApiService : IImageSetApiService
     {
         var response = await _httpClient.GetAsync("/api/imagesets", cancellationToken);
         if (!response.IsSuccessStatusCode)
-        {
             return response.StatusCode switch
             {
                 HttpStatusCode.NotFound => Result.Fail(new NotFoundError("Resource not found")),
-                _ => Result.Fail("Something went wrong"),
+                _ => Result.Fail("Something went wrong")
             };
-        }
 
         try
         {

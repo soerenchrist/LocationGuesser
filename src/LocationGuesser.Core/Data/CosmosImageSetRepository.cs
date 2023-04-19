@@ -1,20 +1,20 @@
 using System.Net;
+using Azure.Identity;
 using FluentResults;
 using LocationGuesser.Core.Data.Abstractions;
-using LocationGuesser.Core.Domain;
 using LocationGuesser.Core.Data.Dtos;
+using LocationGuesser.Core.Domain;
+using LocationGuesser.Core.Domain.Errors;
 using Microsoft.Azure.Cosmos;
 using Microsoft.Extensions.Logging;
-using LocationGuesser.Core.Domain.Errors;
-using Azure.Identity;
 
 namespace LocationGuesser.Core.Data;
 
 public class CosmosImageSetRepository : IImageSetRepository
 {
+    private const string PartitionKey = "IMAGESETS";
     private readonly ICosmosDbContainer _container;
     private readonly ILogger<CosmosImageSetRepository> _logger;
-    private const string PartitionKey = "IMAGESETS";
 
     public CosmosImageSetRepository(ICosmosDbContainer container,
         ILogger<CosmosImageSetRepository> logger)
@@ -28,7 +28,7 @@ public class CosmosImageSetRepository : IImageSetRepository
         try
         {
             var item = await _container.ReadItemAsync<CosmosImageSet>(id.ToString(), new PartitionKey(PartitionKey),
-                cancellationToken: cancellationToken);
+                cancellationToken);
 
             return item.Resource switch
             {
@@ -53,17 +53,14 @@ public class CosmosImageSetRepository : IImageSetRepository
         {
             var query = new QueryDefinition("SELECT * FROM c where c.type = 'ImageSet'");
 
-            using FeedIterator<CosmosImageSet> feed = _container.GetItemQueryIterator<CosmosImageSet>(
-                queryDefinition: query
+            using var feed = _container.GetItemQueryIterator<CosmosImageSet>(
+                query
             );
             var items = new List<ImageSet>();
             while (feed.HasMoreResults)
             {
-                FeedResponse<CosmosImageSet> response = await feed.ReadNextAsync(cancellationToken);
-                foreach (var item in response)
-                {
-                    items.Add(item.ToImageSet());
-                }
+                var response = await feed.ReadNextAsync(cancellationToken);
+                foreach (var item in response) items.Add(item.ToImageSet());
             }
 
             return Result.Ok(items);
@@ -83,11 +80,9 @@ public class CosmosImageSetRepository : IImageSetRepository
         try
         {
             var response = await _container.CreateItemAsync(CosmosImageSet.FromImageSet(imageSet),
-                cancellationToken: cancellationToken);
+                cancellationToken);
             if (response.StatusCode != HttpStatusCode.Created)
-            {
                 return Result.Fail($"Failed to create image set with status code {response.StatusCode}");
-            }
         }
         catch (CosmosException ex)
         {
@@ -124,7 +119,7 @@ public class CosmosImageSetRepository : IImageSetRepository
         {
             var response = await _container.DeleteItemAsync<CosmosImageSet>(id.ToString(),
                 new PartitionKey(PartitionKey),
-                cancellationToken: cancellationToken);
+                cancellationToken);
             return Result.Ok();
         }
         catch (CosmosException ex)

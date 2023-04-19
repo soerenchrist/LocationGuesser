@@ -11,7 +11,6 @@ public static class ImageEndpoints
             [FromRoute] Guid id,
             [FromServices] IMediator mediator) =>
         {
-            
         });
     }
 }

@@ -1,5 +1,3 @@
-
-
 using FluentResults;
 using LocationGuesser.Api.Features.ImageSets;
 using LocationGuesser.Core.Data.Abstractions;
@@ -10,6 +8,7 @@ public class DeleteImageSetTests
 {
     private readonly DeleteImageSetCommandHandler _cut;
     private readonly IImageSetRepository _repository = Substitute.For<IImageSetRepository>();
+
     public DeleteImageSetTests()
     {
         _cut = new DeleteImageSetCommandHandler(_repository);

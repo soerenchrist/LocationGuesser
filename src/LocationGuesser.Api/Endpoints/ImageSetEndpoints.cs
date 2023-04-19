@@ -1,9 +1,7 @@
-using FluentResults;
 using LocationGuesser.Api.Extensions;
 using LocationGuesser.Api.Features.ImageSets;
 using LocationGuesser.Api.Mappings;
 using LocationGuesser.Core.Contracts;
-using LocationGuesser.Core.Domain;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 
@@ -20,16 +18,14 @@ public static class ImageSetEndpoints
             CancellationToken cancellationToken
         ) =>
         {
-            var result = await mediator.Send<Result<List<ImageSet>>>(new ListImageSetsQuery(), cancellationToken);
+            var result = await mediator.Send(new ListImageSetsQuery(), cancellationToken);
             if (result.IsSuccess)
             {
                 var contracts = result.Value.Select(x => x.ToContract());
                 return Results.Ok(contracts);
             }
-            else
-            {
-                return result.ToErrorResponse();
-            }
+
+            return result.ToErrorResponse();
         }).WithName("GetImagesets").WithOpenApi();
 
         group.MapGet("{id:guid}", async (
@@ -39,7 +35,7 @@ public static class ImageSetEndpoints
         ) =>
         {
             var query = new GetImageSetQuery(id);
-            var result = await mediator.Send<Result<ImageSet>>(query);
+            var result = await mediator.Send(query);
             if (result.IsFailed) return result.ToErrorResponse();
             var contract = result.Value.ToContract();
             return Results.Ok(contract);
@@ -51,13 +47,11 @@ public static class ImageSetEndpoints
             CancellationToken cancellationToken
         ) =>
         {
-            var command = new CreateImageSetCommand(request.Title, request.Description, request.Tags, request.LowerYearRange, request.UpperYearRange);
-            var result = await mediator.Send<Result<ImageSet>>(command, cancellationToken);
+            var command = new CreateImageSetCommand(request.Title, request.Description, request.Tags,
+                request.LowerYearRange, request.UpperYearRange);
+            var result = await mediator.Send(command, cancellationToken);
 
-            if (result.IsFailed)
-            {
-                return result.ToErrorResponse();
-            }
+            if (result.IsFailed) return result.ToErrorResponse();
 
             var contract = result.Value.ToContract();
 
@@ -69,12 +63,8 @@ public static class ImageSetEndpoints
             [FromServices] IMediator mediator,
             CancellationToken cancellationToken) =>
         {
-
-            var result = await mediator.Send<Result>(new DeleteImageSetCommand(id), cancellationToken);
-            if (result.IsFailed)
-            {
-                return result.ToErrorResponse();
-            }
+            var result = await mediator.Send(new DeleteImageSetCommand(id), cancellationToken);
+            if (result.IsFailed) return result.ToErrorResponse();
 
             return Results.NoContent();
         });

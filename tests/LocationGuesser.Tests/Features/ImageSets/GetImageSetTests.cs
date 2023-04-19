@@ -9,6 +9,7 @@ public class GetImageSetTests
 {
     private readonly GetImageSetQueryHandler _cut;
     private readonly IImageSetRepository _repository = Substitute.For<IImageSetRepository>();
+
     public GetImageSetTests()
     {
         _cut = new GetImageSetQueryHandler(_repository);

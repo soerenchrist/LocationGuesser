@@ -45,10 +45,7 @@ public class InMemoryImageSetRepositoryTests
     public async Task ListImageSetsAsync_ShouldReturnItems_WhenImageSetsExist()
     {
         var imagesSets = CreateImageSets();
-        foreach (var imageSet in imagesSets)
-        {
-            await _cut.AddImageSetAsync(imageSet, default);
-        }
+        foreach (var imageSet in imagesSets) await _cut.AddImageSetAsync(imageSet, default);
 
         var result = await _cut.ListImageSetsAsync(default);
         result.IsSuccess.Should().BeTrue();
@@ -107,20 +104,20 @@ public class InMemoryImageSetRepositoryTests
     {
         var imageSet = CreateImageSets(1).First();
         await _cut.AddImageSetAsync(imageSet, default);
-        
+
         var result = await _cut.DeleteImageSetAsync(imageSet.Id, default);
         result.IsSuccess.Should().BeTrue();
-        
+
         var listResult = await _cut.ListImageSetsAsync(default);
         listResult.Value.Should().BeEmpty();
     }
-    
+
     [Fact]
     public async Task DeleteImageSetAsync_ShouldReturnFail_WhenImageSetDoesNotExist()
     {
         var imageSet = CreateImageSets(1).First();
         await _cut.AddImageSetAsync(imageSet, default);
-        
+
         var result = await _cut.DeleteImageSetAsync(Guid.NewGuid(), default);
         result.IsFailed.Should().BeTrue();
     }

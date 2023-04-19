@@ -3,7 +3,6 @@ using LocationGuesser.Core.Data.Abstractions;
 using LocationGuesser.Core.Data.InMemory;
 using LocationGuesser.Core.Services;
 using LocationGuesser.Core.Services.Abstractions;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace LocationGuesser.Core;

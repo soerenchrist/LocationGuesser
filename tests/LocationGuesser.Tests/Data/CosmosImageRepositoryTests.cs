@@ -1,13 +1,13 @@
 using System.Net;
+using Azure.Identity;
+using LocationGuesser.Api.Extensions;
 using LocationGuesser.Core.Data;
 using LocationGuesser.Core.Data.Abstractions;
+using LocationGuesser.Core.Data.Dtos;
 using LocationGuesser.Core.Domain;
+using LocationGuesser.Core.Domain.Errors;
 using LocationGuesser.Tests.Utils;
 using Microsoft.Azure.Cosmos;
-using LocationGuesser.Core.Data.Dtos;
-using LocationGuesser.Core.Domain.Errors;
-using LocationGuesser.Api.Extensions;
-using Azure.Identity;
 
 namespace LocationGuesser.Tests.Data;
 
@@ -125,7 +125,7 @@ public class CosmosImageRepositoryTests
     public async Task AddImageAsync_ShouldReturnFail_WhenContainerThrowsAuthenticationException()
     {
         var image = CreateImage();
-        _container.When(x => x.CreateItemAsync<CosmosImage>(Arg.Any<CosmosImage>(), default))
+        _container.When(x => x.CreateItemAsync(Arg.Any<CosmosImage>(), default))
             .Throw(new AuthenticationFailedException("Failed"));
 
         var result = await _cut.AddImageAsync(image, default);
@@ -261,7 +261,7 @@ public class CosmosImageRepositoryTests
         {
             CosmosImage.FromImage(image1),
             CosmosImage.FromImage(image2),
-            CosmosImage.FromImage(image3),
+            CosmosImage.FromImage(image3)
         });
         _container.GetItemQueryIterator<CosmosImage>(Arg.Any<QueryDefinition>())
             .Returns(feed);
@@ -269,7 +269,7 @@ public class CosmosImageRepositoryTests
         var results = await _cut.ListImagesAsync(Guid.NewGuid(), default);
         results.IsSuccess.Should().BeTrue();
         results.Value.Should().HaveCount(3);
-        results.Value.Should().BeEquivalentTo(new List<Image>()
+        results.Value.Should().BeEquivalentTo(new List<Image>
         {
             image1, image2, image3
         });
@@ -284,10 +284,7 @@ public class CosmosImageRepositoryTests
     {
         var substitute = Substitute.For<ItemResponse<CosmosImage>>();
         substitute.StatusCode.Returns(statusCode);
-        if (result != null)
-        {
-            substitute.Resource.Returns(CosmosImage.FromImage(result));
-        }
+        if (result != null) substitute.Resource.Returns(CosmosImage.FromImage(result));
 
         return substitute;
     }

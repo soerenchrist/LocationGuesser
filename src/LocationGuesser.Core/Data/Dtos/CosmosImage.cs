@@ -5,6 +5,10 @@ namespace LocationGuesser.Core.Data.Dtos;
 
 public class CosmosImage
 {
+    private CosmosImage()
+    {
+    }
+
     [JsonProperty("pk")] public string Pk => SetId.ToString();
     [JsonProperty("id")] public required int Number { get; set; }
     [JsonProperty("year")] public required int Year { get; set; }
@@ -15,14 +19,9 @@ public class CosmosImage
     [JsonProperty("setId")] public Guid SetId { get; set; }
     [JsonProperty("type")] public string Type => "Image";
 
-    private CosmosImage()
-    {
-
-    }
-
     public static CosmosImage FromImage(Image image)
     {
-        return new()
+        return new CosmosImage
         {
             SetId = image.SetId,
             Number = image.Number,
@@ -36,6 +35,6 @@ public class CosmosImage
 
     public Image ToImage()
     {
-        return new(SetId, Number, Year, Latitude, Longitude, Description, License);
+        return new Image(SetId, Number, Year, Latitude, Longitude, Description, License);
     }
 }

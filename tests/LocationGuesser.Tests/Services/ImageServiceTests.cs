@@ -1,14 +1,14 @@
+using FluentResults;
 using LocationGuesser.Core.Data.Abstractions;
 using LocationGuesser.Core.Domain;
 using LocationGuesser.Core.Services;
-using FluentResults;
 
 namespace LocationGuesser.Tests.Services;
 
 public class ImageServiceTests
 {
-    private readonly ImageService _cut;
     private readonly IBlobRepository _blobRepository = Substitute.For<IBlobRepository>();
+    private readonly ImageService _cut;
     private readonly IImageRepository _imageRepository = Substitute.For<IImageRepository>();
     private readonly IImageSetRepository _imageSetRepository = Substitute.For<IImageSetRepository>();
 

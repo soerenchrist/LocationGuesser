@@ -30,7 +30,7 @@ public class CosmosImageRepository : IImageRepository
             return response.StatusCode switch
             {
                 HttpStatusCode.Created or HttpStatusCode.OK => Result.Ok(),
-                _ => Result.Fail($"Unexpected status code {response.StatusCode}"),
+                _ => Result.Fail($"Unexpected status code {response.StatusCode}")
             };
         }
         catch (CosmosException ex)
@@ -72,10 +72,7 @@ public class CosmosImageRepository : IImageRepository
             while (feed.HasMoreResults)
             {
                 var response = await feed.ReadNextAsync(cancellationToken);
-                foreach (var item in response)
-                {
-                    items.Add(item.ToImage());
-                }
+                foreach (var item in response) items.Add(item.ToImage());
             }
 
             return Result.Ok(items);

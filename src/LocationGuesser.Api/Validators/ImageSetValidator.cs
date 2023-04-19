@@ -3,7 +3,6 @@ using LocationGuesser.Core.Domain;
 
 namespace LocationGuesser.Api.Validators;
 
-
 public class ImageSetValidator : AbstractValidator<ImageSet>
 {
     public ImageSetValidator()

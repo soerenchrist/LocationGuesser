@@ -7,16 +7,14 @@ namespace LocationGuesser.Blazor.Pages.Index;
 
 public partial class IndexPageViewModel : ViewModelBase
 {
-    [Notify]
-    private bool _isLoading;
-
-    [Notify]
-    private bool _isError;
-
-    [Notify]
-    private List<ImageSet>? _imageSets;
-
     private readonly IImageSetApiService _imageSetApiService;
+
+    [Notify] private List<ImageSet>? _imageSets;
+
+    [Notify] private bool _isError;
+
+    [Notify] private bool _isLoading;
+
     public IndexPageViewModel(IImageSetApiService imageSetApiService)
     {
         _imageSetApiService = imageSetApiService;
@@ -27,17 +25,9 @@ public partial class IndexPageViewModel : ViewModelBase
         IsLoading = true;
         var result = await _imageSetApiService.ListImageSetsAsync();
         if (result.IsFailed)
-        {
             IsError = true;
-        }
         else
-        {
             ImageSets = result.Value;
-        }
         IsLoading = false;
     }
-
-
-
-
 }

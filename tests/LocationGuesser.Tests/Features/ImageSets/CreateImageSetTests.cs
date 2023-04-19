@@ -12,6 +12,7 @@ public class CreateImageSetTests
 {
     private readonly CreateImageSetCommandHandler _cut;
     private readonly IImageSetRepository _repository = Substitute.For<IImageSetRepository>();
+
     public CreateImageSetTests()
     {
         var validator = new ImageSetValidator();

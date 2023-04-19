@@ -10,6 +10,7 @@ public record ListImageSetsQuery : IRequest<Result<List<ImageSet>>>;
 public class ListImageSetsQueryHandler : IRequestHandler<ListImageSetsQuery, Result<List<ImageSet>>>
 {
     private readonly IImageSetRepository _imageSetRepository;
+
     public ListImageSetsQueryHandler(IImageSetRepository imageSetRepository)
     {
         _imageSetRepository = imageSetRepository;

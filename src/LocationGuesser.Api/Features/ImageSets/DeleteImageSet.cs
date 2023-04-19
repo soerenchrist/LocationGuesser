@@ -4,12 +4,12 @@ using MediatR;
 
 namespace LocationGuesser.Api.Features.ImageSets;
 
-
 public record DeleteImageSetCommand(Guid Id) : IRequest<Result>;
 
 public class DeleteImageSetCommandHandler : IRequestHandler<DeleteImageSetCommand, Result>
 {
     private readonly IImageSetRepository _imageSetRepository;
+
     public DeleteImageSetCommandHandler(IImageSetRepository imageSetRepository)
     {
         _imageSetRepository = imageSetRepository;

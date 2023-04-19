@@ -5,6 +5,10 @@ namespace LocationGuesser.Core.Data.Dtos;
 
 public class CosmosImageSet
 {
+    private CosmosImageSet()
+    {
+    }
+
     [JsonProperty("pk")] public string Pk => "IMAGESETS";
     [JsonProperty("id")] public required Guid Id { get; init; }
     [JsonProperty("title")] public required string Title { get; init; }
@@ -15,13 +19,9 @@ public class CosmosImageSet
     [JsonProperty("imageCount")] public required int ImageCount { get; init; }
     [JsonProperty("type")] public string Type => "ImageSet";
 
-    private CosmosImageSet()
-    {
-    }
-
     public static CosmosImageSet FromImageSet(ImageSet imageSet)
     {
-        return new()
+        return new CosmosImageSet
         {
             Id = imageSet.Id,
             Title = imageSet.Title,
@@ -29,12 +29,12 @@ public class CosmosImageSet
             Tags = imageSet.Tags,
             LowerYearRange = imageSet.LowerYearRange,
             UpperYearRange = imageSet.UpperYearRange,
-            ImageCount = imageSet.ImageCount,
+            ImageCount = imageSet.ImageCount
         };
     }
 
     public ImageSet ToImageSet()
     {
-        return new(Id, Title, Description, Tags, LowerYearRange, UpperYearRange, ImageCount);
+        return new ImageSet(Id, Title, Description, Tags, LowerYearRange, UpperYearRange, ImageCount);
     }
 }

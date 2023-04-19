@@ -10,6 +10,7 @@ public record GetImageSetQuery(Guid Id) : IRequest<Result<ImageSet>>;
 public class GetImageSetQueryHandler : IRequestHandler<GetImageSetQuery, Result<ImageSet>>
 {
     private readonly IImageSetRepository _imageSetRepository;
+
     public GetImageSetQueryHandler(IImageSetRepository imageSetRepository)
     {
         _imageSetRepository = imageSetRepository;

@@ -9,14 +9,8 @@ public static class ResultExtensions
 {
     public static IResult ToErrorResponse(this ResultBase result)
     {
-        if (result.IsNotFound())
-        {
-            return result.ToNotFoundResponse();
-        }
-        if (result.IsValidationError())
-        {
-            return result.ToValidationErrorResponse();
-        }
+        if (result.IsNotFound()) return result.ToNotFoundResponse();
+        if (result.IsValidationError()) return result.ToValidationErrorResponse();
         var body = new ErrorResponse(500, result.Errors.ToErrorsList());
         return new ErrorResult(body);
     }
@@ -33,7 +27,7 @@ public static class ResultExtensions
 
         var errorValues = new List<ErrorValue>
         {
-            new ErrorValue(result.Errors.First(x => x is NotFoundError).Message)
+            new(result.Errors.First(x => x is NotFoundError).Message)
         };
         var errorResponse = new ErrorResponse(404, errorValues);
         return Results.NotFound(errorResponse);
@@ -60,5 +54,4 @@ public static class ResultExtensions
     {
         return result.Errors.Any(x => x is ValidationError);
     }
-
 }

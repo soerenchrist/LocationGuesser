@@ -20,14 +20,12 @@ public class ImageService : IImageService
         _imageSetRepository = imageSetRepository;
     }
 
-    public async Task<Result> AddImageToImageSetAsync(ImageSet imageSet, Image image, Stream fileContent, CancellationToken cancellationToken)
+    public async Task<Result> AddImageToImageSetAsync(ImageSet imageSet, Image image, Stream fileContent,
+        CancellationToken cancellationToken)
     {
         var filename = $"{imageSet.Id}_{image.Number}.png";
         var uploadResult = await _blobRepository.UploadImageAsync(filename, fileContent, cancellationToken);
-        if (uploadResult.IsFailed)
-        {
-            return Result.Merge(uploadResult, Result.Fail("Failed to upload image to storage"));
-        }
+        if (uploadResult.IsFailed) return Result.Merge(uploadResult, Result.Fail("Failed to upload image to storage"));
 
         var imageAddResult = await _imageRepository.AddImageAsync(image, cancellationToken);
         if (imageAddResult.IsFailed)
