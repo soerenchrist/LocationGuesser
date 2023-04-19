@@ -1,11 +1,7 @@
 using FluentValidation;
 using LocationGuesser.Api.Endpoints;
 using LocationGuesser.Core;
-using LocationGuesser.Core.Data.Abstractions;
-using LocationGuesser.Core.Data.Dtos;
 using LocationGuesser.Core.Options;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.Azure.Cosmos;
 using Microsoft.OpenApi.Models;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -43,18 +39,19 @@ var app = builder.Build();
 if (app.Environment.IsDevelopment())
 {
     app.UseWebAssemblyDebugging();
-    app.UseDeveloperExceptionPage();
     app.UseSwagger();
     app.UseSwaggerUI(c =>
     {
         c.SwaggerEndpoint("/swagger/v1/swagger.json", "LocationGuesser API v1");
     });
 }
-app.UseBlazorFrameworkFiles();
-app.MapFallbackToFile("index.html");
-
 app.UseHttpsRedirection();
+
+app.UseBlazorFrameworkFiles();
 app.UseStaticFiles();
+app.UseRouting();
+
+app.MapFallbackToFile("index.html");
 
 app.MapImageSetEndpoints();
 app.MapGet("/health", () => Results.Ok());

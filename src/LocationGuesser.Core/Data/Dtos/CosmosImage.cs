@@ -13,6 +13,7 @@ public class CosmosImage
     [JsonProperty("license")] public required string License { get; set; }
     [JsonProperty("description")] public required string Description { get; set; }
     [JsonProperty("setId")] public Guid SetId { get; set; }
+    [JsonProperty("type")] public string Type => "Image";
 
     private CosmosImage()
     {
