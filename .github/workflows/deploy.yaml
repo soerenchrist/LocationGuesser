@@ -9,7 +9,7 @@ on:
       - main
   workflow_dispatch:
 env:
-  API_DIR: src/LocationGuesser.Api
+  API_DIR: src/LocationGuesser.Api/
 
 jobs:
   build:
@@ -29,14 +29,14 @@ jobs:
         working-directory: ${{env.API_DIR}}
 
       - name: dotnet publish
-        run: dotnet publish -c Release -o ${{env.API_DIR}}/out
+        run: dotnet publish -c Release -o ${{env.DOTNET_ROOT}}/out
         working-directory: ${{env.API_DIR}}
 
       - name: Upload artifact for deployment job
         uses: actions/upload-artifact@v2
         with:
           name: .net-app
-          path: ${{env.API_DIR}}/out
+          path: ${{env.DOTNET_ROOT}}/out
 
   deploy:
     runs-on: ubuntu-latest
