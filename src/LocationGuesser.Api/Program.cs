@@ -23,7 +23,8 @@ builder.Services.AddOptions<CosmosDbOptions>()
 
 builder.Services.AddValidatorsFromAssemblyContaining<Program>();
 builder.Services.AddMediatR(config => config.RegisterServicesFromAssemblyContaining<Program>());
-builder.Services.AddCoreDependencies();
+var useInMemory = builder.Configuration.GetValue("UseInMemory", false);
+builder.Services.AddCoreDependencies(useInMemory);
 
 var applicationInsightsConnection = builder.Configuration.GetConnectionString("APPLICATIONINSIGHTS_CONNECTION_STRING");
 if (applicationInsightsConnection != null)
