@@ -1,9 +1,9 @@
 ﻿@page "/"
 @inherits MvvmComponentBase<IndexPageViewModel>
 
-<div class="text-center px-3">
-    <h1 class="my-4 text-6xl text-white font-extrabold leading-tight">LocationGuesser</h1>
-    <h4 class="text-md">Select a set to play</h4>
+<div>
+    <DisplayHeading Size="DisplayHeadingSize.Is1">LocationGuesser</DisplayHeading>
+    <Heading Size="HeadingSize.Is4">Select a set to play</Heading>
     @if (Bind(x => x.IsLoading))
     {
         <p>Loading</p>
@@ -15,11 +15,11 @@
     }
     else if (Bind(x => x.ImageSets) != null)
     {
-        <div class="flex flex-wrap">
+        <CardDeck>
             @foreach (var set in Bind(x => x.ImageSets!))
             {
                 <ImageSetCard ImageSet="@set" />
             }
-        </div>
+        </CardDeck>
     }
 </div>

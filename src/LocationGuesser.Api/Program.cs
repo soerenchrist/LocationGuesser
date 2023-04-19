@@ -1,11 +1,7 @@
 using FluentValidation;
 using LocationGuesser.Api.Endpoints;
 using LocationGuesser.Core;
-using LocationGuesser.Core.Data.Abstractions;
-using LocationGuesser.Core.Data.Dtos;
 using LocationGuesser.Core.Options;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.Azure.Cosmos;
 using Microsoft.OpenApi.Models;
 
 var builder = WebApplication.CreateBuilder(args);

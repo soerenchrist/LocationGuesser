@@ -1,7 +1,13 @@
 @inherits LayoutComponentBase
 
-<div class="leading-relaxed text-white tracking-wide flex flex-col bg-blue-500">
-    <div class="container mx-auto h-screen">
+<Layout>
+    <LayoutHeader>
+
+    </LayoutHeader>
+    <LayoutContent Padding="Padding.Is4">
         @Body
-    </div>
-</div>
+    </LayoutContent>
+    <LayoutFooter>
+
+    </LayoutFooter>
+</Layout>
