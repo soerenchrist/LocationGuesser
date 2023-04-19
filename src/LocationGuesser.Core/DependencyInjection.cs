@@ -10,12 +10,11 @@ public static class DependencyInjection
 {
     public static void AddCoreDependencies(this IServiceCollection services)
     {
+        services.AddSingleton<ICosmosDbContainer, CosmosDbContainer>();
         services.AddScoped<IImageSetRepository, CosmosImageSetRepository>();
         services.AddScoped<IImageRepository, CosmosImageRepository>();
-        services.AddScoped<ICosmosDbContainer, CosmosDbContainer>();
         services.AddScoped<IBlobContainer, AzureBlobContainer>();
         services.AddScoped<IBlobRepository, BlobRepository>();
         services.AddScoped<IImageService, ImageService>();
     }
-
 }

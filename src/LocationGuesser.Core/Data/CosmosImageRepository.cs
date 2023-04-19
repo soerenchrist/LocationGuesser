@@ -65,7 +65,7 @@ public class CosmosImageRepository : IImageRepository
     {
         try
         {
-            var query = new QueryDefinition("SELECT * FROM c WHERE c.setId = @setId")
+            var query = new QueryDefinition("SELECT * FROM c WHERE c.setId = @setId and c.type = 'Image'")
                 .WithParameter("@setId", setId.ToString());
             var feed = _container.GetItemQueryIterator<CosmosImage>(query);
             var items = new List<Image>();
