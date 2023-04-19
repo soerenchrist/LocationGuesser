@@ -15,14 +15,15 @@ public static class DependencyInjection
         if (useInMemory)
         {
             services.AddSingleton<IImageSetRepository, InMemoryImageSetRepository>();
+            services.AddSingleton<IImageRepository, InMemoryImageRepository>();
         }
         else
         {
+            services.AddSingleton<ICosmosDbContainer, CosmosDbContainer>();
             services.AddScoped<IImageSetRepository, CosmosImageSetRepository>();
+            services.AddScoped<IImageRepository, CosmosImageRepository>();
         }
 
-        services.AddSingleton<ICosmosDbContainer, CosmosDbContainer>();
-        services.AddScoped<IImageRepository, CosmosImageRepository>();
         services.AddScoped<IBlobContainer, AzureBlobContainer>();
         services.AddScoped<IBlobRepository, BlobRepository>();
         services.AddScoped<IImageService, ImageService>();
