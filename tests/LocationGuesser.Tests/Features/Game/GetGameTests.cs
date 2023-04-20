@@ -4,6 +4,7 @@ using LocationGuesser.Api.Features.Game;
 using LocationGuesser.Core.Domain;
 using LocationGuesser.Core.Domain.Errors;
 using LocationGuesser.Core.Services.Abstractions;
+using LocationGuesser.Tests.Utils;
 
 namespace LocationGuesser.Tests.Features.Game;
 
@@ -15,7 +16,8 @@ public class GetGameQueryHandlerTests
     public GetGameQueryHandlerTests()
     {
         var validator = new GetGameQueryValidator();
-        _cut = new GetGameQueryHandler(_imageService, validator);
+        var logger = TestLogger.Create<GetGameQueryHandler>();
+        _cut = new GetGameQueryHandler(_imageService, validator, logger);
     }
 
     [Fact]
@@ -64,6 +66,7 @@ public class GetGameQueryHandlerTests
 
     public List<Image> CreateImages(Guid setId, int count)
     {
-        return Enumerable.Range(1, count).Select(x => new Image(setId, x, 2020, 0, 0, $"Description {x}", "License")).ToList();
+        return Enumerable.Range(1, count).Select(x => new Image(setId, x, 2020, 0, 0, $"Description {x}", "License"))
+            .ToList();
     }
 }

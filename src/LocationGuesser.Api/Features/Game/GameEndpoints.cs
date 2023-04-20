@@ -16,7 +16,7 @@ public static class GameEndpoints
             [FromQuery] int? imageCount
         ) =>
         {
-            var count = imageCount == null ? 5 : imageCount.Value;
+            var count = imageCount ?? 5;
             var command = new GetGameQuery(setId, count);
             var result = await mediator.Send<Result<List<Image>>>(command);
 
