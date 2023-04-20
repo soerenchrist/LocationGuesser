@@ -5,6 +5,6 @@ namespace LocationGuesser.Core.Services.Abstractions;
 
 public interface IImageService
 {
-    Task<Result> AddImageToImageSetAsync(ImageSet imageSet, Image image, Stream fileContent,
+    Task<Result> AddImageToImageSetAsync(Guid setId, Image image, Stream fileContent,
         CancellationToken cancellationToken);
 }

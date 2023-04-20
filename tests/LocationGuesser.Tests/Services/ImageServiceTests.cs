@@ -1,6 +1,8 @@
 using FluentResults;
+using LocationGuesser.Api.Extensions;
 using LocationGuesser.Core.Data.Abstractions;
 using LocationGuesser.Core.Domain;
+using LocationGuesser.Core.Domain.Errors;
 using LocationGuesser.Core.Services;
 using LocationGuesser.Core.Services.Abstractions;
 
@@ -22,15 +24,29 @@ public class ImageServiceTests
     }
 
     [Fact]
+    public async Task AddImageToImageSetAsync_ShouldReturnNotFound_WhenImageSetDoesNotExist()
+    {
+        var imageSet = CreateImageSet();
+        _imageSetRepository.GetImageSetAsync(imageSet.Id, default)
+            .Returns(Task.FromResult(Result.Fail<ImageSet>(new NotFoundError("Not found"))));
+
+        var result = await _cut.AddImageToImageSetAsync(imageSet.Id, CreateImage(), Stream.Null, default);
+        result.IsFailed.Should().BeTrue();
+        result.IsNotFound().Should().BeTrue();
+    }
+
+    [Fact]
     public async Task AddImageToImageSetAsync_ShouldReturnFail_WhenBlobUploadFails()
     {
         var imageSet = CreateImageSet();
         var image = CreateImage();
         var filename = $"{imageSet.Id}_{image.Number}.png";
+        _imageSetRepository.GetImageSetAsync(imageSet.Id, default)
+            .Returns(Task.FromResult(Result.Ok(imageSet)));
         _blobRepository.UploadImageAsync(filename, Stream.Null, default)
             .Returns(Task.FromResult(Result.Fail("Failed to upload")));
 
-        var result = await _cut.AddImageToImageSetAsync(imageSet, image, Stream.Null, default);
+        var result = await _cut.AddImageToImageSetAsync(imageSet.Id, image, Stream.Null, default);
 
         result.IsFailed.Should().BeTrue();
 
@@ -44,12 +60,14 @@ public class ImageServiceTests
         var imageSet = CreateImageSet();
         var image = CreateImage();
         var filename = $"{imageSet.Id}_{image.Number}.png";
+        _imageSetRepository.GetImageSetAsync(imageSet.Id, default)
+            .Returns(Task.FromResult(Result.Ok(imageSet)));
         _blobRepository.UploadImageAsync(filename, Stream.Null, default)
             .Returns(Task.FromResult(Result.Ok()));
         _imageRepository.AddImageAsync(image, default)
             .Returns(Task.FromResult(Result.Fail("Something went wrong")));
 
-        var result = await _cut.AddImageToImageSetAsync(imageSet, image, Stream.Null, default);
+        var result = await _cut.AddImageToImageSetAsync(imageSet.Id, image, Stream.Null, default);
 
         result.IsFailed.Should().BeTrue();
 
@@ -62,12 +80,14 @@ public class ImageServiceTests
         var imageSet = CreateImageSet();
         var image = CreateImage();
         var filename = $"{imageSet.Id}_{image.Number}.png";
+        _imageSetRepository.GetImageSetAsync(imageSet.Id, default)
+            .Returns(Task.FromResult(Result.Ok(imageSet)));
         _blobRepository.UploadImageAsync(filename, Stream.Null, default)
             .Returns(Task.FromResult(Result.Ok()));
         _imageRepository.AddImageAsync(image, default)
             .Returns(Task.FromResult(Result.Fail("Something went wrong")));
 
-        var result = await _cut.AddImageToImageSetAsync(imageSet, image, Stream.Null, default);
+        var result = await _cut.AddImageToImageSetAsync(imageSet.Id, image, Stream.Null, default);
 
         await _blobRepository.Received(1).DeleteImageAsync(filename, default);
     }
@@ -78,6 +98,8 @@ public class ImageServiceTests
         var imageSet = CreateImageSet();
         var image = CreateImage();
         var filename = $"{imageSet.Id}_{image.Number}.png";
+        _imageSetRepository.GetImageSetAsync(imageSet.Id, default)
+            .Returns(Task.FromResult(Result.Ok(imageSet)));
         _blobRepository.UploadImageAsync(filename, Stream.Null, default)
             .Returns(Task.FromResult(Result.Ok()));
         _imageRepository.AddImageAsync(image, default)
@@ -85,7 +107,7 @@ public class ImageServiceTests
         _imageSetRepository.UpdateImageSetAsync(imageSet with { ImageCount = imageSet.ImageCount + 1 }, default)
             .Returns(Task.FromResult(Result.Fail("Failed")));
 
-        var result = await _cut.AddImageToImageSetAsync(imageSet, image, Stream.Null, default);
+        var result = await _cut.AddImageToImageSetAsync(imageSet.Id, image, Stream.Null, default);
 
         result.IsFailed.Should().BeTrue();
     }
@@ -96,6 +118,8 @@ public class ImageServiceTests
         var imageSet = CreateImageSet();
         var image = CreateImage();
         var filename = $"{imageSet.Id}_{image.Number}.png";
+        _imageSetRepository.GetImageSetAsync(imageSet.Id, default)
+            .Returns(Task.FromResult(Result.Ok(imageSet)));
         _blobRepository.UploadImageAsync(filename, Stream.Null, default)
             .Returns(Task.FromResult(Result.Ok()));
         _imageRepository.AddImageAsync(image, default)
@@ -103,7 +127,7 @@ public class ImageServiceTests
         _imageSetRepository.UpdateImageSetAsync(imageSet with { ImageCount = imageSet.ImageCount + 1 }, default)
             .Returns(Task.FromResult(Result.Fail("Failed")));
 
-        var result = await _cut.AddImageToImageSetAsync(imageSet, image, Stream.Null, default);
+        var result = await _cut.AddImageToImageSetAsync(imageSet.Id, image, Stream.Null, default);
 
         await _blobRepository.Received(1).DeleteImageAsync(filename, default);
         await _imageRepository.Received(1).DeleteImageAsync(image, default);
