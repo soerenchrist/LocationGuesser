@@ -11,6 +11,7 @@ namespace LocationGuesser.Blazor.Tests.Services;
 public class GameApiServiceTests
 {
     private readonly GameApiService _cut;
+
     private readonly JsonSerializerOptions _jsonSerializerOptions =
         new() { PropertyNamingPolicy = JsonNamingPolicy.CamelCase };
 
@@ -28,7 +29,7 @@ public class GameApiServiceTests
     {
         var setId = Guid.NewGuid();
         var imageCount = 5;
-        _mockHttp.When($"/api/game/{setId}")
+        _mockHttp.When($"/api/games/{setId}")
             .Respond(HttpStatusCode.InternalServerError);
 
         var result = await _cut.GetGameSetAsync(setId, imageCount, default);
@@ -41,7 +42,7 @@ public class GameApiServiceTests
     {
         var setId = Guid.NewGuid();
         var imageCount = 5;
-        _mockHttp.When($"/api/game/{setId}")
+        _mockHttp.When($"/api/games/{setId}")
             .Respond(HttpStatusCode.NotFound);
 
         var result = await _cut.GetGameSetAsync(setId, imageCount, default);
@@ -56,7 +57,7 @@ public class GameApiServiceTests
         var setId = Guid.NewGuid();
         var imageCount = 5;
         var images = CreateImages(setId);
-        _mockHttp.When($"/api/game/{setId}")
+        _mockHttp.When($"/api/games/{setId}")
             .Respond(HttpStatusCode.OK, "application/json", ToJson(images));
 
         var result = await _cut.GetGameSetAsync(setId, imageCount, default);
@@ -70,7 +71,7 @@ public class GameApiServiceTests
     {
         var setId = Guid.NewGuid();
         var imageCount = 5;
-        _mockHttp.When($"/api/game/{setId}")
+        _mockHttp.When($"/api/games/{setId}")
             .Respond(HttpStatusCode.OK, "application/json", "Invalid json");
 
         var result = await _cut.GetGameSetAsync(setId, imageCount, default);
@@ -84,7 +85,7 @@ public class GameApiServiceTests
         var setId = Guid.NewGuid();
         var imageCount = 5;
         var images = CreateImages(setId);
-        _mockHttp.When($"/api/game/{setId}")
+        _mockHttp.When($"/api/games/{setId}")
             .WithQueryString("imageCount", imageCount.ToString())
             .Respond(HttpStatusCode.OK, "application/json", ToJson(images));
 
@@ -98,7 +99,7 @@ public class GameApiServiceTests
     {
         var setId = Guid.NewGuid();
         var imageId = 1;
-        var expectedUrl = $"/api/game/{setId}/image/1/content";
+        var expectedUrl = $"/api/games/{setId}/image/1/content";
 
         var result = _cut.GetImageContentUrl(setId, imageId);
 

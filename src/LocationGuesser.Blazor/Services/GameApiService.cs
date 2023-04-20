@@ -9,14 +9,18 @@ namespace LocationGuesser.Blazor.Services;
 
 public class GameApiService : IGameApiService
 {
-    private readonly JsonSerializerOptions _jsonSerializerOptions = new() { PropertyNamingPolicy = JsonNamingPolicy.CamelCase };
+    private readonly JsonSerializerOptions _jsonSerializerOptions =
+        new() { PropertyNamingPolicy = JsonNamingPolicy.CamelCase };
+
     private readonly HttpClient _httpClient;
+
     public GameApiService(HttpClient httpClient)
     {
         _httpClient = httpClient;
     }
 
-    public async Task<Result<List<Image>>> GetGameSetAsync(Guid setId, int imageCount, CancellationToken cancellationToken)
+    public async Task<Result<List<Image>>> GetGameSetAsync(Guid setId, int imageCount,
+        CancellationToken cancellationToken)
     {
         var url = $"/api/games/{setId}?imageCount={imageCount}";
         var response = await _httpClient.GetAsync(url, cancellationToken);
@@ -29,7 +33,8 @@ public class GameApiService : IGameApiService
         return MapError(response.StatusCode);
     }
 
-    private async Task<Result<List<Image>>> MapSuccess(HttpResponseMessage response, CancellationToken cancellationToken)
+    private async Task<Result<List<Image>>> MapSuccess(HttpResponseMessage response,
+        CancellationToken cancellationToken)
     {
         try
         {
@@ -55,7 +60,7 @@ public class GameApiService : IGameApiService
 
     public string GetImageContentUrl(Guid setId, int number)
     {
-        var url = $"/api/game/{setId}/image/{number}/content";
+        var url = $"/api/games/{setId}/image/{number}/content";
 
         return url;
     }
