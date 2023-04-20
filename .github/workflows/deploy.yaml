@@ -7,6 +7,7 @@ on:
   push:
     branches:
       - main
+      - develop
   workflow_dispatch:
 env:
   API_DIR: src/LocationGuesser.Api/
@@ -46,6 +47,8 @@ jobs:
   deploy:
     runs-on: ubuntu-latest
     needs: build
+    if: ${{ github.ref == 'ref/heads/main' }}
+
     environment:
       name: 'production'
       url: ${{ steps.deploy-to-webapp.outputs.webapp-url }}
