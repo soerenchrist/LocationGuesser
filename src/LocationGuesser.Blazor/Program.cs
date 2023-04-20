@@ -2,6 +2,7 @@ using Blazorise;
 using Blazorise.Bootstrap;
 using Blazorise.Icons.FontAwesome;
 using LocationGuesser.Blazor;
+using LocationGuesser.Blazor.Pages.Game;
 using LocationGuesser.Blazor.Pages.Index;
 using LocationGuesser.Blazor.Services;
 using LocationGuesser.Blazor.Services.Abstractions;
@@ -16,6 +17,7 @@ builder.Services.AddMvvm();
 builder.Services.AddBlazorise(options => { options.Immediate = true; }).AddBootstrapProviders()
     .AddFontAwesomeIcons();
 builder.Services.AddScoped<IndexPageViewModel>();
+builder.Services.AddScoped<GamePageViewModel>();
 builder.Services.AddScoped(sp => new HttpClient { BaseAddress = new Uri(builder.HostEnvironment.BaseAddress) });
 
 builder.Services.AddScoped<IImageSetApiService, ImageSetApiService>();

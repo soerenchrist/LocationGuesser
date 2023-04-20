@@ -1,0 +1,11 @@
+@page "/game/{SetIdString}"
+@inherits MvvmComponentBase<GamePageViewModel>
+
+<div>
+    <Heading Size="HeadingSize.Is1">Game @Bind(x => x.SetId)</Heading>
+</div>
+
+@code {
+    [Parameter]
+    public string? SetIdString { get; set; }
+}
