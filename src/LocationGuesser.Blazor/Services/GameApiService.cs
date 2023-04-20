@@ -60,7 +60,7 @@ public class GameApiService : IGameApiService
 
     public string GetImageContentUrl(Guid setId, int number)
     {
-        var url = $"/api/games/{setId}/image/{number}/content";
+        var url = $"/api/imagesets/{setId}/images/{number}/content";
 
         return url;
     }

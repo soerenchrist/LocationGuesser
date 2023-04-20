@@ -99,7 +99,7 @@ public class GameApiServiceTests
     {
         var setId = Guid.NewGuid();
         var imageId = 1;
-        var expectedUrl = $"/api/games/{setId}/image/1/content";
+        var expectedUrl = $"/api/imagesets/{setId}/images/1/content";
 
         var result = _cut.GetImageContentUrl(setId, imageId);
 
