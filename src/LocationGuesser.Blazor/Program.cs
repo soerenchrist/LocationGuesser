@@ -17,6 +17,8 @@ builder.Services.AddBlazorise(options => { options.Immediate = true; }).AddBoots
     .AddFontAwesomeIcons();
 builder.Services.AddScoped<IndexPageViewModel>();
 builder.Services.AddScoped(sp => new HttpClient { BaseAddress = new Uri(builder.HostEnvironment.BaseAddress) });
+
 builder.Services.AddScoped<IImageSetApiService, ImageSetApiService>();
+builder.Services.AddScoped<IGameApiService, GameApiService>();
 
 await builder.Build().RunAsync();

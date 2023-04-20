@@ -10,7 +10,7 @@ public class CosmosImage
     }
 
     [JsonProperty("pk")] public string Pk => SetId.ToString();
-    [JsonProperty("id")] 
+    [JsonProperty("id")]
     public string InternalId => Number.ToString();
     [JsonIgnore]
     public required int Number { get; set; }

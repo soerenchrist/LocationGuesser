@@ -4,6 +4,7 @@ using LocationGuesser.Blazor.Services;
 using LocationGuesser.Core.Contracts;
 using LocationGuesser.Core.Domain.Errors;
 using RichardSzalay.MockHttp;
+using static LocationGuesser.Blazor.Tests.Helpers.JsonHelper;
 
 namespace LocationGuesser.Blazor.Tests.Services;
 
@@ -11,8 +12,6 @@ public class ImageSetApiServiceTests
 {
     private readonly ImageSetApiService _cut;
 
-    private readonly JsonSerializerOptions _jsonSerializerOptions =
-        new() { PropertyNamingPolicy = JsonNamingPolicy.CamelCase };
 
     private readonly MockHttpMessageHandler _mockHttp = new();
 
@@ -105,11 +104,5 @@ public class ImageSetApiServiceTests
         }).ToList();
 
         return contracts;
-    }
-
-    private string ToJson<T>(T data)
-    {
-        var json = JsonSerializer.Serialize(data, _jsonSerializerOptions);
-        return json;
     }
 }
