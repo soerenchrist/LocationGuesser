@@ -1,4 +1,3 @@
-using LocationGuesser.Api.Features.Game;
 using MediatR;
 using FluentResults;
 using Microsoft.AspNetCore.Mvc;

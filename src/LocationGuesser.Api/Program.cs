@@ -46,15 +46,15 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
+app.MapImageSetEndpoints();
+app.MapImageEndpoints();
+app.MapGameEndpoints();
+
 app.UseBlazorFrameworkFiles();
 app.UseStaticFiles();
 app.UseRouting();
 
 app.MapFallbackToFile("index.html");
-
-app.MapImageSetEndpoints();
-app.MapImageEndpoints();
-app.MapGameEndpoints();
 app.MapGet("/health", () => Results.Ok());
 
 app.Run();
