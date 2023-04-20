@@ -27,10 +27,11 @@ public class GameApiServiceTests
     public async Task GetGameSetAsync_ShouldReturnFail_WhenHttpCallFails()
     {
         var setId = Guid.NewGuid();
+        var imageCount = 5;
         _mockHttp.When($"/api/game/{setId}")
             .Respond(HttpStatusCode.InternalServerError);
 
-        var result = await _cut.GetGameSetAsync(setId, default);
+        var result = await _cut.GetGameSetAsync(setId, imageCount, default);
 
         result.IsFailed.Should().BeTrue();
     }
@@ -39,10 +40,11 @@ public class GameApiServiceTests
     public async Task GetGameSetAsync_ShouldReturnNotFound_WhenHttpCallFailsWith404()
     {
         var setId = Guid.NewGuid();
+        var imageCount = 5;
         _mockHttp.When($"/api/game/{setId}")
             .Respond(HttpStatusCode.NotFound);
 
-        var result = await _cut.GetGameSetAsync(setId, default);
+        var result = await _cut.GetGameSetAsync(setId, imageCount, default);
 
         result.IsFailed.Should().BeTrue();
         result.Errors.First().Should().BeOfType<NotFoundError>();
@@ -52,11 +54,12 @@ public class GameApiServiceTests
     public async Task GetGameSetAsync_ShouldReturnListOfImages_WhenHttpCallReturnsWith200()
     {
         var setId = Guid.NewGuid();
+        var imageCount = 5;
         var images = CreateImages(setId);
         _mockHttp.When($"/api/game/{setId}")
             .Respond(HttpStatusCode.OK, "application/json", ToJson(images));
 
-        var result = await _cut.GetGameSetAsync(setId, default);
+        var result = await _cut.GetGameSetAsync(setId, imageCount, default);
 
         result.IsSuccess.Should().BeTrue();
         result.Value.Should().BeEquivalentTo(images);
@@ -66,12 +69,28 @@ public class GameApiServiceTests
     public async Task GetGameSetAsync_ShouldReturnFail_WhenJsonIsInvalid()
     {
         var setId = Guid.NewGuid();
+        var imageCount = 5;
         _mockHttp.When($"/api/game/{setId}")
             .Respond(HttpStatusCode.OK, "application/json", "Invalid json");
 
-        var result = await _cut.GetGameSetAsync(setId, default);
+        var result = await _cut.GetGameSetAsync(setId, imageCount, default);
 
         result.IsFailed.Should().BeTrue();
+    }
+
+    [Fact]
+    public async Task GetGameSetAsync_ShouldPassImageCountViaQuery()
+    {
+        var setId = Guid.NewGuid();
+        var imageCount = 5;
+        var images = CreateImages(setId);
+        _mockHttp.When($"/api/game/{setId}")
+            .WithQueryString("imageCount", imageCount.ToString())
+            .Respond(HttpStatusCode.OK, "application/json", ToJson(images));
+
+        var result = await _cut.GetGameSetAsync(setId, imageCount, default);
+
+        result.IsSuccess.Should().BeTrue();
     }
 
     private List<Image> CreateImages(Guid setId, int count = 5)
