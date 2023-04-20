@@ -19,10 +19,4 @@ public static class ImageSetMappings
             ImageCount = imageSet.ImageCount
         };
     }
-
-    public static ImageSet ToDomain(this CreateImageSetCommand command)
-    {
-        return new ImageSet(Guid.NewGuid(), command.Title!, command.Description!, command.Tags!, command.LowerYearRange,
-            command.UpperYearRange, 0);
-    }
 }

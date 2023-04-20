@@ -1,5 +1,7 @@
 using FluentValidation;
-using LocationGuesser.Api.Endpoints;
+using LocationGuesser.Api.Features.Game;
+using LocationGuesser.Api.Features.Images;
+using LocationGuesser.Api.Features.ImageSets;
 using LocationGuesser.Core;
 using LocationGuesser.Core.Options;
 using Microsoft.OpenApi.Models;

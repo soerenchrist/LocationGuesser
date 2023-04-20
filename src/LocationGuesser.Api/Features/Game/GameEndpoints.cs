@@ -5,7 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 using LocationGuesser.Core.Domain;
 using LocationGuesser.Api.Extensions;
 
-namespace LocationGuesser.Api.Endpoints;
+namespace LocationGuesser.Api.Features.Game;
 
 public static class GameEndpoints
 {

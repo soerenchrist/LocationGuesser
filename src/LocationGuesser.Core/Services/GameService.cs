@@ -5,14 +5,14 @@ using LocationGuesser.Core.Services.Abstractions;
 
 namespace LocationGuesser.Core.Services;
 
-public class ImageService : IImageService
+public class GameService : IGameService
 {
     private readonly IBlobRepository _blobRepository;
     private readonly IImageRepository _imageRepository;
     private readonly IImageSetRepository _imageSetRepository;
     private readonly IRandom _random;
 
-    public ImageService(IBlobRepository blobRepository,
+    public GameService(IBlobRepository blobRepository,
         IImageRepository imageRepository,
         IImageSetRepository imageSetRepository,
         IRandom random)
@@ -21,39 +21,6 @@ public class ImageService : IImageService
         _imageRepository = imageRepository;
         _imageSetRepository = imageSetRepository;
         _random = random;
-    }
-
-    public async Task<Result> AddImageToImageSetAsync(Guid setId, Image image, Stream fileContent,
-        CancellationToken cancellationToken)
-    {
-        var imageSetResult = await _imageSetRepository.GetImageSetAsync(setId, cancellationToken);
-        if (imageSetResult.IsFailed)
-        {
-            return imageSetResult.ToResult();
-        }
-        var imageSet = imageSetResult.Value;
-
-        var filename = $"{setId}_{image.Number}.png";
-        var uploadResult = await _blobRepository.UploadImageAsync(filename, fileContent, cancellationToken);
-        if (uploadResult.IsFailed) return Result.Merge(uploadResult, Result.Fail("Failed to upload image to storage"));
-
-        var imageAddResult = await _imageRepository.AddImageAsync(image, cancellationToken);
-        if (imageAddResult.IsFailed)
-        {
-            _ = await _blobRepository.DeleteImageAsync(filename, cancellationToken);
-            return Result.Merge(imageAddResult, Result.Fail("Failed to add image to image set"));
-        }
-
-        var updatedImageSet = imageSet with { ImageCount = imageSet.ImageCount + 1 };
-        var imageSetUpdateResult = await _imageSetRepository.UpdateImageSetAsync(updatedImageSet, cancellationToken);
-        if (imageSetUpdateResult.IsFailed)
-        {
-            _ = await _blobRepository.DeleteImageAsync(filename, cancellationToken);
-            _ = await _imageRepository.DeleteImageAsync(image, cancellationToken);
-            return Result.Merge(imageSetUpdateResult, Result.Fail("Failed to update image sets image count"));
-        }
-
-        return Result.Ok();
     }
 
     public async Task<Result<List<Image>>> GetGameSetAsync(Guid imageSetId, int imageCount, CancellationToken cancellationToken)

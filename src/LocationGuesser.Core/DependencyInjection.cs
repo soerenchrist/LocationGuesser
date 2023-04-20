@@ -25,7 +25,7 @@ public static class DependencyInjection
 
         services.AddScoped<IBlobContainer, AzureBlobContainer>();
         services.AddScoped<IBlobRepository, BlobRepository>();
-        services.AddScoped<IImageService, ImageService>();
+        services.AddScoped<IGameService, GameService>();
         services.AddScoped<IRandom, RandomGenerator>();
     }
 }

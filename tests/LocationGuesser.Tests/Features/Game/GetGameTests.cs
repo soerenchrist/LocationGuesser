@@ -10,7 +10,7 @@ namespace LocationGuesser.Tests.Features.Game;
 public class GetGameQueryHandlerTests
 {
     private readonly GetGameQueryHandler _cut;
-    private readonly IImageService _imageService = Substitute.For<IImageService>();
+    private readonly IGameService _imageService = Substitute.For<IGameService>();
 
     public GetGameQueryHandlerTests()
     {

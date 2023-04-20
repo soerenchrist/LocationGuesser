@@ -11,10 +11,10 @@ public record GetGameQuery(Guid SetId, int ImageCount) : IRequest<Result<List<Im
 
 public class GetGameQueryHandler : IRequestHandler<GetGameQuery, Result<List<Image>>>
 {
-    private readonly IImageService _imageService;
+    private readonly IGameService _imageService;
     private readonly IValidator<GetGameQuery> _validator;
 
-    public GetGameQueryHandler(IImageService imageService,
+    public GetGameQueryHandler(IGameService imageService,
         IValidator<GetGameQuery> validator)
     {
         _imageService = imageService;
