@@ -6,7 +6,7 @@ using Microsoft.Extensions.Options;
 
 namespace LocationGuesser.Core.Data;
 
-internal class CosmosDbContainer : ICosmosDbContainer, IDisposable
+public class CosmosDbContainer : ICosmosDbContainer, IDisposable
 {
     private readonly CosmosClient _client;
     private readonly Container _container;
