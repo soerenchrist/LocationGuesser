@@ -25,6 +25,7 @@ public class CosmosImageSetRepository : IImageSetRepository
 
     public async Task<Result<ImageSet>> GetImageSetAsync(Guid id, CancellationToken cancellationToken)
     {
+        _logger.LogDebug("Getting image set with id {id}", id);
         try
         {
             var item = await _container.ReadItemAsync<CosmosImageSet>(id.ToString(), new PartitionKey(PartitionKey),
@@ -33,15 +34,17 @@ public class CosmosImageSetRepository : IImageSetRepository
             return item.Resource switch
             {
                 null => Result.Fail(CreateNotFoundError(id)),
-                CosmosImageSet image => Result.Ok(image.ToImageSet())
+                var image => Result.Ok(image.ToImageSet())
             };
         }
         catch (CosmosException ex)
         {
+            _logger.LogError(ex, "Failed to get image set with id {id}", id);
             return MatchExceptionToImageSetResult(id, ex);
         }
-        catch (AuthenticationFailedException)
+        catch (AuthenticationFailedException ex)
         {
+            _logger.LogError(ex, "Failed to authenticate against CosmosDB");
             return Result.Fail<ImageSet>("Failed to authenticate with CosmosDB");
         }
     }
@@ -49,6 +52,7 @@ public class CosmosImageSetRepository : IImageSetRepository
 
     public async Task<Result<List<ImageSet>>> ListImageSetsAsync(CancellationToken cancellationToken)
     {
+        _logger.LogDebug("Listing image sets");
         try
         {
             var query = new QueryDefinition("SELECT * FROM c where c.type = 'ImageSet'");
@@ -63,20 +67,24 @@ public class CosmosImageSetRepository : IImageSetRepository
                 foreach (var item in response) items.Add(item.ToImageSet());
             }
 
+            _logger.LogDebug("Found {count} image sets", items.Count);
             return Result.Ok(items);
         }
         catch (CosmosException ex)
         {
+            _logger.LogError(ex, "Failed to list image sets");
             return Result.Fail(ex.Message);
         }
-        catch (AuthenticationFailedException)
+        catch (AuthenticationFailedException ex)
         {
+            _logger.LogError(ex, "Failed to authenticate against CosmosDB");
             return Result.Fail("Failed to authenticate with CosmosDB");
         }
     }
 
     public async Task<Result<ImageSet>> AddImageSetAsync(ImageSet imageSet, CancellationToken cancellationToken)
     {
+        _logger.LogDebug("Adding image set {imageSet}", imageSet);
         try
         {
             var response = await _container.CreateItemAsync(CosmosImageSet.FromImageSet(imageSet),
@@ -86,10 +94,12 @@ public class CosmosImageSetRepository : IImageSetRepository
         }
         catch (CosmosException ex)
         {
+            _logger.LogError(ex, "Failed to add image set {ImageSet}", imageSet);
             return Result.Fail(ex.Message);
         }
-        catch (AuthenticationFailedException)
+        catch (AuthenticationFailedException ex)
         {
+            _logger.LogError(ex, "Failed to authenticate against CosmosDB");
             return Result.Fail("Failed to authenticate with CosmosDB");
         }
 
@@ -98,46 +108,53 @@ public class CosmosImageSetRepository : IImageSetRepository
 
     public async Task<Result> UpdateImageSetAsync(ImageSet imageSet, CancellationToken cancellationToken)
     {
+        _logger.LogDebug("Updating image set {imageSet}", imageSet);
         try
         {
-            var response = await _container.UpsertItemAsync(CosmosImageSet.FromImageSet(imageSet), cancellationToken);
+            await _container.UpsertItemAsync(CosmosImageSet.FromImageSet(imageSet), cancellationToken);
             return Result.Ok();
         }
         catch (CosmosException ex)
         {
+            _logger.LogError(ex, "Failed to update image set {ImageSet}", imageSet);
             return MatchExceptionToResult(imageSet.Id, ex);
         }
-        catch (AuthenticationFailedException)
+        catch (AuthenticationFailedException ex)
         {
+            _logger.LogError(ex, "Failed to authenticate against CosmosDB");
             return Result.Fail("Failed to authenticate with CosmosDB");
         }
     }
 
     public async Task<Result> DeleteImageSetAsync(Guid id, CancellationToken cancellationToken)
     {
+        _logger.LogDebug("Deleting image set with id {id}", id);
         try
         {
-            var response = await _container.DeleteItemAsync<CosmosImageSet>(id.ToString(),
+            await _container.DeleteItemAsync<CosmosImageSet>(id.ToString(),
                 new PartitionKey(PartitionKey),
                 cancellationToken);
             return Result.Ok();
         }
         catch (CosmosException ex)
         {
+            _logger.LogError(ex, "Failed to delete image set with id {id}", id);
             return MatchExceptionToResult(id, ex);
         }
-        catch (AuthenticationFailedException)
+        catch (AuthenticationFailedException ex)
         {
+            _logger.LogError(ex, "Failed to authenticate against CosmosDB");
             return Result.Fail("Failed to authenticate with CosmosDB");
         }
     }
 
     private NotFoundError CreateNotFoundError(Guid id)
     {
+        _logger.LogInformation("ImageSet with id {id} not found", id);
         return new NotFoundError($"ImageSet with id {id} not found");
     }
 
-    public Result<ImageSet> MatchExceptionToImageSetResult(Guid guid, CosmosException ex)
+    private Result<ImageSet> MatchExceptionToImageSetResult(Guid guid, CosmosException ex)
     {
         return ex.StatusCode switch
         {
@@ -146,7 +163,7 @@ public class CosmosImageSetRepository : IImageSetRepository
         };
     }
 
-    public Result MatchExceptionToResult(Guid guid, CosmosException ex)
+    private Result MatchExceptionToResult(Guid guid, CosmosException ex)
     {
         return ex.StatusCode switch
         {

@@ -1,8 +1,8 @@
 using FluentResults;
-using LocationGuesser.Api.Extensions;
 using LocationGuesser.Api.Features.Images;
 using LocationGuesser.Core.Data.Abstractions;
 using LocationGuesser.Core.Domain.Errors;
+using LocationGuesser.Tests.Utils;
 
 namespace LocationGuesser.Tests.Features.Images;
 
@@ -13,8 +13,9 @@ public class GetImageContentQueryHandlerTests
 
     public GetImageContentQueryHandlerTests()
     {
+        var logger = TestLogger.Create<GetImageContentQueryHandler>();
         var validator = new GetImageContentQueryValidator();
-        _cut = new GetImageContentQueryHandler(_blobRepository, validator);
+        _cut = new GetImageContentQueryHandler(_blobRepository, validator, logger);
     }
 
     [Theory]
@@ -59,6 +60,4 @@ public class GetImageContentQueryHandlerTests
         result.IsSuccess.Should().BeTrue();
         result.Value.Should().BeSameAs(stream);
     }
-
-
 }

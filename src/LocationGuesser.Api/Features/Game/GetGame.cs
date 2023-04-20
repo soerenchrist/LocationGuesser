@@ -13,19 +13,24 @@ public class GetGameQueryHandler : IRequestHandler<GetGameQuery, Result<List<Ima
 {
     private readonly IGameService _imageService;
     private readonly IValidator<GetGameQuery> _validator;
+    private readonly ILogger<GetGameQueryHandler> _logger;
 
     public GetGameQueryHandler(IGameService imageService,
-        IValidator<GetGameQuery> validator)
+        IValidator<GetGameQuery> validator,
+        ILogger<GetGameQueryHandler> logger)
     {
         _imageService = imageService;
         _validator = validator;
+        _logger = logger;
     }
 
     public async Task<Result<List<Image>>> Handle(GetGameQuery request, CancellationToken cancellationToken)
     {
+        _logger.LogDebug("Getting game set {SetId} with {ImageCount} images", request.SetId, request.ImageCount);
         var validationResult = await _validator.ValidateAsync(request, cancellationToken);
         if (!validationResult.IsValid)
         {
+            _logger.LogDebug("Invalid request: {ValidationErrors}", validationResult.Errors);
             return validationResult.ToResult<List<Image>>();
         }
         var result = await _imageService.GetGameSetAsync(request.SetId, request.ImageCount, cancellationToken);

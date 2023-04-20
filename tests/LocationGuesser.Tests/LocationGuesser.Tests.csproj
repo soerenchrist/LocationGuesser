@@ -10,11 +10,11 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <PackageReference Include="Bogus" Version="34.0.2"/>
-        <PackageReference Include="FluentAssertions" Version="6.10.0"/>
-        <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.5.0"/>
-        <PackageReference Include="NSubstitute" Version="5.0.0"/>
-        <PackageReference Include="xunit" Version="2.4.2"/>
+        <PackageReference Include="Bogus" Version="34.0.2" />
+        <PackageReference Include="FluentAssertions" Version="6.10.0" />
+        <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.5.0" />
+        <PackageReference Include="NSubstitute" Version="5.0.0" />
+        <PackageReference Include="xunit" Version="2.4.2" />
         <PackageReference Include="xunit.runner.visualstudio" Version="2.4.5">
             <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
             <PrivateAssets>all</PrivateAssets>
@@ -26,10 +26,10 @@
     </ItemGroup>
 
     <ItemGroup>
-        <ProjectReference Include="..\..\src\LocationGuesser.Core\LocationGuesser.Core.csproj"/>
-        <ProjectReference Include="..\..\src\LocationGuesser.Core.Contracts\LocationGuesser.Core.Contracts.csproj"/>
-        <ProjectReference Include="..\..\src\LocationGuesser.Core.Domain\LocationGuesser.Core.Domain.csproj"/>
-        <ProjectReference Include="..\..\src\LocationGuesser.Api\LocationGuesser.Api.csproj"/>
+        <ProjectReference Include="..\..\src\LocationGuesser.Core\LocationGuesser.Core.csproj" />
+        <ProjectReference Include="..\..\src\LocationGuesser.Core.Contracts\LocationGuesser.Core.Contracts.csproj" />
+        <ProjectReference Include="..\..\src\LocationGuesser.Core.Domain\LocationGuesser.Core.Domain.csproj" />
+        <ProjectReference Include="..\..\src\LocationGuesser.Api\LocationGuesser.Api.csproj" />
     </ItemGroup>
 
 </Project>

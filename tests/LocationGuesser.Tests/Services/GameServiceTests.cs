@@ -3,12 +3,12 @@ using LocationGuesser.Core.Data.Abstractions;
 using LocationGuesser.Core.Domain;
 using LocationGuesser.Core.Services;
 using LocationGuesser.Core.Services.Abstractions;
+using LocationGuesser.Tests.Utils;
 
 namespace LocationGuesser.Tests.Services;
 
 public class GameServiceTests
 {
-    private readonly IBlobRepository _blobRepository = Substitute.For<IBlobRepository>();
     private readonly GameService _cut;
     private readonly IImageRepository _imageRepository = Substitute.For<IImageRepository>();
     private readonly IImageSetRepository _imageSetRepository = Substitute.For<IImageSetRepository>();
@@ -16,9 +16,10 @@ public class GameServiceTests
 
     public GameServiceTests()
     {
+        var logger = TestLogger.Create<GameService>();
         _random.Next(Arg.Any<int>(), Arg.Any<int>(), Arg.Any<HashSet<int>>())
             .Returns(1, 2, 3, 4, 5, 6, 7, 8, 9, 10);
-        _cut = new GameService(_blobRepository, _imageRepository, _imageSetRepository, _random);
+        _cut = new GameService(_imageRepository, _imageSetRepository, _random, logger);
     }
 
     [Fact]

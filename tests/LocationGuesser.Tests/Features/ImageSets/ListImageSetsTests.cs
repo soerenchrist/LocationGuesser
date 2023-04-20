@@ -2,6 +2,7 @@ using FluentResults;
 using LocationGuesser.Api.Features.ImageSets;
 using LocationGuesser.Core.Data.Abstractions;
 using LocationGuesser.Core.Domain;
+using LocationGuesser.Tests.Utils;
 
 namespace LocationGuesser.Tests.Features.ImageSets;
 
@@ -12,7 +13,8 @@ public class ListImageSetsTests
 
     public ListImageSetsTests()
     {
-        _cut = new ListImageSetsQueryHandler(_imageSetRepository);
+        var logger = TestLogger.Create<ListImageSetsQueryHandler>();
+        _cut = new ListImageSetsQueryHandler(_imageSetRepository, logger);
     }
 
     [Fact]

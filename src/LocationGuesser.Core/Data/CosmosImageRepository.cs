@@ -24,6 +24,7 @@ public class CosmosImageRepository : IImageRepository
 
     public async Task<Result> AddImageAsync(Image image, CancellationToken cancellationToken)
     {
+        _logger.LogDebug("Adding image with number {number} to set {setId}", image.Number, image.SetId);
         try
         {
             var response = await _container.CreateItemAsync(CosmosImage.FromImage(image), cancellationToken);
@@ -35,16 +36,19 @@ public class CosmosImageRepository : IImageRepository
         }
         catch (CosmosException ex)
         {
+            _logger.LogError(ex, "Failed to add image with number {number} to set {setId}", image.Number, image.SetId);
             return Result.Fail(ex.Message);
         }
-        catch (AuthenticationFailedException)
+        catch (AuthenticationFailedException ex)
         {
+            _logger.LogError(ex, "Failed to authenticate against CosmosDB");
             return Result.Fail("Failed to authenticate against CosmosDB");
         }
     }
 
     public async Task<Result> DeleteImageAsync(Image image, CancellationToken cancellationToken)
     {
+        _logger.LogDebug("Deleting image with number {number} from set {setId}", image.Number, image.SetId);
         try
         {
             await _container.DeleteItemAsync<CosmosImage>(image.Number.ToString(),
@@ -53,16 +57,20 @@ public class CosmosImageRepository : IImageRepository
         }
         catch (CosmosException ex)
         {
+            _logger.LogError(ex, "Failed to delete image with number {number} from set {setId}", image.Number,
+                image.SetId);
             return MatchExceptionToResult(image.SetId, image.Number, ex);
         }
-        catch (AuthenticationFailedException)
+        catch (AuthenticationFailedException ex)
         {
+            _logger.LogError(ex, "Failed to authenticate against CosmosDB");
             return Result.Fail("Failed to authenticate against CosmosDB");
         }
     }
 
     public async Task<Result<List<Image>>> ListImagesAsync(Guid setId, CancellationToken cancellationToken)
     {
+        _logger.LogDebug("Listing images in set {setId}", setId);
         try
         {
             var query = new QueryDefinition("SELECT * FROM c WHERE c.setId = @setId and c.type = 'Image'")
@@ -79,10 +87,12 @@ public class CosmosImageRepository : IImageRepository
         }
         catch (CosmosException ex)
         {
+            _logger.LogError(ex, "Failed to list images in set {setId}", setId);
             return Result.Fail<List<Image>>("Unknown error with status code " + ex.StatusCode);
         }
-        catch (AuthenticationFailedException)
+        catch (AuthenticationFailedException ex)
         {
+            _logger.LogError(ex, "Failed to authenticate against CosmosDB");
             return Result.Fail<List<Image>>("Failed to authenticate against CosmosDB");
         }
 
@@ -91,6 +101,7 @@ public class CosmosImageRepository : IImageRepository
 
     public async Task<Result<Image>> GetImageAsync(Guid setId, int number, CancellationToken cancellationToken)
     {
+        _logger.LogDebug("Getting image with number {number} from set {setId}", number, setId);
         try
         {
             var response = await _container.ReadItemAsync<CosmosImage>(number.ToString(),
@@ -103,10 +114,12 @@ public class CosmosImageRepository : IImageRepository
         }
         catch (CosmosException ex)
         {
+            _logger.LogError(ex, "Failed to get image with number {number} from set {setId}", number, setId);
             return MatchExceptionToImageResult(setId, number, ex);
         }
-        catch (AuthenticationFailedException)
+        catch (AuthenticationFailedException ex)
         {
+            _logger.LogError(ex, "Failed to authenticate against CosmosDB");
             return Result.Fail("Failed to authenticate against CosmosDB");
         }
     }
@@ -131,6 +144,7 @@ public class CosmosImageRepository : IImageRepository
 
     private NotFoundError CreateNotFoundError(Guid setId, int number)
     {
+        _logger.LogInformation("Image {number} in {setId} not found", number, setId);
         return new NotFoundError($"Image {number} in {setId} not found");
     }
 }
