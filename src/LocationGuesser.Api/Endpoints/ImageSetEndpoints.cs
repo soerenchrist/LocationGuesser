@@ -41,22 +41,23 @@ public static class ImageSetEndpoints
             return Results.Ok(contract);
         });
 
-        group.MapPost("/", async (
-            [FromBody] CreateImageSetContract request,
-            [FromServices] IMediator mediator,
-            CancellationToken cancellationToken
-        ) =>
-        {
-            var command = new CreateImageSetCommand(request.Title, request.Description, request.Tags,
-                request.LowerYearRange, request.UpperYearRange);
-            var result = await mediator.Send(command, cancellationToken);
+        /*
+                group.MapPost("/", async (
+                    [FromBody] CreateImageSetContract request,
+                    [FromServices] IMediator mediator,
+                    CancellationToken cancellationToken
+                ) =>
+                {
+                    var command = new CreateImageSetCommand(request.Title, request.Description, request.Tags,
+                        request.LowerYearRange, request.UpperYearRange);
+                    var result = await mediator.Send(command, cancellationToken);
 
-            if (result.IsFailed) return result.ToErrorResponse();
+                    if (result.IsFailed) return result.ToErrorResponse();
 
-            var contract = result.Value.ToContract();
+                    var contract = result.Value.ToContract();
 
-            return Results.Created($"/api/imagesets/{result.Value.Id}", contract);
-        });
+                    return Results.Created($"/api/imagesets/{result.Value.Id}", contract);
+                });
 
         group.MapDelete("{id:guid}", async (
             [FromRoute] Guid id,
@@ -68,5 +69,6 @@ public static class ImageSetEndpoints
 
             return Results.NoContent();
         });
+                */
     }
 }

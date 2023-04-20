@@ -11,12 +11,6 @@ public static class ImageEndpoints
 {
     public static void MapImageEndpoints(this WebApplication app)
     {
-        app.MapGet("/api/imagesets/{id:guid}/images", async (
-            [FromRoute] Guid id,
-            [FromServices] IMediator mediator) =>
-        {
-        });
-
         app.MapPost("/api/imagesets/{id:guid}/images", async (
             [FromBody] CreateImageContract contract,
             [FromServices] IMediator mediator) =>
