@@ -1,11 +1,37 @@
-@page "/game/{SetIdString}"
+@page "/game/{SetId:guid}"
 @inherits MvvmComponentBase<GamePageViewModel>
 
-<div>
+@SetId
+@Bind(x => x.SetId);
+@if (Bind(x => x.NotFound))
+{
+    <Heading Size="HeadingSize.Is1">Set not found</Heading>
+}
+else if (Bind(x => x.IsError))
+{
+    <Heading Size="HeadingSize.Is1">Error</Heading>
+}
+else
+{
+    <div>
     <Heading Size="HeadingSize.Is1">Game @Bind(x => x.SetId)</Heading>
-</div>
-
+    @if (Bind(x => x.ImageUrl) != null)
+        {
+            <img width="200" src="@Bind(x => x.ImageUrl)" />
+        }
+        <p>
+            @Bind(x => x.ImageUrl);
+        </p>
+        @Bind(x => x.CurrentIndex);
+        <Button @onclick="@(() => @BindingContext.Next())">Next</Button>
+    </div>
+}
 @code {
     [Parameter]
-    public string? SetIdString { get; set; }
+    public Guid SetId { get; set; }
+    protected override void OnInitialized()
+    {
+        base.OnInitialized();
+        BindingContext.SetId = SetId;
+    }
 }

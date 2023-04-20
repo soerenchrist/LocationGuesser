@@ -93,6 +93,18 @@ public class GameApiServiceTests
         result.IsSuccess.Should().BeTrue();
     }
 
+    [Fact]
+    public void GetImageContentUrl_ShouldReturnCorrectUrl()
+    {
+        var setId = Guid.NewGuid();
+        var imageId = 1;
+        var expectedUrl = $"/api/game/{setId}/image/1/content";
+
+        var result = _cut.GetImageContentUrl(setId, imageId);
+
+        result.Should().Be(expectedUrl);
+    }
+
     private List<Image> CreateImages(Guid setId, int count = 5)
     {
         return Enumerable.Range(1, count)

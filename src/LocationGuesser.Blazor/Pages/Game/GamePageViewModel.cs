@@ -1,7 +1,6 @@
 using LocationGuesser.Blazor.Services.Abstractions;
 using LocationGuesser.Core.Domain;
 using LocationGuesser.Core.Domain.Errors;
-using Microsoft.AspNetCore.Components;
 using MvvmBlazor;
 using MvvmBlazor.ViewModel;
 
@@ -9,13 +8,13 @@ namespace LocationGuesser.Blazor.Pages.Game;
 
 public partial class GamePageViewModel : ViewModelBase
 {
-    [Parameter]
-    public string? SetIdString { get; set; }
+    public Guid SetId { get; set; }
 
     [Notify] private bool _notFound;
     [Notify] private bool _isError;
-    [Notify] private Guid _setId;
     [Notify] private List<Image>? _images;
+    [Notify] private int _currentIndex;
+    [Notify] private string? _imageUrl;
     private readonly IGameApiService _gameSetService;
 
     public GamePageViewModel(IGameApiService gameSetService)
@@ -25,19 +24,9 @@ public partial class GamePageViewModel : ViewModelBase
 
     public override async Task OnInitializedAsync()
     {
-        if (ValidateSetId())
-            await FetchGameSet();
-    }
-
-    private bool ValidateSetId()
-    {
-        if (Guid.TryParse(SetIdString, out var setId))
-        {
-            SetId = setId;
-            return true;
-        }
-        NotFound = true;
-        return false;
+        await base.OnInitializedAsync();
+        Console.WriteLine(SetId);
+        await FetchGameSet();
     }
 
     private async Task FetchGameSet()
@@ -51,6 +40,27 @@ public partial class GamePageViewModel : ViewModelBase
             return;
         }
         Images = result.Value;
+        if (Images.Count > 0)
+        {
+            LoadUrl(Images[0]);
+        }
     }
 
+    public void Next()
+    {
+        Console.WriteLine("Next");
+        if (Images == null) return;
+        Console.WriteLine("Next 1");
+        if (CurrentIndex == Images?.Count - 1) return;
+        Console.WriteLine("Next 2");
+        CurrentIndex++;
+
+        LoadUrl(Images![CurrentIndex]);
+    }
+
+    private void LoadUrl(Image image)
+    {
+        Console.WriteLine("Next 3");
+        ImageUrl = _gameSetService.GetImageContentUrl(image.SetId, image.Number);
+    }
 }

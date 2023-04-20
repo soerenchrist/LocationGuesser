@@ -18,7 +18,7 @@ public class GameApiService : IGameApiService
 
     public async Task<Result<List<Image>>> GetGameSetAsync(Guid setId, int imageCount, CancellationToken cancellationToken)
     {
-        var url = $"/api/game/{setId}?imageCount={imageCount}";
+        var url = $"/api/games/{setId}?imageCount={imageCount}";
         var response = await _httpClient.GetAsync(url, cancellationToken);
 
         if (response.IsSuccessStatusCode)
@@ -51,5 +51,12 @@ public class GameApiService : IGameApiService
             HttpStatusCode.NotFound => Result.Fail<List<Image>>(new NotFoundError("Game set not found")),
             _ => Result.Fail<List<Image>>("Unexpected error")
         };
+    }
+
+    public string GetImageContentUrl(Guid setId, int number)
+    {
+        var url = $"/api/game/{setId}/image/{number}/content";
+
+        return url;
     }
 }
