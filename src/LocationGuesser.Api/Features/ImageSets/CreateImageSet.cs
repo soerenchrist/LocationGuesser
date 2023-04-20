@@ -8,7 +8,7 @@ using MediatR;
 
 namespace LocationGuesser.Api.Features.ImageSets;
 
-public record CreateImageSetCommand(string Title, string Description, string Tags, int LowerYearRange,
+public record CreateImageSetCommand(string? Title, string? Description, string? Tags, int LowerYearRange,
     int UpperYearRange) : IRequest<Result<ImageSet>>;
 
 public class CreateImageSetCommandHandler : IRequestHandler<CreateImageSetCommand, Result<ImageSet>>
