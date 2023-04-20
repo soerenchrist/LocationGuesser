@@ -47,7 +47,7 @@ public class BlobRepository : IBlobRepository
         try
         {
             var response = await _container.DownloadContentAsync(filename, cancellationToken);
-            if (response is null) return Result.Fail<Stream>(new NotFoundError("File not found"));
+            if (response is null) return Result.Fail<Stream>(new NotFoundError($"File {filename} not found"));
             return Result.Ok(response);
         }
         catch (RequestFailedException ex)

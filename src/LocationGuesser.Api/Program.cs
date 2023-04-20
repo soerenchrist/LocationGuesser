@@ -51,6 +51,7 @@ app.UseRouting();
 app.MapFallbackToFile("index.html");
 
 app.MapImageSetEndpoints();
+app.MapImageEndpoints();
 app.MapGameEndpoints();
 app.MapGet("/health", () => Results.Ok());
 

@@ -6,4 +6,5 @@ public interface IBlobRepository
 {
     Task<Result> UploadImageAsync(string filename, Stream fileStream, CancellationToken cancellationToken);
     Task<Result> DeleteImageAsync(string filename, CancellationToken cancellationToken);
+    Task<Result<Stream>> DownloadImageAsync(string filename, CancellationToken cancellationToken);
 }

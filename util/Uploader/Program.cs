@@ -1,10 +1,7 @@
 ﻿using System.Reflection;
 using LocationGuesser.Core.Options;
 using Microsoft.Extensions.Configuration;
-using LocationGuesser.Core.Data;
-using Microsoft.Extensions.Options;
 using Uploader;
-using System.Text.Json;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.DependencyInjection;
 using LocationGuesser.Core;
@@ -35,8 +32,8 @@ Console.WriteLine("Uploading images...");
 
 foreach (var image in data.Files)
 {
-    using var stream = File.OpenRead(image);
-    var filename = Path.GetFileName(image);
+    using var stream = File.OpenRead(image.Filename);
+    var filename = $"{image.SetId}/{image.Number}.jpg";
     var result = await blobRepository.UploadImageAsync(filename, stream, CancellationToken.None);
     if (result.IsFailed)
     {

@@ -52,7 +52,7 @@ public class DirectoryReader
 
             var image = new Image(imageSetId, counter, imageInfo.Year, imageInfo.Latitude, imageInfo.Longitude, imageInfo.Description, imageInfo.License);
             uploadData.Images.Add(image);
-            uploadData.Files.Add(imageFile);
+            uploadData.Files.Add(new ImageContent(imageFile, imageSetId, counter));
             counter++;
         }
 

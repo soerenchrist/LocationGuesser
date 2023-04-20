@@ -29,8 +29,10 @@ public class AzureBlobContainer : IBlobContainer
     public async Task<Stream?> DownloadContentAsync(string filename, CancellationToken cancellationToken)
     {
         var client = _containerClient.GetBlobClient(filename);
-        var result = await client.DownloadContentAsync(cancellationToken: cancellationToken);
-        return result.GetRawResponse().ContentStream;
+        var stream = new MemoryStream();
+        await client.DownloadToAsync(stream, cancellationToken: cancellationToken);
+        stream.Position = 0;
+        return stream;
     }
 
     public async Task<BlobContentInfo> UploadAsync(string filename, Stream fileStream,

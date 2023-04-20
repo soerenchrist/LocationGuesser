@@ -1,3 +1,4 @@
+using FluentResults;
 using LocationGuesser.Api.Extensions;
 using LocationGuesser.Api.Features.Images;
 using LocationGuesser.Api.Mappings;
@@ -31,6 +32,24 @@ public static class ImageEndpoints
             }
 
             return Results.Ok(result.Value.ToContract());
+        });
+
+        app.MapGet("/api/imagesets/{id:guid}/images/{number:int}/content", async (
+            [FromRoute] Guid id,
+            [FromRoute] int number,
+            [FromServices] IMediator mediator
+        ) =>
+        {
+            var command = new GetImageContentQuery(id, number);
+
+            var result = await mediator.Send<Result<Stream>>(command);
+
+            if (result.IsFailed)
+            {
+                return result.ToErrorResponse();
+            }
+
+            return Results.File(result.Value, "image/jpeg");
         });
     }
 }
