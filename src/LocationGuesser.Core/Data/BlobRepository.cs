@@ -1,6 +1,7 @@
 using Azure;
 using FluentResults;
 using LocationGuesser.Core.Data.Abstractions;
+using LocationGuesser.Core.Domain.Errors;
 
 namespace LocationGuesser.Core.Data;
 
@@ -39,5 +40,19 @@ public class BlobRepository : IBlobRepository
         }
 
         return Result.Ok();
+    }
+
+    public async Task<Result<Stream>> DownloadImageAsync(string filename, CancellationToken cancellationToken)
+    {
+        try
+        {
+            var response = await _container.DownloadContentAsync(filename, cancellationToken);
+            if (response is null) return Result.Fail<Stream>(new NotFoundError("File not found"));
+            return Result.Ok(response);
+        }
+        catch (RequestFailedException ex)
+        {
+            return Result.Fail<Stream>(ex.Message);
+        }
     }
 }

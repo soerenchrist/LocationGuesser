@@ -1,3 +1,4 @@
+using Azure;
 using Azure.Identity;
 using Azure.Storage.Blobs;
 using Azure.Storage.Blobs.Models;
@@ -23,6 +24,13 @@ public class AzureBlobContainer : IBlobContainer
     {
         var client = _containerClient.GetBlobClient(filename);
         return client.DeleteIfExistsAsync(cancellationToken: cancellationToken);
+    }
+
+    public async Task<Stream?> DownloadContentAsync(string filename, CancellationToken cancellationToken)
+    {
+        var client = _containerClient.GetBlobClient(filename);
+        var result = await client.DownloadContentAsync(cancellationToken: cancellationToken);
+        return result.GetRawResponse().ContentStream;
     }
 
     public async Task<BlobContentInfo> UploadAsync(string filename, Stream fileStream,

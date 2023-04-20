@@ -2,6 +2,7 @@ using Azure;
 using Azure.Storage.Blobs.Models;
 using LocationGuesser.Core.Data;
 using LocationGuesser.Core.Data.Abstractions;
+using LocationGuesser.Core.Domain.Errors;
 
 namespace LocationGuesser.Tests.Data;
 
@@ -62,6 +63,45 @@ public class BlobRepositoryTests
         var result = await _cut.DeleteImageAsync(filename, default);
 
         result.IsSuccess.Should().BeTrue();
+    }
+
+    [Fact]
+    public async Task DownloadImageAsync_ShouldReturnStream_WhenContainerReturnsStream()
+    {
+        var filename = "test.png";
+        var stream = new MemoryStream();
+        _container.DownloadContentAsync(filename, default)
+            .Returns(Task.FromResult<Stream?>(stream));
+
+        var result = await _cut.DownloadImageAsync(filename, default);
+
+        result.IsSuccess.Should().BeTrue();
+        result.Value.Should().BeSameAs(stream);
+    }
+
+    [Fact]
+    public async Task DownloadImageAsync_ShouldReturnNotFoudn_WhenContainerReturnsNull()
+    {
+        var filename = "test.png";
+        _container.DownloadContentAsync(filename, default)
+            .Returns(Task.FromResult<Stream?>(null));
+
+        var result = await _cut.DownloadImageAsync(filename, default);
+
+        result.IsFailed.Should().BeTrue();
+        result.Errors.Should().ContainSingle(x => x is NotFoundError);
+    }
+
+    [Fact]
+    public async Task DownloadImageAsync_ShouldReturnError_WhenContainerThrowsException()
+    {
+        var filename = "test.png";
+        _container.When(x => x.DownloadContentAsync(filename, default))
+            .Throw(new RequestFailedException("Something went wrong"));
+
+        var result = await _cut.DownloadImageAsync(filename, default);
+
+        result.IsFailed.Should().BeTrue();
     }
 
     private BlobContentInfo CreateContentInfo()
