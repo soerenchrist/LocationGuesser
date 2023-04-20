@@ -69,3 +69,7 @@ jobs:
           slot-name: 'production'
           publish-profile: ${{ secrets.AzureAppService_PublishProfile }}
           package: .
+      - name: Delete Artifacts
+        uses: jimschubert/delete-artifacts-action@v1
+        with:
+          artifact_name: .net-app
