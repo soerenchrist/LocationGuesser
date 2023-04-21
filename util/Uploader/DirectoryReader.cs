@@ -1,10 +1,17 @@
 using System.Text.Json;
 using LocationGuesser.Core.Domain;
+using LocationGuesser.Core.Services.Abstractions;
 
 namespace Uploader;
 
 public class DirectoryReader
 {
+    private readonly IImageUrlService _imageUrlService;
+    public DirectoryReader(IImageUrlService imageUrlService)
+    {
+        _imageUrlService = imageUrlService;
+    }
+
     private readonly JsonSerializerOptions _options = new JsonSerializerOptions { PropertyNamingPolicy = JsonNamingPolicy.CamelCase };
     public UploadData ReadDirectory(string path)
     {
@@ -50,7 +57,8 @@ public class DirectoryReader
             var imageInfo = JsonSerializer.Deserialize<ImageInfo>(File.ReadAllText(infoPath), _options);
             if (imageInfo == null) throw new Exception($"Could not deserialize json file for image {imageName}");
 
-            var image = new Image(imageSetId, counter, imageInfo.Year, imageInfo.Latitude, imageInfo.Longitude, imageInfo.Description, imageInfo.License);
+            var url = _imageUrlService.GetImageUrl(imageSetId, counter);
+            var image = new Image(imageSetId, counter, imageInfo.Year, imageInfo.Latitude, imageInfo.Longitude, imageInfo.Description, imageInfo.License, url);
             uploadData.Images.Add(image);
             uploadData.Files.Add(new ImageContent(imageFile, imageSetId, counter));
             counter++;

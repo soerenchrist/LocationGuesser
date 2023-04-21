@@ -134,7 +134,7 @@ public class GamePageViewModelTests
     private List<Image> CreateImages(Guid setId)
     {
         return Enumerable.Range(1, 5)
-            .Select(i => new Image(setId, i, 2023, 10, 20, $"Description {i}", ""))
+            .Select(i => new Image(setId, i, 2023, 10, 20, $"Description {i}", "", "Url"))
             .ToList();
     }
 }

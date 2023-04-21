@@ -109,7 +109,7 @@ public class GameApiServiceTests
     private List<Image> CreateImages(Guid setId, int count = 5)
     {
         return Enumerable.Range(1, count)
-            .Select(x => new Image(setId, x, 2023, 10, 20, $"Description {x}", ""))
+            .Select(x => new Image(setId, x, 2023, 10, 20, $"Description {x}", "", "Url"))
             .ToList();
     }
 }

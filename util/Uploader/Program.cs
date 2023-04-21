@@ -6,6 +6,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.DependencyInjection;
 using LocationGuesser.Core;
 using LocationGuesser.Core.Data.Abstractions;
+using LocationGuesser.Core.Services.Abstractions;
 
 var configuration = new ConfigurationBuilder()
     .AddJsonFile("appsettings.json", false, true)
@@ -21,7 +22,7 @@ services.AddCoreDependencies();
 
 var serviceProvider = services.BuildServiceProvider();
 
-var reader = new DirectoryReader();
+var reader = new DirectoryReader(serviceProvider.GetRequiredService<IImageUrlService>());
 var data = reader.ReadDirectory("images");
 
 var blobRepository = serviceProvider.GetRequiredService<IBlobRepository>();

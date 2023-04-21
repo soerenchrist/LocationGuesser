@@ -17,7 +17,8 @@ public class CosmosImage
     [JsonProperty("longitude")] public required double Longitude { get; set; }
     [JsonProperty("license")] public required string License { get; set; }
     [JsonProperty("description")] public required string Description { get; set; }
-    [JsonProperty("setId")] public Guid SetId { get; set; }
+    [JsonProperty("setId")] public required Guid SetId { get; set; }
+    [JsonProperty("url")] public required string Url { get; set; }
     [JsonProperty("type")] public string Type => "Image";
 
     public static CosmosImage FromImage(Image image)
@@ -30,12 +31,13 @@ public class CosmosImage
             Longitude = image.Longitude,
             Year = image.Year,
             License = image.License,
-            Description = image.Description
+            Description = image.Description,
+            Url = image.Url
         };
     }
 
     public Image ToImage()
     {
-        return new Image(SetId, Number, Year, Latitude, Longitude, Description, License);
+        return new Image(SetId, Number, Year, Latitude, Longitude, Description, License, Url);
     }
 }

@@ -9,5 +9,6 @@ public class ImageContract
     public required int Year { get; set; }
     public required double Latitude { get; set; }
     public required double Longitude { get; set; }
+    public required string Url { get; set; }
 
 }

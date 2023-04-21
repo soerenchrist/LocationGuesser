@@ -66,7 +66,7 @@ public class GetGameQueryHandlerTests
 
     public List<Image> CreateImages(Guid setId, int count)
     {
-        return Enumerable.Range(1, count).Select(x => new Image(setId, x, 2020, 0, 0, $"Description {x}", "License"))
+        return Enumerable.Range(1, count).Select(x => new Image(setId, x, 2020, 0, 0, $"Description {x}", "License", "Url"))
             .ToList();
     }
 }

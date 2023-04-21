@@ -41,7 +41,7 @@ public class InMemoryImageRepositoryTests
         var addResult = await _cut.AddImageAsync(image, default);
         addResult.IsSuccess.Should().BeTrue();
 
-        var secondImage = new Image(image.SetId, image.Number, 2000, 50, 1, "", "");
+        var secondImage = new Image(image.SetId, image.Number, 2000, 50, 1, "", "", "");
 
         var result = await _cut.AddImageAsync(secondImage, default);
         result.IsFailed.Should().BeTrue();
@@ -89,6 +89,6 @@ public class InMemoryImageRepositoryTests
 
     private Image CreateImage()
     {
-        return new Image(Guid.NewGuid(), 1, 1954, 49, 10, "Description", "License");
+        return new Image(Guid.NewGuid(), 1, 1954, 49, 10, "Description", "License", "Url");
     }
 }

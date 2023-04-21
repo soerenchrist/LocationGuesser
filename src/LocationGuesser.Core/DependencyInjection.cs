@@ -27,5 +27,6 @@ public static class DependencyInjection
         services.AddScoped<IBlobRepository, BlobRepository>();
         services.AddScoped<IGameService, GameService>();
         services.AddScoped<IRandom, RandomGenerator>();
+        services.AddTransient<IImageUrlService, ImageUrlService>();
     }
 }

@@ -87,6 +87,6 @@ public class GameServiceTests
     private Image CreateImage(Guid guid = default, int number = 1)
     {
         if (guid == default) guid = Guid.NewGuid();
-        return new Image(guid, number, 1900, 49, 10, "Description", "Licence");
+        return new Image(guid, number, 1900, 49, 10, "Description", "Licence", "Url");
     }
 }

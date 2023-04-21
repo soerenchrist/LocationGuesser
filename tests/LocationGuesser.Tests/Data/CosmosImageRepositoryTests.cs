@@ -98,7 +98,7 @@ public class CosmosImageRepositoryTests
     {
         var setId = Guid.NewGuid();
         var number = 3;
-        var image = new Image(Guid.NewGuid(), number, 1900, 49, 11, "", "");
+        var image = new Image(Guid.NewGuid(), number, 1900, 49, 11, "", "", "");
         var response = CreateResponse(HttpStatusCode.OK, image);
         _container.ReadItemAsync<CosmosImage>(number.ToString(), new PartitionKey(setId.ToString()), default)
             .ReturnsForAnyArgs(Task.FromResult(response));
@@ -277,7 +277,7 @@ public class CosmosImageRepositoryTests
 
     private Image CreateImage()
     {
-        return new Image(Guid.NewGuid(), 1, 2000, 49, 10, "Description", "License");
+        return new Image(Guid.NewGuid(), 1, 2000, 49, 10, "Description", "License", "Url");
     }
 
     private ItemResponse<CosmosImage> CreateResponse(HttpStatusCode statusCode, Image? result = null)
