@@ -23,24 +23,24 @@ public class CosmosImageSetRepository : IImageSetRepository
         _logger = logger;
     }
 
-    public async Task<Result<ImageSet>> GetImageSetAsync(Guid id, CancellationToken cancellationToken)
+    public async Task<Result<ImageSet>> GetImageSetAsync(string slug, CancellationToken cancellationToken)
     {
-        _logger.LogDebug("Getting image set with id {id}", id);
+        _logger.LogDebug("Getting image set with id {id}", slug);
         try
         {
-            var item = await _container.ReadItemAsync<CosmosImageSet>(id.ToString(), new PartitionKey(PartitionKey),
+            var item = await _container.ReadItemAsync<CosmosImageSet>(slug, new PartitionKey(PartitionKey),
                 cancellationToken);
 
             return item.Resource switch
             {
-                null => Result.Fail(CreateNotFoundError(id)),
+                null => Result.Fail(CreateNotFoundError(slug)),
                 var image => Result.Ok(image.ToImageSet())
             };
         }
         catch (CosmosException ex)
         {
-            _logger.LogError(ex, "Failed to get image set with id {id}", id);
-            return MatchExceptionToImageSetResult(id, ex);
+            _logger.LogError(ex, "Failed to get image set with id {id}", slug);
+            return MatchExceptionToImageSetResult(slug, ex);
         }
         catch (AuthenticationFailedException ex)
         {
@@ -117,7 +117,7 @@ public class CosmosImageSetRepository : IImageSetRepository
         catch (CosmosException ex)
         {
             _logger.LogError(ex, "Failed to update image set {ImageSet}", imageSet);
-            return MatchExceptionToResult(imageSet.Id, ex);
+            return MatchExceptionToResult(imageSet.Slug, ex);
         }
         catch (AuthenticationFailedException ex)
         {
@@ -126,20 +126,20 @@ public class CosmosImageSetRepository : IImageSetRepository
         }
     }
 
-    public async Task<Result> DeleteImageSetAsync(Guid id, CancellationToken cancellationToken)
+    public async Task<Result> DeleteImageSetAsync(string slug, CancellationToken cancellationToken)
     {
-        _logger.LogDebug("Deleting image set with id {id}", id);
+        _logger.LogDebug("Deleting image set with id {id}", slug);
         try
         {
-            await _container.DeleteItemAsync<CosmosImageSet>(id.ToString(),
+            await _container.DeleteItemAsync<CosmosImageSet>(slug,
                 new PartitionKey(PartitionKey),
                 cancellationToken);
             return Result.Ok();
         }
         catch (CosmosException ex)
         {
-            _logger.LogError(ex, "Failed to delete image set with id {id}", id);
-            return MatchExceptionToResult(id, ex);
+            _logger.LogError(ex, "Failed to delete image set with id {id}", slug);
+            return MatchExceptionToResult(slug, ex);
         }
         catch (AuthenticationFailedException ex)
         {
@@ -148,26 +148,26 @@ public class CosmosImageSetRepository : IImageSetRepository
         }
     }
 
-    private NotFoundError CreateNotFoundError(Guid id)
+    private NotFoundError CreateNotFoundError(string slug)
     {
-        _logger.LogInformation("ImageSet with id {id} not found", id);
-        return new NotFoundError($"ImageSet with id {id} not found");
+        _logger.LogInformation("ImageSet with id {slug} not found", slug);
+        return new NotFoundError($"ImageSet with id {slug} not found");
     }
 
-    private Result<ImageSet> MatchExceptionToImageSetResult(Guid guid, CosmosException ex)
+    private Result<ImageSet> MatchExceptionToImageSetResult(string slug, CosmosException ex)
     {
         return ex.StatusCode switch
         {
-            HttpStatusCode.NotFound => Result.Fail(CreateNotFoundError(guid)),
+            HttpStatusCode.NotFound => Result.Fail(CreateNotFoundError(slug)),
             _ => Result.Fail(ex.Message)
         };
     }
 
-    private Result MatchExceptionToResult(Guid guid, CosmosException ex)
+    private Result MatchExceptionToResult(string slug, CosmosException ex)
     {
         return ex.StatusCode switch
         {
-            HttpStatusCode.NotFound => Result.Fail(CreateNotFoundError(guid)),
+            HttpStatusCode.NotFound => Result.Fail(CreateNotFoundError(slug)),
             _ => Result.Fail(ex.Message)
         };
     }

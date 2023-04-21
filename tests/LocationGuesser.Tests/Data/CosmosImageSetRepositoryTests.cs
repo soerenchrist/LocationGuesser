@@ -26,7 +26,7 @@ public class CosmosImageSetRepositoryTests
     [Fact]
     public async Task GetImageSetAsync_ShouldReturnFail_WhenContainerReadThrowsException()
     {
-        var id = Guid.NewGuid();
+        var id = Guid.NewGuid().ToString();
         _container.When(x => x.ReadItemAsync<CosmosImageSet>(id.ToString(), new PartitionKey(PartitionKey), default))
             .Throw(new CosmosException("Something went wrong", HttpStatusCode.InternalServerError, 500, "",
                 10));
@@ -40,7 +40,7 @@ public class CosmosImageSetRepositoryTests
     [Fact]
     public async Task GetImageSetAsync_ShouldReturnNotFoundError_WhenContainerReadThrowsExceptionWithNotFoundStatus()
     {
-        var id = Guid.NewGuid();
+        var id = Guid.NewGuid().ToString();
         _container.When(x => x.ReadItemAsync<CosmosImageSet>(id.ToString(), new PartitionKey(PartitionKey), default))
             .Throw(new CosmosException("NotFound", HttpStatusCode.NotFound, 404, "",
                 10));
@@ -54,7 +54,7 @@ public class CosmosImageSetRepositoryTests
     [Fact]
     public async Task GetImageSetAsync_ShouldReturnFail_WhenContainerReadThrowsAuthenticationFailed()
     {
-        var id = Guid.NewGuid();
+        var id = Guid.NewGuid().ToString();
         _container.When(x => x.ReadItemAsync<CosmosImageSet>(id.ToString(), new PartitionKey(PartitionKey), default))
             .Throw(new AuthenticationFailedException("Failed"));
 
@@ -66,7 +66,7 @@ public class CosmosImageSetRepositoryTests
     [Fact]
     public async Task GetImageSetAsync_ShouldReturnNotFoundError_WhenStatusCodeIsNotFound()
     {
-        var id = Guid.NewGuid();
+        var id = Guid.NewGuid().ToString();
         var taskResult = CreateResponse(HttpStatusCode.NotFound);
         _container.ReadItemAsync<CosmosImageSet>(id.ToString(), new PartitionKey(PartitionKey), default)
             .ReturnsForAnyArgs(Task.FromResult(taskResult));
@@ -80,7 +80,7 @@ public class CosmosImageSetRepositoryTests
     [Fact]
     public async Task GetImageSetAsync_ShouldReturnOkObject_WhenStatusCodeIsOkAndHasObject()
     {
-        var id = Guid.NewGuid();
+        var id = Guid.NewGuid().ToString();
         var imageSet = CreateImageSet(id);
         var taskResult = CreateResponse(HttpStatusCode.OK, imageSet);
         _container.ReadItemAsync<CosmosImageSet>(id.ToString(), new PartitionKey(PartitionKey), default)
@@ -96,7 +96,7 @@ public class CosmosImageSetRepositoryTests
     [Fact]
     public async Task GetImageSetAsync_ShouldReturnNotFound_WhenStatusCodeIsOkButHasNoData()
     {
-        var id = Guid.NewGuid();
+        var id = Guid.NewGuid().ToString();
         var taskResult = CreateResponse(HttpStatusCode.OK);
         _container.ReadItemAsync<CosmosImageSet>(id.ToString(), new PartitionKey(PartitionKey), default)
             .ReturnsForAnyArgs(Task.FromResult(taskResult));
@@ -265,7 +265,7 @@ public class CosmosImageSetRepositoryTests
         _container.When(x => x.DeleteItemAsync<CosmosImageSet>(Arg.Any<string>(), Arg.Any<PartitionKey>(), default))
             .Throw(new CosmosException("Something went wrong", HttpStatusCode.InternalServerError, 500, "", 10));
 
-        var result = await _cut.DeleteImageSetAsync(Guid.NewGuid(), default);
+        var result = await _cut.DeleteImageSetAsync(Guid.NewGuid().ToString(), default);
 
         result.IsFailed.Should().BeTrue();
     }
@@ -276,7 +276,7 @@ public class CosmosImageSetRepositoryTests
         _container.When(x => x.DeleteItemAsync<CosmosImageSet>(Arg.Any<string>(), Arg.Any<PartitionKey>(), default))
             .Throw(new CosmosException("Something went wrong", HttpStatusCode.NotFound, 404, "", 10));
 
-        var result = await _cut.DeleteImageSetAsync(Guid.NewGuid(), default);
+        var result = await _cut.DeleteImageSetAsync(Guid.NewGuid().ToString(), default);
 
         result.IsFailed.Should().BeTrue();
         result.IsNotFound().Should().BeTrue();
@@ -289,7 +289,7 @@ public class CosmosImageSetRepositoryTests
         _container.DeleteItemAsync<CosmosImageSet>(Arg.Any<string>(), Arg.Any<PartitionKey>(), default)
             .Returns(Task.FromResult(response));
 
-        var result = await _cut.DeleteImageSetAsync(Guid.NewGuid(), default);
+        var result = await _cut.DeleteImageSetAsync(Guid.NewGuid().ToString(), default);
 
         result.IsSuccess.Should().BeTrue();
     }
@@ -301,7 +301,7 @@ public class CosmosImageSetRepositoryTests
         _container.When(x => x.DeleteItemAsync<CosmosImageSet>(Arg.Any<string>(), Arg.Any<PartitionKey>(), default))
             .Throw(new AuthenticationFailedException("Failed"));
 
-        var result = await _cut.DeleteImageSetAsync(Guid.NewGuid(), default);
+        var result = await _cut.DeleteImageSetAsync(Guid.NewGuid().ToString(), default);
 
         result.IsFailed.Should().BeTrue();
     }
@@ -345,8 +345,8 @@ public class CosmosImageSetRepositoryTests
         return substitute;
     }
 
-    private ImageSet CreateImageSet(Guid guid = default, string title = "Title", string description = "Description")
+    private ImageSet CreateImageSet(string setSlug = "", string title = "Title", string description = "Description")
     {
-        return new ImageSet(guid, "Title", "Description", "Tags", 1900, 2000, 10);
+        return new ImageSet(setSlug, "Title", "Description", "Tags", 1900, 2000, 10);
     }
 }

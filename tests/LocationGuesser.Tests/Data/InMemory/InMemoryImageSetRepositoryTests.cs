@@ -16,10 +16,10 @@ public class InMemoryImageSetRepositoryTests
     [Fact]
     public async Task GetImageSetAsync_ShouldReturnImageSet_WhenItExists()
     {
-        var imageSet = new ImageSet(Guid.NewGuid(), "Title", "Description", "Tags", 1900, 2000, 0);
+        var imageSet = new ImageSet(Guid.NewGuid().ToString(), "Title", "Description", "Tags", 1900, 2000, 0);
         await _cut.AddImageSetAsync(imageSet, CancellationToken.None);
 
-        var result = await _cut.GetImageSetAsync(imageSet.Id, default);
+        var result = await _cut.GetImageSetAsync(imageSet.Slug, default);
 
         result.IsSuccess.Should().BeTrue();
         result.Value.Should().Be(imageSet);
@@ -28,7 +28,7 @@ public class InMemoryImageSetRepositoryTests
     [Fact]
     public async Task GetImageSetAsync_ShouldReturnNotFound_WhenImageSetDoesNotExist()
     {
-        var result = await _cut.GetImageSetAsync(Guid.NewGuid(), default);
+        var result = await _cut.GetImageSetAsync(Guid.NewGuid().ToString(), default);
         result.IsFailed.Should().BeTrue();
         result.IsNotFound().Should().BeTrue();
     }
@@ -55,7 +55,7 @@ public class InMemoryImageSetRepositoryTests
     [Fact]
     public async Task AddImageSetAsync_ShouldAddImageSet()
     {
-        var imageSet = new ImageSet(Guid.NewGuid(), "Title", "Description", "Tags", 1900, 2000, 0);
+        var imageSet = new ImageSet(Guid.NewGuid().ToString(), "Title", "Description", "Tags", 1900, 2000, 0);
         var result = await _cut.AddImageSetAsync(imageSet, default);
         result.IsSuccess.Should().BeTrue();
         result.Value.Should().Be(imageSet);
@@ -84,7 +84,7 @@ public class InMemoryImageSetRepositoryTests
         var result = await _cut.UpdateImageSetAsync(updatedImageSet, default);
         result.IsSuccess.Should().BeTrue();
 
-        var getResult = await _cut.GetImageSetAsync(imageSet.Id, default);
+        var getResult = await _cut.GetImageSetAsync(imageSet.Slug, default);
         getResult.Value.Should().Be(updatedImageSet);
     }
 
@@ -105,7 +105,7 @@ public class InMemoryImageSetRepositoryTests
         var imageSet = CreateImageSets(1).First();
         await _cut.AddImageSetAsync(imageSet, default);
 
-        var result = await _cut.DeleteImageSetAsync(imageSet.Id, default);
+        var result = await _cut.DeleteImageSetAsync(imageSet.Slug, default);
         result.IsSuccess.Should().BeTrue();
 
         var listResult = await _cut.ListImageSetsAsync(default);
@@ -118,14 +118,14 @@ public class InMemoryImageSetRepositoryTests
         var imageSet = CreateImageSets(1).First();
         await _cut.AddImageSetAsync(imageSet, default);
 
-        var result = await _cut.DeleteImageSetAsync(Guid.NewGuid(), default);
+        var result = await _cut.DeleteImageSetAsync(Guid.NewGuid().ToString(), default);
         result.IsFailed.Should().BeTrue();
     }
 
     private List<ImageSet> CreateImageSets(int count = 10)
     {
         return Enumerable.Range(1, count)
-            .Select(x => new ImageSet(Guid.NewGuid(), $"Title{x}", $"Description{x}", $"Tags{x}", 1900, 2000, 0))
+            .Select(x => new ImageSet(Guid.NewGuid().ToString(), $"Title{x}", $"Description{x}", $"Tags{x}", 1900, 2000, 0))
             .ToList();
     }
 }

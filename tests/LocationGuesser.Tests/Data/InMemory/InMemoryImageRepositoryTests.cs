@@ -16,7 +16,7 @@ public class InMemoryImageRepositoryTests
     [Fact]
     public async Task ListImagesAsync_ReturnsEmptyList_WhenNoImagesExist()
     {
-        var result = await _cut.ListImagesAsync(Guid.NewGuid(), CancellationToken.None);
+        var result = await _cut.ListImagesAsync(Guid.NewGuid().ToString(), CancellationToken.None);
 
         result.IsSuccess.Should().BeTrue();
         result.Value.Should().BeEmpty();
@@ -29,7 +29,7 @@ public class InMemoryImageRepositoryTests
         var addResult = await _cut.AddImageAsync(image, default);
         addResult.IsSuccess.Should().BeTrue();
 
-        var result = await _cut.ListImagesAsync(Guid.NewGuid(), default);
+        var result = await _cut.ListImagesAsync(Guid.NewGuid().ToString(), default);
 
         result.Value.Should().Contain(image);
     }
@@ -41,7 +41,7 @@ public class InMemoryImageRepositoryTests
         var addResult = await _cut.AddImageAsync(image, default);
         addResult.IsSuccess.Should().BeTrue();
 
-        var secondImage = new Image(image.SetId, image.Number, 2000, 50, 1, "", "", "");
+        var secondImage = new Image(image.SetSlug, image.Number, 2000, 50, 1, "", "", "");
 
         var result = await _cut.AddImageAsync(secondImage, default);
         result.IsFailed.Should().BeTrue();
@@ -50,7 +50,7 @@ public class InMemoryImageRepositoryTests
     [Fact]
     public async Task GetImageAsync_ShouldReturnNotFound_WhenImageDoesNotExist()
     {
-        var result = await _cut.GetImageAsync(Guid.NewGuid(), 1, default);
+        var result = await _cut.GetImageAsync(Guid.NewGuid().ToString(), 1, default);
 
         result.IsFailed.Should().BeTrue();
         result.IsNotFound().Should().BeTrue();
@@ -61,7 +61,7 @@ public class InMemoryImageRepositoryTests
     {
         var image = CreateImage();
         await _cut.AddImageAsync(image, default);
-        var result = await _cut.GetImageAsync(image.SetId, image.Number, default);
+        var result = await _cut.GetImageAsync(image.SetSlug, image.Number, default);
 
         result.IsSuccess.Should().BeTrue();
         result.Value.Should().Be(image);
@@ -89,6 +89,6 @@ public class InMemoryImageRepositoryTests
 
     private Image CreateImage()
     {
-        return new Image(Guid.NewGuid(), 1, 1954, 49, 10, "Description", "License", "Url");
+        return new Image("slug", 1, 1954, 49, 10, "Description", "License", "Url");
     }
 }

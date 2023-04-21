@@ -5,5 +5,5 @@ namespace LocationGuesser.Core.Services.Abstractions;
 
 public interface IGameService
 {
-    Task<Result<List<Image>>> GetGameSetAsync(Guid imageSetId, int imageCount, CancellationToken cancellationToken);
+    Task<Result<List<Image>>> GetGameSetAsync(string imageSetSlug, int imageCount, CancellationToken cancellationToken);
 }

@@ -5,5 +5,5 @@ namespace LocationGuesser.Blazor.Services.Abstractions;
 
 public interface IGameApiService
 {
-    Task<Result<List<Image>>> GetGameSetAsync(Guid setId, int imageCount, CancellationToken cancellationToken);
+    Task<Result<List<Image>>> GetGameSetAsync(string setSlug, int imageCount, CancellationToken cancellationToken);
 }

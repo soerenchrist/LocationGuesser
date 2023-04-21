@@ -12,13 +12,13 @@ public class ImageUrlService : IImageUrlService
         _endpoint = options.Value.Endpoint;
     }
 
-    public string GetImageUrl(Guid setId, int number)
+    public string GetImageUrl(string slug, int number)
     {
         if (_endpoint.EndsWith("/"))
         {
-            return $"{_endpoint}images/{setId}/{number}.jpg";
+            return $"{_endpoint}images/{slug}/{number}.jpg";
         }
 
-        return $"{_endpoint}/images/{setId}/{number}.jpg";
+        return $"{_endpoint}/images/{slug}/{number}.jpg";
     }
 }

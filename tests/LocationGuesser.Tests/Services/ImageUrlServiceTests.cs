@@ -14,12 +14,12 @@ public class ImageUrlServiceTests
             Endpoint = "https://test.blob.core.windows.net",
         };
         var cut = new ImageUrlService(Options.Create(options));
-        var guid = Guid.NewGuid();
-        var url = cut.GetImageUrl(guid, 1);
+        var slug = "test-slug";
+        var url = cut.GetImageUrl(slug, 1);
 
-        url.Should().Be($"https://test.blob.core.windows.net/images/{guid}/1.jpg");
+        url.Should().Be($"https://test.blob.core.windows.net/images/{slug}/1.jpg");
     }
-    
+
     [Fact]
     public void GetImageUrl_ShouldReturnCorrectUrl_WhenEndsWithSlash()
     {
@@ -28,9 +28,9 @@ public class ImageUrlServiceTests
             Endpoint = "https://test.blob.core.windows.net/",
         };
         var cut = new ImageUrlService(Options.Create(options));
-        var guid = Guid.NewGuid();
-        var url = cut.GetImageUrl(guid, 1);
+        var slug = "test-slug";
+        var url = cut.GetImageUrl(slug, 1);
 
-        url.Should().Be($"https://test.blob.core.windows.net/images/{guid}/1.jpg");
+        url.Should().Be($"https://test.blob.core.windows.net/images/{slug}/1.jpg");
     }
 }

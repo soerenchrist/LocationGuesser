@@ -19,10 +19,10 @@ public class GameApiService : IGameApiService
         _httpClient = httpClient;
     }
 
-    public async Task<Result<List<Image>>> GetGameSetAsync(Guid setId, int imageCount,
+    public async Task<Result<List<Image>>> GetGameSetAsync(string setSlug, int imageCount,
         CancellationToken cancellationToken)
     {
-        var url = $"/api/games/{setId}?imageCount={imageCount}";
+        var url = $"/api/games/{setSlug}?imageCount={imageCount}";
         var response = await _httpClient.GetAsync(url, cancellationToken);
 
         if (response.IsSuccessStatusCode)

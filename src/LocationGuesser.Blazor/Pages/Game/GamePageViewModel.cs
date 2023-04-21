@@ -8,13 +8,12 @@ namespace LocationGuesser.Blazor.Pages.Game;
 
 public partial class GamePageViewModel : ViewModelBase
 {
-    public Guid SetId { get; set; }
+    public string SetSlug { get; set; } = string.Empty;
 
     [Notify] private bool _notFound;
     [Notify] private bool _isError;
     [Notify] private List<Image>? _images;
     [Notify] private int _currentIndex;
-    [Notify] private string? _imageUrl;
     [Notify] private Image? _currentImage;
     private readonly IGameApiService _gameSetService;
 
@@ -31,7 +30,7 @@ public partial class GamePageViewModel : ViewModelBase
 
     private async Task FetchGameSet()
     {
-        var result = await _gameSetService.GetGameSetAsync(SetId, 5, CancellationToken.None);
+        var result = await _gameSetService.GetGameSetAsync(SetSlug, 5, CancellationToken.None);
         if (result.IsFailed)
         {
             if (result.Errors.First() is NotFoundError)

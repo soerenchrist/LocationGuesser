@@ -10,7 +10,7 @@ public class CosmosImageSet
     }
 
     [JsonProperty("pk")] public string Pk => "IMAGESETS";
-    [JsonProperty("id")] public required Guid Id { get; init; }
+    [JsonProperty("id")] public required string Slug { get; init; }
     [JsonProperty("title")] public required string Title { get; init; }
     [JsonProperty("description")] public required string Description { get; init; }
     [JsonProperty("tags")] public required string Tags { get; init; }
@@ -23,7 +23,7 @@ public class CosmosImageSet
     {
         return new CosmosImageSet
         {
-            Id = imageSet.Id,
+            Slug = imageSet.Slug,
             Title = imageSet.Title,
             Description = imageSet.Description,
             Tags = imageSet.Tags,
@@ -35,6 +35,6 @@ public class CosmosImageSet
 
     public ImageSet ToImageSet()
     {
-        return new ImageSet(Id, Title, Description, Tags, LowerYearRange, UpperYearRange, ImageCount);
+        return new ImageSet(Slug, Title, Description, Tags, LowerYearRange, UpperYearRange, ImageCount);
     }
 }

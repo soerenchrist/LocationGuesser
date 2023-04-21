@@ -7,7 +7,7 @@ using MediatR;
 
 namespace LocationGuesser.Api.Features.Game;
 
-public record GetGameQuery(Guid SetId, int ImageCount) : IRequest<Result<List<Image>>>;
+public record GetGameQuery(string SetSlug, int ImageCount) : IRequest<Result<List<Image>>>;
 
 public class GetGameQueryHandler : IRequestHandler<GetGameQuery, Result<List<Image>>>
 {
@@ -26,14 +26,14 @@ public class GetGameQueryHandler : IRequestHandler<GetGameQuery, Result<List<Ima
 
     public async Task<Result<List<Image>>> Handle(GetGameQuery request, CancellationToken cancellationToken)
     {
-        _logger.LogDebug("Getting game set {SetId} with {ImageCount} images", request.SetId, request.ImageCount);
+        _logger.LogDebug("Getting game set {SetId} with {ImageCount} images", request.SetSlug, request.ImageCount);
         var validationResult = await _validator.ValidateAsync(request, cancellationToken);
         if (!validationResult.IsValid)
         {
             _logger.LogDebug("Invalid request: {ValidationErrors}", validationResult.Errors);
             return validationResult.ToResult<List<Image>>();
         }
-        var result = await _imageService.GetGameSetAsync(request.SetId, request.ImageCount, cancellationToken);
+        var result = await _imageService.GetGameSetAsync(request.SetSlug, request.ImageCount, cancellationToken);
         return result;
     }
 }
@@ -42,7 +42,7 @@ public class GetGameQueryValidator : AbstractValidator<GetGameQuery>
 {
     public GetGameQueryValidator()
     {
-        RuleFor(x => x.SetId).NotEmpty();
+        RuleFor(x => x.SetSlug).NotEmpty();
         RuleFor(x => x.ImageCount).InclusiveBetween(3, 20);
     }
 }

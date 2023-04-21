@@ -27,7 +27,7 @@ public class GameApiServiceTests
     [Fact]
     public async Task GetGameSetAsync_ShouldReturnFail_WhenHttpCallFails()
     {
-        var setId = Guid.NewGuid();
+        var setId = Guid.NewGuid().ToString();
         var imageCount = 5;
         _mockHttp.When($"/api/games/{setId}")
             .Respond(HttpStatusCode.InternalServerError);
@@ -40,7 +40,7 @@ public class GameApiServiceTests
     [Fact]
     public async Task GetGameSetAsync_ShouldReturnNotFound_WhenHttpCallFailsWith404()
     {
-        var setId = Guid.NewGuid();
+        var setId = Guid.NewGuid().ToString();
         var imageCount = 5;
         _mockHttp.When($"/api/games/{setId}")
             .Respond(HttpStatusCode.NotFound);
@@ -54,7 +54,7 @@ public class GameApiServiceTests
     [Fact]
     public async Task GetGameSetAsync_ShouldReturnListOfImages_WhenHttpCallReturnsWith200()
     {
-        var setId = Guid.NewGuid();
+        var setId = Guid.NewGuid().ToString();
         var imageCount = 5;
         var images = CreateImages(setId);
         _mockHttp.When($"/api/games/{setId}")
@@ -69,7 +69,7 @@ public class GameApiServiceTests
     [Fact]
     public async Task GetGameSetAsync_ShouldReturnFail_WhenJsonIsInvalid()
     {
-        var setId = Guid.NewGuid();
+        var setId = Guid.NewGuid().ToString();
         var imageCount = 5;
         _mockHttp.When($"/api/games/{setId}")
             .Respond(HttpStatusCode.OK, "application/json", "Invalid json");
@@ -82,7 +82,7 @@ public class GameApiServiceTests
     [Fact]
     public async Task GetGameSetAsync_ShouldPassImageCountViaQuery()
     {
-        var setId = Guid.NewGuid();
+        var setId = Guid.NewGuid().ToString();
         var imageCount = 5;
         var images = CreateImages(setId);
         _mockHttp.When($"/api/games/{setId}")
@@ -94,22 +94,10 @@ public class GameApiServiceTests
         result.IsSuccess.Should().BeTrue();
     }
 
-    [Fact]
-    public void GetImageContentUrl_ShouldReturnCorrectUrl()
-    {
-        var setId = Guid.NewGuid();
-        var imageId = 1;
-        var expectedUrl = $"/api/imagesets/{setId}/images/1/content";
-
-        var result = _cut.GetImageContentUrl(setId, imageId);
-
-        result.Should().Be(expectedUrl);
-    }
-
-    private List<Image> CreateImages(Guid setId, int count = 5)
+    private List<Image> CreateImages(string setSlug, int count = 5)
     {
         return Enumerable.Range(1, count)
-            .Select(x => new Image(setId, x, 2023, 10, 20, $"Description {x}", "", "Url"))
+            .Select(x => new Image(setSlug, x, 2023, 10, 20, $"Description {x}", "", "Url"))
             .ToList();
     }
 }

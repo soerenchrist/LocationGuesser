@@ -34,7 +34,7 @@ Console.WriteLine("Uploading images...");
 foreach (var image in data.Files)
 {
     using var stream = File.OpenRead(image.Filename);
-    var filename = $"{image.SetId}/{image.Number}.jpg";
+    var filename = $"{image.SetSlug}/{image.Number}.jpg";
     var result = await blobRepository.UploadImageAsync(filename, stream, CancellationToken.None);
     if (result.IsFailed)
     {

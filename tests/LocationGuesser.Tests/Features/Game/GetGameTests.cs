@@ -23,7 +23,7 @@ public class GetGameQueryHandlerTests
     [Fact]
     public async Task Handle_ShouldReturnNotFound_WhenServiceReturnsNotFound()
     {
-        var setId = Guid.NewGuid();
+        var setId = Guid.NewGuid().ToString();
         var imageCount = 10;
         _imageService.GetGameSetAsync(setId, imageCount, default)
             .Returns(Task.FromResult(Result.Fail<List<Image>>(new NotFoundError("Set not found"))));
@@ -41,7 +41,7 @@ public class GetGameQueryHandlerTests
     [InlineData(21)]
     public async Task Handle_ShouldReturnValidationError_WhenRequestIsInvalid(int imageCount)
     {
-        var setId = Guid.NewGuid();
+        var setId = Guid.NewGuid().ToString();
 
         var result = await _cut.Handle(new GetGameQuery(setId, imageCount), default);
 
@@ -52,7 +52,7 @@ public class GetGameQueryHandlerTests
     [Fact]
     public async Task Handle_ShouldReturnIMages_WhenRequestIsValid()
     {
-        var setId = Guid.NewGuid();
+        var setId = Guid.NewGuid().ToString();
         var imageCount = 10;
         var images = CreateImages(setId, imageCount);
         _imageService.GetGameSetAsync(setId, imageCount, default)
@@ -64,9 +64,9 @@ public class GetGameQueryHandlerTests
         result.Value.Should().BeSameAs(images);
     }
 
-    public List<Image> CreateImages(Guid setId, int count)
+    public List<Image> CreateImages(string setSlug, int count)
     {
-        return Enumerable.Range(1, count).Select(x => new Image(setId, x, 2020, 0, 0, $"Description {x}", "License", "Url"))
+        return Enumerable.Range(1, count).Select(x => new Image(setSlug, x, 2020, 0, 0, $"Description {x}", "License", "Url"))
             .ToList();
     }
 }

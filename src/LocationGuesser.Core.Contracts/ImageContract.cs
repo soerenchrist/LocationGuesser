@@ -2,7 +2,7 @@ namespace LocationGuesser.Core.Contracts;
 
 public class ImageContract
 {
-    public required Guid SetId { get; set; }
+    public required string SetSlug { get; set; }
     public required int Number { get; set; }
     public required string Description { get; set; }
     public required string License { get; set; }

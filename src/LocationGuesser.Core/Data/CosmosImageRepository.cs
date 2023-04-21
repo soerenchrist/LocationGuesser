@@ -24,7 +24,7 @@ public class CosmosImageRepository : IImageRepository
 
     public async Task<Result> AddImageAsync(Image image, CancellationToken cancellationToken)
     {
-        _logger.LogDebug("Adding image with number {number} to set {setId}", image.Number, image.SetId);
+        _logger.LogDebug("Adding image with number {number} to set {setId}", image.Number, image.SetSlug);
         try
         {
             var response = await _container.CreateItemAsync(CosmosImage.FromImage(image), cancellationToken);
@@ -36,7 +36,7 @@ public class CosmosImageRepository : IImageRepository
         }
         catch (CosmosException ex)
         {
-            _logger.LogError(ex, "Failed to add image with number {number} to set {setId}", image.Number, image.SetId);
+            _logger.LogError(ex, "Failed to add image with number {number} to set {setId}", image.Number, image.SetSlug);
             return Result.Fail(ex.Message);
         }
         catch (AuthenticationFailedException ex)
@@ -48,18 +48,18 @@ public class CosmosImageRepository : IImageRepository
 
     public async Task<Result> DeleteImageAsync(Image image, CancellationToken cancellationToken)
     {
-        _logger.LogDebug("Deleting image with number {number} from set {setId}", image.Number, image.SetId);
+        _logger.LogDebug("Deleting image with number {number} from set {setId}", image.Number, image.SetSlug);
         try
         {
             await _container.DeleteItemAsync<CosmosImage>(image.Number.ToString(),
-                new PartitionKey(image.SetId.ToString()), cancellationToken);
+                new PartitionKey(image.SetSlug), cancellationToken);
             return Result.Ok();
         }
         catch (CosmosException ex)
         {
             _logger.LogError(ex, "Failed to delete image with number {number} from set {setId}", image.Number,
-                image.SetId);
-            return MatchExceptionToResult(image.SetId, image.Number, ex);
+                image.SetSlug);
+            return MatchExceptionToResult(image.SetSlug, image.Number, ex);
         }
         catch (AuthenticationFailedException ex)
         {
@@ -68,13 +68,13 @@ public class CosmosImageRepository : IImageRepository
         }
     }
 
-    public async Task<Result<List<Image>>> ListImagesAsync(Guid setId, CancellationToken cancellationToken)
+    public async Task<Result<List<Image>>> ListImagesAsync(string setSlug, CancellationToken cancellationToken)
     {
-        _logger.LogDebug("Listing images in set {setId}", setId);
+        _logger.LogDebug("Listing images in set {setId}", setSlug);
         try
         {
-            var query = new QueryDefinition("SELECT * FROM c WHERE c.setId = @setId and c.type = 'Image'")
-                .WithParameter("@setId", setId.ToString());
+            var query = new QueryDefinition("SELECT * FROM c WHERE c.setSlug = @setSlug and c.type = 'Image'")
+                .WithParameter("@setSlug", setSlug);
             var feed = _container.GetItemQueryIterator<CosmosImage>(query);
             var items = new List<Image>();
             while (feed.HasMoreResults)
@@ -87,7 +87,7 @@ public class CosmosImageRepository : IImageRepository
         }
         catch (CosmosException ex)
         {
-            _logger.LogError(ex, "Failed to list images in set {setId}", setId);
+            _logger.LogError(ex, "Failed to list images in set {setId}", setSlug);
             return Result.Fail<List<Image>>("Unknown error with status code " + ex.StatusCode);
         }
         catch (AuthenticationFailedException ex)
@@ -99,23 +99,23 @@ public class CosmosImageRepository : IImageRepository
         throw new NotImplementedException();
     }
 
-    public async Task<Result<Image>> GetImageAsync(Guid setId, int number, CancellationToken cancellationToken)
+    public async Task<Result<Image>> GetImageAsync(string setSlug, int number, CancellationToken cancellationToken)
     {
-        _logger.LogDebug("Getting image with number {number} from set {setId}", number, setId);
+        _logger.LogDebug("Getting image with number {number} from set {setId}", number, setSlug);
         try
         {
             var response = await _container.ReadItemAsync<CosmosImage>(number.ToString(),
-                new PartitionKey(setId.ToString()), cancellationToken);
+                new PartitionKey(setSlug), cancellationToken);
             return response.Resource switch
             {
-                null => Result.Fail(CreateNotFoundError(setId, number)),
+                null => Result.Fail(CreateNotFoundError(setSlug, number)),
                 var image => Result.Ok(image.ToImage())
             };
         }
         catch (CosmosException ex)
         {
-            _logger.LogError(ex, "Failed to get image with number {number} from set {setId}", number, setId);
-            return MatchExceptionToImageResult(setId, number, ex);
+            _logger.LogError(ex, "Failed to get image with number {number} from set {setId}", number, setSlug);
+            return MatchExceptionToImageResult(setSlug, number, ex);
         }
         catch (AuthenticationFailedException ex)
         {
@@ -124,27 +124,27 @@ public class CosmosImageRepository : IImageRepository
         }
     }
 
-    private Result<Image> MatchExceptionToImageResult(Guid setId, int number, CosmosException ex)
+    private Result<Image> MatchExceptionToImageResult(string setSlug, int number, CosmosException ex)
     {
         return ex.StatusCode switch
         {
-            HttpStatusCode.NotFound => Result.Fail(CreateNotFoundError(setId, number)),
+            HttpStatusCode.NotFound => Result.Fail(CreateNotFoundError(setSlug, number)),
             _ => Result.Fail<Image>(ex.Message)
         };
     }
 
-    private Result MatchExceptionToResult(Guid setId, int number, CosmosException ex)
+    private Result MatchExceptionToResult(string setSlug, int number, CosmosException ex)
     {
         return ex.StatusCode switch
         {
-            HttpStatusCode.NotFound => Result.Fail(CreateNotFoundError(setId, number)),
+            HttpStatusCode.NotFound => Result.Fail(CreateNotFoundError(setSlug, number)),
             _ => Result.Fail(ex.Message)
         };
     }
 
-    private NotFoundError CreateNotFoundError(Guid setId, int number)
+    private NotFoundError CreateNotFoundError(string setSlug, int number)
     {
-        _logger.LogInformation("Image {number} in {setId} not found", number, setId);
-        return new NotFoundError($"Image {number} in {setId} not found");
+        _logger.LogInformation("Image {number} in {setId} not found", number, setSlug);
+        return new NotFoundError($"Image {number} in {setSlug} not found");
     }
 }

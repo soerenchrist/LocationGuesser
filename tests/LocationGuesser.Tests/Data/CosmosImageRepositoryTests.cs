@@ -24,7 +24,7 @@ public class CosmosImageRepositoryTests
     [Fact]
     public async Task GetImageAsync_ShouldReturnFail_WhenContainerThrowsException()
     {
-        var setId = Guid.NewGuid();
+        var setId = Guid.NewGuid().ToString();
         var number = 3;
         _container.When(x =>
                 x.ReadItemAsync<CosmosImage>(number.ToString(), new PartitionKey(setId.ToString()), default))
@@ -38,7 +38,7 @@ public class CosmosImageRepositoryTests
     [Fact]
     public async Task GetImageAsync_ShouldReturnFail_WhenContainerThrowsAuthenticationException()
     {
-        var setId = Guid.NewGuid();
+        var setId = Guid.NewGuid().ToString();
         var number = 3;
         _container.When(x =>
                 x.ReadItemAsync<CosmosImage>(number.ToString(), new PartitionKey(setId.ToString()), default))
@@ -52,7 +52,7 @@ public class CosmosImageRepositoryTests
     [Fact]
     public async Task GetImageAsync_ShouldReturnNotFound_WhenContainerThrowsExceptionWithNotFoundStatus()
     {
-        var setId = Guid.NewGuid();
+        var setId = Guid.NewGuid().ToString();
         var number = 3;
         _container.When(x =>
                 x.ReadItemAsync<CosmosImage>(number.ToString(), new PartitionKey(setId.ToString()), default))
@@ -67,7 +67,7 @@ public class CosmosImageRepositoryTests
     [Fact]
     public async Task GetImageAsync_ShouldReturnFail_WhenCosmosReturnsInvalidStatusCode()
     {
-        var setId = Guid.NewGuid();
+        var setId = Guid.NewGuid().ToString();
         var number = 3;
         var response = CreateResponse(HttpStatusCode.InternalServerError);
         _container.ReadItemAsync<CosmosImage>(number.ToString(), new PartitionKey(setId.ToString()), default)
@@ -81,7 +81,7 @@ public class CosmosImageRepositoryTests
     [Fact]
     public async Task GetImageAsync_ShouldReturnNotFoundError_WhenCosmosReturnsOkWithNullResult()
     {
-        var setId = Guid.NewGuid();
+        var setId = Guid.NewGuid().ToString();
         var number = 3;
         var response = CreateResponse(HttpStatusCode.OK);
         _container.ReadItemAsync<CosmosImage>(number.ToString(), new PartitionKey(setId.ToString()), default)
@@ -96,9 +96,9 @@ public class CosmosImageRepositoryTests
     [Fact]
     public async Task GetImageAsync_ShouldReturnImage_WhenCosmosReturnsResult()
     {
-        var setId = Guid.NewGuid();
+        var setId = Guid.NewGuid().ToString();
         var number = 3;
-        var image = new Image(Guid.NewGuid(), number, 1900, 49, 11, "", "", "");
+        var image = new Image(Guid.NewGuid().ToString(), number, 1900, 49, 11, "", "", "");
         var response = CreateResponse(HttpStatusCode.OK, image);
         _container.ReadItemAsync<CosmosImage>(number.ToString(), new PartitionKey(setId.ToString()), default)
             .ReturnsForAnyArgs(Task.FromResult(response));
@@ -165,7 +165,7 @@ public class CosmosImageRepositoryTests
         var image = CreateImage();
 
         var response = CreateResponse(HttpStatusCode.OK, image);
-        _container.DeleteItemAsync<CosmosImage>(image.Number.ToString(), new PartitionKey(image.SetId.ToString()),
+        _container.DeleteItemAsync<CosmosImage>(image.Number.ToString(), new PartitionKey(image.SetSlug),
                 default)
             .ReturnsForAnyArgs(Task.FromResult(response));
 
@@ -180,7 +180,7 @@ public class CosmosImageRepositoryTests
         var image = CreateImage();
 
         _container.When(x =>
-                x.DeleteItemAsync<CosmosImage>(image.Number.ToString(), new PartitionKey(image.SetId.ToString()),
+                x.DeleteItemAsync<CosmosImage>(image.Number.ToString(), new PartitionKey(image.SetSlug),
                     default))
             .Throw(new CosmosException("Something went wrong", HttpStatusCode.InternalServerError, 500, "", 10));
 
@@ -195,7 +195,7 @@ public class CosmosImageRepositoryTests
         var image = CreateImage();
 
         _container.When(x =>
-                x.DeleteItemAsync<CosmosImage>(image.Number.ToString(), new PartitionKey(image.SetId.ToString()),
+                x.DeleteItemAsync<CosmosImage>(image.Number.ToString(), new PartitionKey(image.SetSlug),
                     default))
             .Throw(new CosmosException("Something went wrong", HttpStatusCode.NotFound, 404, "", 10));
 
@@ -223,7 +223,7 @@ public class CosmosImageRepositoryTests
         _container.When(x => x.GetItemQueryIterator<CosmosImage>(Arg.Any<QueryDefinition>()))
             .Throw(new AuthenticationFailedException("Failed"));
 
-        var result = await _cut.ListImagesAsync(Guid.NewGuid(), default);
+        var result = await _cut.ListImagesAsync(Guid.NewGuid().ToString(), default);
 
         result.IsFailed.Should().BeTrue();
     }
@@ -234,7 +234,7 @@ public class CosmosImageRepositoryTests
         _container.When(x => x.GetItemQueryIterator<CosmosImage>(Arg.Any<QueryDefinition>()))
             .Throw(new CosmosException("Failed", HttpStatusCode.InternalServerError, 500, "", 10));
 
-        var result = await _cut.ListImagesAsync(Guid.NewGuid(), default);
+        var result = await _cut.ListImagesAsync(Guid.NewGuid().ToString(), default);
 
         result.IsFailed.Should().BeTrue();
     }
@@ -246,7 +246,7 @@ public class CosmosImageRepositoryTests
         _container.GetItemQueryIterator<CosmosImage>(Arg.Any<QueryDefinition>())
             .ReturnsForAnyArgs(emptyFeed);
 
-        var results = await _cut.ListImagesAsync(Guid.NewGuid(), default);
+        var results = await _cut.ListImagesAsync(Guid.NewGuid().ToString(), default);
         results.IsSuccess.Should().BeTrue();
         results.Value.Should().BeEmpty();
     }
@@ -266,7 +266,7 @@ public class CosmosImageRepositoryTests
         _container.GetItemQueryIterator<CosmosImage>(Arg.Any<QueryDefinition>())
             .Returns(feed);
 
-        var results = await _cut.ListImagesAsync(Guid.NewGuid(), default);
+        var results = await _cut.ListImagesAsync(Guid.NewGuid().ToString(), default);
         results.IsSuccess.Should().BeTrue();
         results.Value.Should().HaveCount(3);
         results.Value.Should().BeEquivalentTo(new List<Image>
@@ -277,7 +277,7 @@ public class CosmosImageRepositoryTests
 
     private Image CreateImage()
     {
-        return new Image(Guid.NewGuid(), 1, 2000, 49, 10, "Description", "License", "Url");
+        return new Image("slug", 1, 2000, 49, 10, "Description", "License", "Url");
     }
 
     private ItemResponse<CosmosImage> CreateResponse(HttpStatusCode statusCode, Image? result = null)

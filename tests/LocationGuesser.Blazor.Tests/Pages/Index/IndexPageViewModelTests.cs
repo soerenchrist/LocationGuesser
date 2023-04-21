@@ -73,7 +73,7 @@ public class IndexPageViewModelTests
     private List<ImageSet> CreateImageSets(int number = 10)
     {
         return Enumerable.Range(1, number)
-            .Select(i => new ImageSet(Guid.NewGuid(), $"ImageSet {i}", $"Description {i}", $"Tags {i}", 1900, 2000, 1))
+            .Select(i => new ImageSet("slug", $"ImageSet {i}", $"Description {i}", $"Tags {i}", 1900, 2000, 1))
             .ToList();
     }
 }

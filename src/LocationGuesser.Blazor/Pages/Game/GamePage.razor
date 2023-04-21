@@ -1,4 +1,4 @@
-@page "/game/{SetId:guid}"
+@page "/game/{SetSlug}"
 @inherits MvvmComponentBase<GamePageViewModel>
 
 @if (Bind(x => x.NotFound))
@@ -12,7 +12,7 @@ else if (Bind(x => x.IsError))
 else
 {
     <div>
-    <Heading Size="HeadingSize.Is1">Game @Bind(x => x.SetId)</Heading>
+    <Heading Size="HeadingSize.Is1">Game @Bind(x => x.SetSlug)</Heading>
     @{
             var currentImage = Bind(x => x.CurrentImage);
         }
@@ -26,10 +26,10 @@ else
 }
 @code {
     [Parameter]
-    public Guid SetId { get; set; }
+    public string SetSlug { get; set; } = "";
     protected override void OnInitialized()
     {
         base.OnInitialized();
-        BindingContext.SetId = SetId;
+        BindingContext.SetSlug = SetSlug;
     }
 }

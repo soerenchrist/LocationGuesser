@@ -97,7 +97,7 @@ public class ImageSetApiServiceTests
             Title = $"Title {x}",
             Description = $"Description {x}",
             Tags = $"Tags {x}",
-            Id = Guid.NewGuid(),
+            Slug = $"slug-{x}",
             LowerYearRange = 1900,
             UpperYearRange = 2000,
             ImageCount = 10
