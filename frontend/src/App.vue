@@ -5,7 +5,6 @@
 
 <template>
   <div class="h-screen bg-teal-800 text-center text-white">
-    <HomePage />
-
+    <RouterView />
   </div>
 </template>
