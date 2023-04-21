@@ -1,6 +1,5 @@
 using FluentValidation;
 using LocationGuesser.Api.Features.Game;
-using LocationGuesser.Api.Features.Images;
 using LocationGuesser.Api.Features.ImageSets;
 using LocationGuesser.Core;
 using LocationGuesser.Core.Options;
@@ -47,7 +46,6 @@ if (app.Environment.IsDevelopment())
 app.UseHttpsRedirection();
 
 app.MapImageSetEndpoints();
-app.MapImageEndpoints();
 app.MapGameEndpoints();
 
 app.UseBlazorFrameworkFiles();

@@ -15,7 +15,8 @@ public static class ImageMappings
             License = image.License,
             Year = image.Year,
             Latitude = image.Latitude,
-            Longitude = image.Longitude
+            Longitude = image.Longitude,
+            Url = image.Url
         };
     }
 }
