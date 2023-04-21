@@ -22,6 +22,11 @@ builder.Services.AddOptions<CosmosDbOptions>()
     .ValidateDataAnnotations()
     .ValidateOnStart();
 
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowAll", builder => builder.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader());
+});
+
 builder.Services.AddValidatorsFromAssemblyContaining<Program>();
 builder.Services.AddMediatR(config => config.RegisterServicesFromAssemblyContaining<Program>());
 var useInMemory = builder.Configuration.GetValue("UseInMemory", false);
@@ -41,6 +46,7 @@ if (app.Environment.IsDevelopment())
     app.UseWebAssemblyDebugging();
     app.UseSwagger();
     app.UseSwaggerUI(c => { c.SwaggerEndpoint("/swagger/v1/swagger.json", "LocationGuesser API v1"); });
+    app.UseCors("AllowAll");
 }
 
 app.UseHttpsRedirection();
