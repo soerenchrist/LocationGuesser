@@ -3,14 +3,17 @@
         <CardTitle Size="3">@ImageSet.Title</CardTitle>
         <CardText>@ImageSet.Description</CardText>
     </CardBody>
-    <Button Color="Color.Primary" Margin="Margin.Is2">
-        Play
-    </Button>
+    <a href="@Url">
+        <Button Color="Color.Primary" Margin="Margin.Is2">
+            Play
+        </Button>
+    </a>
 </Card>
 
 @code {
 
     [Parameter]
     public ImageSet ImageSet { get; set; } = null!;
+    private string Url => $"/game/{ImageSet.Id}";
 
 }

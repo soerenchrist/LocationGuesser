@@ -73,21 +73,6 @@ public class GamePageViewModelTests
         _cut.Images.Should().BeEquivalentTo(images);
     }
 
-    /*
-        [Fact]
-        public async Task OnInitialized_ShouldSetImageUrl_WhenReturnsImages()
-        {
-            var id = Guid.NewGuid();
-            var images = CreateImages(id);
-            _gameApiService.GetGameSetAsync(id, 5, default)
-                .Returns(Task.FromResult(Result.Ok(images)));
-            _gameApiService.GetImageContentUrl(id, 1).ReturnsForAnyArgs("url");
-
-            _cut.SetId = id;
-            await _cut.OnInitializedAsync();
-            _cut.ImageUrl.Should().BeEquivalentTo("url");
-        }
-        */
 
     [Fact]
     public void Next_ShouldSetCurrentIndexToNextNumber()
@@ -116,19 +101,6 @@ public class GamePageViewModelTests
         _cut.Next();
 
         _cut.CurrentIndex.Should().Be(4);
-    }
-
-    [Fact]
-    public void Next_ShouldSetUrlToNextUrl()
-    {
-        var setId = Guid.NewGuid();
-        _cut.Images = CreateImages(setId);
-        _gameApiService.GetImageContentUrl(setId, 1).Returns("url1");
-        _gameApiService.GetImageContentUrl(setId, 2).Returns("url2");
-
-        _cut.Next();
-
-        _cut.ImageUrl.Should().Be("url2");
     }
 
     private List<Image> CreateImages(Guid setId)

@@ -15,6 +15,7 @@ public partial class GamePageViewModel : ViewModelBase
     [Notify] private List<Image>? _images;
     [Notify] private int _currentIndex;
     [Notify] private string? _imageUrl;
+    [Notify] private Image? _currentImage;
     private readonly IGameApiService _gameSetService;
 
     public GamePageViewModel(IGameApiService gameSetService)
@@ -25,7 +26,6 @@ public partial class GamePageViewModel : ViewModelBase
     public override async Task OnInitializedAsync()
     {
         await base.OnInitializedAsync();
-        Console.WriteLine(SetId);
         await FetchGameSet();
     }
 
@@ -42,25 +42,15 @@ public partial class GamePageViewModel : ViewModelBase
         Images = result.Value;
         if (Images.Count > 0)
         {
-            LoadUrl(Images[0]);
+            CurrentImage = Images[0];
         }
     }
 
     public void Next()
     {
-        Console.WriteLine("Next");
         if (Images == null) return;
-        Console.WriteLine("Next 1");
         if (CurrentIndex == Images?.Count - 1) return;
-        Console.WriteLine("Next 2");
         CurrentIndex++;
-
-        LoadUrl(Images![CurrentIndex]);
-    }
-
-    private void LoadUrl(Image image)
-    {
-        Console.WriteLine("Next 3");
-        ImageUrl = _gameSetService.GetImageContentUrl(image.SetId, image.Number);
+        CurrentImage = Images![CurrentIndex];
     }
 }

@@ -1,8 +1,6 @@
 @page "/game/{SetId:guid}"
 @inherits MvvmComponentBase<GamePageViewModel>
 
-@SetId
-@Bind(x => x.SetId);
 @if (Bind(x => x.NotFound))
 {
     <Heading Size="HeadingSize.Is1">Set not found</Heading>
@@ -15,13 +13,13 @@ else
 {
     <div>
     <Heading Size="HeadingSize.Is1">Game @Bind(x => x.SetId)</Heading>
-    @if (Bind(x => x.ImageUrl) != null)
-        {
-            <img width="200" src="@Bind(x => x.ImageUrl)" />
+    @{
+            var currentImage = Bind(x => x.CurrentImage);
         }
-        <p>
-            @Bind(x => x.ImageUrl);
-        </p>
+        @if (currentImage != null)
+        {
+            <img width="200" src="@currentImage.Url" />
+        }
         @Bind(x => x.CurrentIndex);
         <Button @onclick="@(() => @BindingContext.Next())">Next</Button>
     </div>
