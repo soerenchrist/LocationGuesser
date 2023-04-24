@@ -6,6 +6,8 @@ export const imageSet = z.object({
   slug: z.string(),
   imageCount: z.number(),
   tags: z.string(),
+  lowerYearRange: z.number(),
+  upperYearRange: z.number(),
 });
 
 export const image = z.object({
@@ -19,8 +21,14 @@ export const image = z.object({
   url: z.string(),
 });
 
+export const game = z.object({
+  imageSet: imageSet,
+  images: z.array(image),
+});
+
 export type ImageSet = z.infer<typeof imageSet>;
 export type Image = z.infer<typeof image>;
+export type Game = z.infer<typeof game>;
 
 export type Success<T> = {
   state: "success";
