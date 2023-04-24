@@ -1,14 +1,31 @@
 <script setup lang="ts">
 import 'leaflet/dist/leaflet.css';
-import { LMap, LTileLayer } from '@vue-leaflet/vue-leaflet';
+import * as L from 'leaflet';
+import { onMounted, ref } from 'vue';
 
+const map = ref<L.Map>();
+
+const emit = defineEmits<{
+    (e: 'click', latLng: L.LatLng): void
+}>()
+
+const onMapClick = (e) => {
+    emit('click', e.latlng);
+}
+
+onMounted(() => {
+    map.value = L.map('map').setView([51.505, -0.09], 13);
+    L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        maxZoom: 19,
+        attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+    }).addTo(map.value);
+    map.value.on('click', onMapClick);
+})
 
 </script>
 
 <template>
     <div style="height: 600px; width: 800px">
-        <l-map :zoom="10" :center="[49.10, 9.18]" :use-global-leaflet="false">
-            <l-tile-layer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" layer-type="base" name="OpenStreetMap" />
-        </l-map>
+        <div id="map" class="w-full h-full"></div>
     </div>
 </template>

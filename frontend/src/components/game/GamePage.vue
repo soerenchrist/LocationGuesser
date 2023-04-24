@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { onMounted, reactive } from 'vue';
+import type { LatLng } from 'leaflet';
 import { getGameSet } from '../../api/api';
 import { Image } from '../../api/types';
 import GuessMap from './GuessMap.vue';
@@ -48,6 +49,10 @@ const fetchGameSet = async () => {
   state.isLoading = false;
 }
 
+const onMapClick = (latLng: LatLng) => {
+  console.log(latLng);
+}
+
 onMounted(() => {
   fetchGameSet();
 })
@@ -61,7 +66,7 @@ onMounted(() => {
     <div v-if="state.images.length > 0">
       <img :src="state.images[state.currentIndex].url" width="400" />
     </div>
-    <guess-map />
+    <guess-map @click="onMapClick" />
   </div>
   <button @click="next">Next</button>
 </template>
