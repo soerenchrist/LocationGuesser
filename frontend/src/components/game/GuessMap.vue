@@ -34,7 +34,7 @@ watch(props, (newProps) => {
 });
 
 onMounted(() => {
-    map.value = L.map('map').setView([51.505, -0.09], 13);
+    map.value = L.map('map').setView([45.505, -0], 3);
     L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
         maxZoom: 19,
         attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
@@ -45,7 +45,7 @@ onMounted(() => {
 </script>
 
 <template>
-    <div style="height: 600px; width: 800px">
+    <div style="height: 600px; width: 100%">
         <div id="map" class="w-full h-full"></div>
     </div>
 </template>
