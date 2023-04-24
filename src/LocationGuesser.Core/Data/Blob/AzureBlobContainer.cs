@@ -1,4 +1,3 @@
-using Azure;
 using Azure.Identity;
 using Azure.Storage.Blobs;
 using Azure.Storage.Blobs.Models;
@@ -6,7 +5,7 @@ using LocationGuesser.Core.Data.Abstractions;
 using LocationGuesser.Core.Options;
 using Microsoft.Extensions.Options;
 
-namespace LocationGuesser.Core.Data;
+namespace LocationGuesser.Core.Data.Blob;
 
 public class AzureBlobContainer : IBlobContainer
 {

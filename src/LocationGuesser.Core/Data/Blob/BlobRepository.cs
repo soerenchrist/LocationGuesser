@@ -3,7 +3,7 @@ using FluentResults;
 using LocationGuesser.Core.Data.Abstractions;
 using LocationGuesser.Core.Domain.Errors;
 
-namespace LocationGuesser.Core.Data;
+namespace LocationGuesser.Core.Data.Blob;
 
 public class BlobRepository : IBlobRepository
 {

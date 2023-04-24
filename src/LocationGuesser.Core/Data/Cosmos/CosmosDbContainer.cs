@@ -4,7 +4,7 @@ using LocationGuesser.Core.Options;
 using Microsoft.Azure.Cosmos;
 using Microsoft.Extensions.Options;
 
-namespace LocationGuesser.Core.Data;
+namespace LocationGuesser.Core.Data.Cosmos;
 
 public class CosmosDbContainer : ICosmosDbContainer, IDisposable
 {

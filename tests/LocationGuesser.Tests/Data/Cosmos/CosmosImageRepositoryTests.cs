@@ -1,15 +1,15 @@
 using System.Net;
 using Azure.Identity;
 using LocationGuesser.Api.Extensions;
-using LocationGuesser.Core.Data;
 using LocationGuesser.Core.Data.Abstractions;
+using LocationGuesser.Core.Data.Cosmos;
 using LocationGuesser.Core.Data.Dtos;
 using LocationGuesser.Core.Domain;
 using LocationGuesser.Core.Domain.Errors;
 using LocationGuesser.Tests.Utils;
 using Microsoft.Azure.Cosmos;
 
-namespace LocationGuesser.Tests.Data;
+namespace LocationGuesser.Tests.Data.Cosmos;
 
 public class CosmosImageRepositoryTests
 {

@@ -8,7 +8,7 @@ using LocationGuesser.Core.Domain.Errors;
 using Microsoft.Azure.Cosmos;
 using Microsoft.Extensions.Logging;
 
-namespace LocationGuesser.Core.Data;
+namespace LocationGuesser.Core.Data.Cosmos;
 
 public class CosmosImageRepository : IImageRepository
 {

@@ -1,8 +1,11 @@
 using LocationGuesser.Core.Data;
 using LocationGuesser.Core.Data.Abstractions;
+using LocationGuesser.Core.Data.Blob;
+using LocationGuesser.Core.Data.Cosmos;
 using LocationGuesser.Core.Data.InMemory;
 using LocationGuesser.Core.Services;
 using LocationGuesser.Core.Services.Abstractions;
+using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace LocationGuesser.Core;
@@ -20,10 +23,15 @@ public static class DependencyInjection
         {
             services.AddSingleton<ICosmosDbContainer, CosmosDbContainer>();
             services.AddScoped<CosmosImageSetRepository>();
-            services.AddScoped<IImageSetRepository, CachedCosmosImageSetRepository>();
+            services.AddScoped<IImageSetRepository>(provider => new CachedImageSetRepository(
+                provider.GetRequiredService<CosmosImageSetRepository>(),
+                provider.GetRequiredService<IMemoryCache>()));
             services.AddScoped<CosmosImageRepository>();
-            services.AddScoped<IImageRepository, CachedCosmosImageRepository>();
+            services.AddScoped<IImageRepository>(provider => new CachedImageRepository(
+                provider.GetRequiredService<CosmosImageRepository>(),
+                provider.GetRequiredService<IMemoryCache>()));
         }
+
         services.AddMemoryCache();
 
         services.AddScoped<IBlobContainer, AzureBlobContainer>();

@@ -1,10 +1,10 @@
 using Azure;
 using Azure.Storage.Blobs.Models;
-using LocationGuesser.Core.Data;
 using LocationGuesser.Core.Data.Abstractions;
+using LocationGuesser.Core.Data.Blob;
 using LocationGuesser.Core.Domain.Errors;
 
-namespace LocationGuesser.Tests.Data;
+namespace LocationGuesser.Tests.Data.Blob;
 
 public class BlobRepositoryTests
 {
