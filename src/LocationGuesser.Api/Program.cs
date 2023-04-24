@@ -23,6 +23,11 @@ builder.Services.AddOptions<CosmosDbOptions>()
     .ValidateDataAnnotations()
     .ValidateOnStart();
 
+builder.Services.AddOutputCache(options =>
+{
+    options.AddBasePolicy(builder => builder.Expire(TimeSpan.FromMinutes(5)));
+});
+
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowAll", builder => builder.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader());
@@ -53,6 +58,7 @@ app.UseHttpsRedirection();
 
 app.UseMiddleware<ExceptionHandlerMiddleware>();
 app.UseMiddleware<TraceMiddleware>();
+app.UseOutputCache();
 
 app.MapImageSetEndpoints();
 app.MapGameEndpoints();

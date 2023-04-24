@@ -48,6 +48,6 @@ public static class GameEndpoints
             return Results.Ok(result);
         });
     }
-
-    record GetGameResult(ImageSetContract ImageSet, List<ImageContract> Images);
 }
+
+file record GetGameResult(ImageSetContract ImageSet, List<ImageContract> Images);

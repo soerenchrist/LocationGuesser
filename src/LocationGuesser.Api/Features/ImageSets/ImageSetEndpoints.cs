@@ -2,6 +2,7 @@ using LocationGuesser.Api.Extensions;
 using LocationGuesser.Api.Mappings;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.OutputCaching;
 
 namespace LocationGuesser.Api.Features.ImageSets;
 
@@ -24,6 +25,8 @@ public static class ImageSetEndpoints
             }
 
             return result.ToErrorResponse();
-        }).WithName("GetImagesets").WithOpenApi();
+        }).WithName("GetImagesets")
+        .WithOpenApi()
+        .CacheOutput();
     }
 }
