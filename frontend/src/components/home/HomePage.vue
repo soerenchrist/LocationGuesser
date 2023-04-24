@@ -7,15 +7,21 @@ import ImageSetCard from './ImageSetCard.vue';
 type State = {
   isLoading: boolean;
   imageSets: ImageSet[];
+  isError: boolean
 }
 
-const state = reactive<State>({ isLoading: true, imageSets: [] });
+const state = reactive<State>({ isLoading: true, isError: false, imageSets: [] });
 
 const fetchImageSets = async () => {
   const response = await getImageSets();
 
+  if (response.state === 'success') {
+    state.imageSets = response.data;
+  }
+  else {
+    state.isError = true;
+  }
   state.isLoading = false;
-  state.imageSets = response;
 }
 
 onMounted(() => {

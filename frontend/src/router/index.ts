@@ -18,6 +18,11 @@ const routes = [
         name: 'game',
         props: true,
         component: () => import('../components/game/GamePage.vue')
+    },
+    {
+        path: '/:pathMatch(.*)*',
+        name: 'NotFound',
+        component: () => import('../components/NotFound.vue')
     }
 ];
 

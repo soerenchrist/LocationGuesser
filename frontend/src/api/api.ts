@@ -1,16 +1,54 @@
 import { z } from "zod";
-import { createZodFetcher } from "zod-fetch";
-import { ImageSet, imageSet, image, Image } from "./types";
+import { ImageSet, imageSet, image, Image, ApiResult } from "./types";
 
-const fetcher = createZodFetcher();
+export async function getImageSets(): Promise<ApiResult<ImageSet[]>> {
+  const response = await fetch("http://localhost:5077/api/imagesets");
+  if (response.ok) {
+    const schema = z.array(imageSet);
+    const data = await response.json();
+    const result = schema.parse(data);
+    return {
+      state: "success",
+      code: 200,
+      data: result,
+    };
+  }
 
-export async function getImageSets(): Promise<ImageSet[]> {
-    const response = await fetcher(z.array(imageSet), `http://localhost:5077/api/imagesets`);
-    return response;
+  if (response.status === 404) {
+    return {
+      state: "not-found",
+      code: 404,
+    };
+  }
+
+  return {
+    state: "server-error",
+    code: 500,
+  };
 }
 
-export async function getGameSet(slug: string): Promise<Image[]> {
+export async function getGameSet(slug: string): Promise<ApiResult<Image[]>> {
+  const response = await fetch("http://localhost:5077/api/games/" + slug);
+  if (response.ok) {
     const schema = z.array(image);
-    const response = await fetcher(schema, `http://localhost:5077/api/games/${slug}`);
-    return response;
+    const data = await response.json();
+    const result = schema.parse(data);
+    return {
+      state: "success",
+      code: 200,
+      data: result,
+    };
+  }
+
+  if (response.status === 404) {
+    return {
+      state: "not-found",
+      code: 404,
+    };
+  }
+
+  return {
+    state: "server-error",
+    code: 500,
+  };
 }
