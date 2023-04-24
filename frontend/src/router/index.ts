@@ -13,6 +13,12 @@ const routes = [
         name: 'about',
         component: AboutPage
     },
+    {
+        path: '/game/:slug',
+        name: 'game',
+        props: true,
+        component: () => import('../components/game/GamePage.vue')
+    }
 ];
 
 const router = createRouter({
