@@ -31,9 +31,9 @@ onMounted(() => {
 
 <template>
   <div class="flex flex-col items-center">
+    <img width="200" class="mt-4" src="../../assets/logo.jpg" />
     <Heading title="Location Guesser" />
-    <RouterLink to="/about" class="text-2xl font-bold mt-8">About</RouterLink>
-    <div class="flex flex-wrap justify-center mt-8">
+    <div class="flex flex-wrap justify-center mt-12">
       <template v-if="state.isLoading">
         <div class="text-2xl font-bold mt-8">Loading...</div>
       </template>
