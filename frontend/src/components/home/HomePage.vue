@@ -33,16 +33,16 @@ onMounted(() => {
   <div class="flex flex-col items-center">
     <img width="200" class="mt-4" src="../../assets/logo.jpg" />
     <Heading title="Location Guesser" />
-    <div class="flex flex-wrap justify-center mt-12">
+    <div class="w-full mt-8 p-4">
       <template v-if="state.isLoading">
         <div class="text-2xl font-bold mt-8">Loading...</div>
       </template>
       <template v-else>
-        <template v-for="imageSet in state.imageSets">
-          <div class="flex flex-col items-center m-4">
+        <div class="w-full grid grid-cols-3 gap-4">
+          <template v-for="imageSet in state.imageSets">
             <ImageSetCard :imageSet="imageSet" />
-          </div>
-        </template>
+          </template>
+        </div>
       </template>
     </div>
   </div>
