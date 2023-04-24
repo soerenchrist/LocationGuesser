@@ -5,6 +5,7 @@ import { Image, ImageSet, LatLng } from '../../api/types';
 import GuessMap from './GuessMap.vue';
 import router from '../../router';
 import { calculateDistance, calculatePoints } from '../../services/points';
+import GameStats from './GameStats.vue';
 
 type State = {
   isLoading: boolean,
@@ -142,20 +143,9 @@ onMounted(() => {
             class="bg-teal-400 hover:bg-teal-500 disabled:bg-slate-400 py-2 rounded w-full" @click="onNext">Next</button>
         </div>
       </div>
-      <div class="col-span-2 grid grid-cols-3" v-if="state.showResult">
-        <div>
-          <h4 class="font-bold">Distance</h4>
-          <p>{{ Math.round(state.distance) }} m</p>
-        </div>
-        <div>
-          <h4 class="font-bold">Years off</h4>
-          <p>{{ Math.abs(state.selectedYear - state.images[state.currentIndex].year) }}</p>
-        </div>
-        <div>
-          <h4 class="font-bold">Points</h4>
-          <p>{{ state.totalPoints }}</p>
-        </div>
-
+      <div class="col-span-2" v-if="state.showResult">
+        <GameStats :years-off="Math.abs(state.selectedYear - state.images[state.currentIndex].year)"
+          :distance="state.distance" :round-points="state.points" :total-points="state.totalPoints" />
       </div>
     </div>
   </div>
