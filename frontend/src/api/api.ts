@@ -2,7 +2,7 @@ import { z } from "zod";
 import { ImageSet, imageSet, image, Image, ApiResult } from "./types";
 
 export async function getImageSets(): Promise<ApiResult<ImageSet[]>> {
-  const response = await fetch("http://localhost:5077/api/imagesets");
+  const response = await fetch(`${import.meta.env.VITE_API_ENDPOINT}/api/imagesets`);
   if (response.ok) {
     const schema = z.array(imageSet);
     const data = await response.json();
@@ -28,7 +28,7 @@ export async function getImageSets(): Promise<ApiResult<ImageSet[]>> {
 }
 
 export async function getGameSet(slug: string): Promise<ApiResult<Image[]>> {
-  const response = await fetch("http://localhost:5077/api/games/" + slug);
+  const response = await fetch(`${import.meta.env.VITE_API_ENDPOINT}/api/games/${slug}`);
   if (response.ok) {
     const schema = z.array(image);
     const data = await response.json();

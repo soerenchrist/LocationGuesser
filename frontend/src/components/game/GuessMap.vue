@@ -19,7 +19,14 @@ const onMapClick = (e: any) => {
 }
 
 watch(props, (newProps) => {
-    if (!newProps.position) return;
+    if (!newProps.position) {
+        if (marker.value) {
+            map.value.removeLayer(marker.value);
+            marker.value = undefined;
+        }
+
+        return;
+    }
     if (!marker.value) {
         marker.value = L.marker(newProps.position).addTo(map.value!);
     }
