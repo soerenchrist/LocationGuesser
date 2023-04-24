@@ -1,6 +1,7 @@
 using FluentValidation;
 using LocationGuesser.Api.Features.Game;
 using LocationGuesser.Api.Features.ImageSets;
+using LocationGuesser.Api.Middleware;
 using LocationGuesser.Core;
 using LocationGuesser.Core.Options;
 using Microsoft.OpenApi.Models;
@@ -43,7 +44,6 @@ if (applicationInsightsConnection != null)
 var app = builder.Build();
 if (app.Environment.IsDevelopment())
 {
-    app.UseWebAssemblyDebugging();
     app.UseSwagger();
     app.UseSwaggerUI(c => { c.SwaggerEndpoint("/swagger/v1/swagger.json", "LocationGuesser API v1"); });
     app.UseCors("AllowAll");
@@ -51,14 +51,12 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
+app.UseMiddleware<ExceptionHandlerMiddleware>();
+app.UseMiddleware<TraceMiddleware>();
+
 app.MapImageSetEndpoints();
 app.MapGameEndpoints();
 
-app.UseBlazorFrameworkFiles();
-app.UseStaticFiles();
-app.UseRouting();
-
-app.MapFallbackToFile("index.html");
 app.MapGet("/health", () => Results.Ok());
 
 app.Run();
