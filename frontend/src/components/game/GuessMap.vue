@@ -21,7 +21,7 @@ const onMapClick = (e: any) => {
 watch(props, (newProps) => {
     if (!newProps.position) {
         if (marker.value) {
-            map.value.removeLayer(marker.value);
+            map.value!.removeLayer(marker.value);
             marker.value = undefined;
         }
 
