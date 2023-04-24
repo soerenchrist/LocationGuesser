@@ -2,35 +2,86 @@
 import 'leaflet/dist/leaflet.css';
 import * as L from 'leaflet';
 import { onMounted, ref, watch } from 'vue';
+import { LatLng } from '../../api/types';
 
 const map = ref<L.Map>();
-const marker = ref<L.Marker>();
+const selectedPositionMarker = ref<L.Marker>();
+const correctPositionMarker = ref<L.Marker>();
+const line = ref<L.Polyline>();
 
 const emit = defineEmits<{
-    (e: 'click', latLng: L.LatLng): void
+    (e: 'click', latLng: LatLng): void
 }>()
 
 const props = defineProps<{
-    position?: L.LatLng,
+    selectedPosition?: { lat: number, lng: number },
+    showResult: boolean,
+    correctPosition?: { lat: number, lng: number }
 }>();
 
 const onMapClick = (e: any) => {
     emit('click', e.latlng);
 }
 
-watch(props, (newProps) => {
-    if (!newProps.position) {
-        if (marker.value) {
-            map.value!.removeLayer(marker.value);
-            marker.value = undefined;
+const displayCorrectPositionMarker = (position: LatLng | undefined, showResult: boolean) => {
+    if (!position || !showResult) {
+        if (correctPositionMarker.value) {
+            map.value!.removeLayer(correctPositionMarker.value);
+            correctPositionMarker.value = undefined;
         }
 
         return;
     }
-    if (!marker.value) {
-        marker.value = L.marker(newProps.position).addTo(map.value!);
+    if (!correctPositionMarker.value) {
+        correctPositionMarker.value = L.marker(position).addTo(map.value!);
     }
-    marker.value.setLatLng(newProps.position);
+    correctPositionMarker.value.setLatLng(position);
+}
+
+const displayPolyline = (correctPosition: LatLng | undefined, selectedPosition: LatLng | undefined, showResult: boolean) => {
+    if (!correctPosition || !selectedPosition || !showResult) {
+        if (line.value) {
+            map.value!.removeLayer(line.value);
+            line.value = undefined;
+        }
+
+        return;
+    }
+    if (!line.value) {
+        line.value = L.polyline([correctPosition, selectedPosition], {
+            color: "red",
+            lineCap: "round",
+            weight: 2,
+            dashArray: "3"
+        }).addTo(map.value!);
+    }
+    line.value.setLatLngs([correctPosition, selectedPosition]);
+}
+
+const displayPositionMarker = (position?: LatLng) => {
+    if (!position) {
+        if (selectedPositionMarker.value) {
+            map.value!.removeLayer(selectedPositionMarker.value);
+            selectedPositionMarker.value = undefined;
+        }
+
+        return;
+    }
+    if (!selectedPositionMarker.value) {
+        selectedPositionMarker.value = L.marker(position).addTo(map.value!);
+    }
+    selectedPositionMarker.value.setLatLng(position);
+}
+
+watch(props, (newProps) => {
+    displayPositionMarker(newProps.selectedPosition);
+    displayCorrectPositionMarker(newProps.correctPosition, newProps.showResult);
+    displayPolyline(newProps.correctPosition, newProps.selectedPosition, newProps.showResult);
+
+    if (newProps.showResult) {
+        const group = L.featureGroup([selectedPositionMarker.value!, correctPositionMarker.value!]);
+        map.value!.fitBounds(group.getBounds());
+    }
 });
 
 onMounted(() => {

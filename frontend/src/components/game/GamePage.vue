@@ -1,8 +1,7 @@
 <script setup lang="ts">
 import { computed, onMounted, reactive } from 'vue';
-import type { LatLng } from 'leaflet';
 import { getGameSet } from '../../api/api';
-import { Image, ImageSet } from '../../api/types';
+import { Image, ImageSet, LatLng } from '../../api/types';
 import GuessMap from './GuessMap.vue';
 import router from '../../router';
 import { calculateDistance, calculatePoints } from '../../services/points';
@@ -89,6 +88,7 @@ const fetchGameSet = async () => {
 }
 
 const onMapClick = (latLng: LatLng) => {
+  if (state.showResult) return;
   state.guessPosition = latLng;
 }
 
@@ -96,6 +96,15 @@ const canSubmit = computed(() => {
   if (state.guessPosition === undefined) return false;
 
   return true;
+})
+
+const correctPosition = computed(() => {
+  if (state.images.length === 0) return undefined;
+
+  return {
+    lat: state.images[state.currentIndex].latitude,
+    lng: state.images[state.currentIndex].longitude
+  }
 })
 
 onMounted(() => {
@@ -118,7 +127,8 @@ onMounted(() => {
         <p v-if="state.showResult">{{ state.images[state.currentIndex].description }}</p>
       </div>
       <div>
-        <guess-map :position="state.guessPosition" @click="onMapClick" />
+        <guess-map :selected-position="state.guessPosition" :correct-position="correctPosition"
+          :show-result="state.showResult" @click="onMapClick" />
         <div class="col-span-2 h-10 p-4">
           <input type="range" :min="state.imageSet!.lowerYearRange" :max="state.imageSet!.upperYearRange"
             v-model="state.selectedYear" class="w-full slider" />

@@ -45,4 +45,9 @@ export type ServerError = {
   code: 500;
 };
 
+export type LatLng = {
+  lat: number;
+  lng: number;
+};
+
 export type ApiResult<T> = Success<T> | NotFound | ServerError;

@@ -1,7 +1,4 @@
-type LatLng = {
-  lat: number;
-  lng: number;
-};
+import { LatLng } from "../api/types";
 
 export function calculateDistance(from: LatLng, to: LatLng) {
   const R = 6371e3;
