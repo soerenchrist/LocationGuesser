@@ -1,17 +1,30 @@
 <script setup lang="ts">
 import 'leaflet/dist/leaflet.css';
 import * as L from 'leaflet';
-import { onMounted, ref } from 'vue';
+import { onMounted, ref, watch } from 'vue';
 
 const map = ref<L.Map>();
+const marker = ref<L.Marker>();
 
 const emit = defineEmits<{
     (e: 'click', latLng: L.LatLng): void
 }>()
 
-const onMapClick = (e) => {
+const props = defineProps<{
+    position?: L.LatLng,
+}>();
+
+const onMapClick = (e: any) => {
     emit('click', e.latlng);
 }
+
+watch(props, (newProps) => {
+    if (!newProps.position) return;
+    if (!marker.value) {
+        marker.value = L.marker(newProps.position).addTo(map.value!);
+    }
+    marker.value.setLatLng(newProps.position);
+});
 
 onMounted(() => {
     map.value = L.map('map').setView([51.505, -0.09], 13);

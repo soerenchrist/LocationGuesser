@@ -11,7 +11,8 @@ type State = {
   images: Image[],
   isError: boolean,
   isNotFound: boolean,
-  currentIndex: number
+  currentIndex: number,
+  guessPosition?: LatLng
 }
 
 const props = defineProps({
@@ -50,7 +51,7 @@ const fetchGameSet = async () => {
 }
 
 const onMapClick = (latLng: LatLng) => {
-  console.log(latLng);
+  state.guessPosition = latLng;
 }
 
 onMounted(() => {
@@ -66,7 +67,7 @@ onMounted(() => {
     <div v-if="state.images.length > 0">
       <img :src="state.images[state.currentIndex].url" width="400" />
     </div>
-    <guess-map @click="onMapClick" />
+    <guess-map :position="state.guessPosition" @click="onMapClick" />
   </div>
   <button @click="next">Next</button>
 </template>
