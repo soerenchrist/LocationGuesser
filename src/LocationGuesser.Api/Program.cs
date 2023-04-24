@@ -26,6 +26,7 @@ builder.Services.AddOptions<CosmosDbOptions>()
 builder.Services.AddOutputCache(options =>
 {
     options.AddBasePolicy(builder => builder.Expire(TimeSpan.FromMinutes(5)));
+    options.AddPolicy("NoCache", builder => builder.NoCache());
 });
 
 builder.Services.AddCors(options =>

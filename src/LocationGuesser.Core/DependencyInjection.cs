@@ -19,9 +19,12 @@ public static class DependencyInjection
         else
         {
             services.AddSingleton<ICosmosDbContainer, CosmosDbContainer>();
-            services.AddScoped<IImageSetRepository, CosmosImageSetRepository>();
-            services.AddScoped<IImageRepository, CosmosImageRepository>();
+            services.AddScoped<CosmosImageSetRepository>();
+            services.AddScoped<IImageSetRepository, CachedCosmosImageSetRepository>();
+            services.AddScoped<CosmosImageRepository>();
+            services.AddScoped<IImageRepository, CachedCosmosImageRepository>();
         }
+        services.AddMemoryCache();
 
         services.AddScoped<IBlobContainer, AzureBlobContainer>();
         services.AddScoped<IBlobRepository, BlobRepository>();

@@ -46,7 +46,7 @@ public static class GameEndpoints
             );
 
             return Results.Ok(result);
-        });
+        }).CacheOutput("NoCache");
     }
 }
 
