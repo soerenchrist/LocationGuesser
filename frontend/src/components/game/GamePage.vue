@@ -6,6 +6,7 @@ import GuessMap from './GuessMap.vue';
 import router from '../../router';
 import { calculateDistance, calculatePoints } from '../../services/points';
 import GameStats from './GameStats.vue';
+import GameOverlay from './GameOverlay.vue';
 
 type State = {
   isLoading: boolean,
@@ -131,6 +132,7 @@ onMounted(() => {
       Screen</button>
   </div>
   <div v-else>
+    <GameOverlay :total-points="state.totalPoints" :round="state.currentIndex + 1" />
     <div class="grid grid-cols-2 gap-2">
       <div v-if="state.images.length > 0" class="flex flex-col items-center">
         <img :src="state.images[state.currentIndex].url" class="m-2 max-w-full max-h-[70%]" />
