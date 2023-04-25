@@ -33,7 +33,12 @@ const displayCorrectPositionMarker = (position: LatLng | undefined, showResult: 
         return;
     }
     if (!correctPositionMarker.value) {
-        correctPositionMarker.value = L.marker(position).addTo(map.value!);
+        const icon = L.icon({
+            iconUrl: 'marker-green.svg',
+            iconSize: [48, 48],
+            iconAnchor: [24, 48],
+        });
+        correctPositionMarker.value = L.marker(position, { icon }).addTo(map.value!);
     }
     correctPositionMarker.value.setLatLng(position);
 }
@@ -68,7 +73,12 @@ const displayPositionMarker = (position?: LatLng) => {
         return;
     }
     if (!selectedPositionMarker.value) {
-        selectedPositionMarker.value = L.marker(position).addTo(map.value!);
+        const icon = L.icon({
+            iconUrl: 'marker-blue.svg',
+            iconSize: [48, 48],
+            iconAnchor: [24, 48],
+        });
+        selectedPositionMarker.value = L.marker(position, { icon }).addTo(map.value!);
     }
     selectedPositionMarker.value.setLatLng(position);
 }
