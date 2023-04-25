@@ -9,6 +9,6 @@ public class UploadData
     public List<ImageContent> Files { get; } = new();
 }
 
-public record ImageSetInfo(string Title, string Description, string Tags, int lowerYearRange, int upperYearRange);
+public record ImageSetInfo(string Title, string Slug, string Description, string Tags, int lowerYearRange, int upperYearRange);
 public record ImageInfo(string Description, int Year, double Latitude, double Longitude, string License);
-public record ImageContent(string Filename, Guid SetId, int Number);
+public record ImageContent(string Filename, string SetSlug, int Number);

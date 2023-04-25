@@ -9,13 +9,14 @@ public static class ImageMappings
     {
         return new ImageContract
         {
-            SetId = image.SetId,
+            SetSlug = image.SetSlug,
             Number = image.Number,
             Description = image.Description,
             License = image.License,
             Year = image.Year,
             Latitude = image.Latitude,
-            Longitude = image.Longitude
+            Longitude = image.Longitude,
+            Url = image.Url
         };
     }
 }

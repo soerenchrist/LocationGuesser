@@ -1,6 +1,7 @@
 {
     "description": "Famous places around the world in different years",
     "title": "Famous places",
+    "slug": "famous-places",
     "tags": "easy,famous",
     "lowerYearRange": 1800,
     "upperYearRange": 2023

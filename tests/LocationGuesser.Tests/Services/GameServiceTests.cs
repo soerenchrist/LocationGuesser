@@ -25,7 +25,7 @@ public class GameServiceTests
     [Fact]
     public async Task GetGameSetAsync_ShouldReturnFail_WhenImageSetDoesNotExist()
     {
-        var imageSetId = Guid.NewGuid();
+        var imageSetId = Guid.NewGuid().ToString();
         _imageSetRepository.GetImageSetAsync(imageSetId, default)
             .Returns(Task.FromResult(Result.Fail<ImageSet>("Not found")));
 
@@ -38,7 +38,7 @@ public class GameServiceTests
     public async Task GetGameSetAsync_ShouldReturnFail_WhenImageSetDoesNotHaveEnoughImages()
     {
         var imageSet = CreateImageSet(3);
-        var imageSetId = imageSet.Id;
+        var imageSetId = imageSet.Slug;
         _imageSetRepository.GetImageSetAsync(imageSetId, default)
             .Returns(Task.FromResult(Result.Ok(imageSet)));
 
@@ -51,11 +51,11 @@ public class GameServiceTests
     public async Task GetGameSetAsync_ShouldReturn5DistinctImages_WhenImageSetHasEnoughImages()
     {
         var imageSet = CreateImageSet(10);
-        var imageSetId = imageSet.Id;
+        var imageSetId = imageSet.Slug;
         _imageSetRepository.GetImageSetAsync(imageSetId, default)
             .Returns(Task.FromResult(Result.Ok(imageSet)));
         _imageRepository.GetImageAsync(imageSetId, Arg.Any<int>(), default)
-            .Returns(x => Task.FromResult(Result.Ok(CreateImage(x.Arg<Guid>(), x.Arg<int>()))));
+            .Returns(x => Task.FromResult(Result.Ok(CreateImage(x.Arg<string>(), x.Arg<int>()))));
 
         var result = await _cut.GetGameSetAsync(imageSetId, 5, default);
 
@@ -68,7 +68,7 @@ public class GameServiceTests
     public async Task GetGameSetAsync_ShouldReturnFail_WhenImageFailsToFetch()
     {
         var imageSet = CreateImageSet(10);
-        var imageSetId = imageSet.Id;
+        var imageSetId = imageSet.Slug;
         _imageSetRepository.GetImageSetAsync(imageSetId, default)
             .Returns(Task.FromResult(Result.Ok(imageSet)));
         _imageRepository.GetImageAsync(imageSetId, Arg.Any<int>(), default)
@@ -81,12 +81,12 @@ public class GameServiceTests
 
     private ImageSet CreateImageSet(int imageCount = 10)
     {
-        return new ImageSet(Guid.NewGuid(), "Title", "Description", "Tags", 1900, 2000, imageCount);
+        return new ImageSet("slug", "Title", "Description", "Tags", 1900, 2000, imageCount);
     }
 
-    private Image CreateImage(Guid guid = default, int number = 1)
+    private Image CreateImage(string slug = "", int number = 1)
     {
-        if (guid == default) guid = Guid.NewGuid();
-        return new Image(guid, number, 1900, 49, 10, "Description", "Licence");
+        if (slug == string.Empty) slug = Guid.NewGuid().ToString();
+        return new Image(slug, number, 1900, 49, 10, "Description", "Licence", "Url");
     }
 }

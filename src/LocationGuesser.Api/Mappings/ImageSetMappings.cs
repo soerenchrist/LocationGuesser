@@ -10,7 +10,7 @@ public static class ImageSetMappings
     {
         return new ImageSetContract
         {
-            Id = imageSet.Id,
+            Slug = imageSet.Slug,
             Title = imageSet.Title,
             Description = imageSet.Description,
             Tags = imageSet.Tags,

@@ -1,7 +1,7 @@
 using FluentValidation;
 using LocationGuesser.Api.Features.Game;
-using LocationGuesser.Api.Features.Images;
 using LocationGuesser.Api.Features.ImageSets;
+using LocationGuesser.Api.Middleware;
 using LocationGuesser.Core;
 using LocationGuesser.Core.Options;
 using Microsoft.OpenApi.Models;
@@ -23,6 +23,17 @@ builder.Services.AddOptions<CosmosDbOptions>()
     .ValidateDataAnnotations()
     .ValidateOnStart();
 
+builder.Services.AddOutputCache(options =>
+{
+    options.AddBasePolicy(builder => builder.Expire(TimeSpan.FromMinutes(5)));
+    options.AddPolicy("NoCache", builder => builder.NoCache());
+});
+
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowAll", builder => builder.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader());
+});
+
 builder.Services.AddValidatorsFromAssemblyContaining<Program>();
 builder.Services.AddMediatR(config => config.RegisterServicesFromAssemblyContaining<Program>());
 var useInMemory = builder.Configuration.GetValue("UseInMemory", false);
@@ -39,22 +50,20 @@ if (applicationInsightsConnection != null)
 var app = builder.Build();
 if (app.Environment.IsDevelopment())
 {
-    app.UseWebAssemblyDebugging();
     app.UseSwagger();
     app.UseSwaggerUI(c => { c.SwaggerEndpoint("/swagger/v1/swagger.json", "LocationGuesser API v1"); });
+    app.UseCors("AllowAll");
 }
 
 app.UseHttpsRedirection();
 
+app.UseMiddleware<ExceptionHandlerMiddleware>();
+app.UseMiddleware<TraceMiddleware>();
+app.UseOutputCache();
+
 app.MapImageSetEndpoints();
-app.MapImageEndpoints();
 app.MapGameEndpoints();
 
-app.UseBlazorFrameworkFiles();
-app.UseStaticFiles();
-app.UseRouting();
-
-app.MapFallbackToFile("index.html");
 app.MapGet("/health", () => Results.Ok());
 
 app.Run();

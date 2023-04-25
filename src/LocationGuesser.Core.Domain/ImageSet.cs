@@ -1,4 +1,4 @@
 namespace LocationGuesser.Core.Domain;
 
-public record ImageSet(Guid Id, string Title, string Description, string Tags, int LowerYearRange, int UpperYearRange,
+public record ImageSet(string Slug, string Title, string Description, string Tags, int LowerYearRange, int UpperYearRange,
     int ImageCount);

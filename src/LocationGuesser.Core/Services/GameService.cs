@@ -25,11 +25,11 @@ public class GameService : IGameService
         _logger = logger;
     }
 
-    public async Task<Result<List<Image>>> GetGameSetAsync(Guid imageSetId, int imageCount,
+    public async Task<Result<List<Image>>> GetGameSetAsync(string imageSetSlug, int imageCount,
         CancellationToken cancellationToken)
     {
-        _logger.LogDebug("Getting game set {ImageSetId} with {ImageCount} images", imageSetId, imageCount);
-        var imageSetResult = await _imageSetRepository.GetImageSetAsync(imageSetId, cancellationToken);
+        _logger.LogDebug("Getting game set {ImageSetId} with {ImageCount} images", imageSetSlug, imageCount);
+        var imageSetResult = await _imageSetRepository.GetImageSetAsync(imageSetSlug, cancellationToken);
         if (imageSetResult.IsFailed)
         {
             _logger.LogError("Failed to get image set");
@@ -50,7 +50,7 @@ public class GameService : IGameService
             usedNumbers.Add(number);
         }
 
-        var tasks = usedNumbers.Select(number => _imageRepository.GetImageAsync(imageSetId, number, cancellationToken))
+        var tasks = usedNumbers.Select(number => _imageRepository.GetImageAsync(imageSetSlug, number, cancellationToken))
             .ToList();
         await Task.WhenAll(tasks);
 

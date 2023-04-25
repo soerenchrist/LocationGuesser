@@ -7,16 +7,16 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <PackageReference Include="Azure.Identity" Version="1.8.2"/>
-        <PackageReference Include="Azure.Storage.Blobs" Version="12.16.0"/>
-        <PackageReference Include="FluentResults" Version="3.15.2"/>
-        <PackageReference Include="Microsoft.Azure.Cosmos" Version="3.32.3"/>
-        <PackageReference Include="Microsoft.Extensions.Configuration" Version="7.0.0"/>
-        <PackageReference Include="Microsoft.Extensions.Options" Version="7.0.1"/>
-        <PackageReference Include="Optional" Version="4.0.0"/>
+        <PackageReference Include="Azure.Identity" Version="1.8.2" />
+        <PackageReference Include="Azure.Storage.Blobs" Version="12.16.0" />
+        <PackageReference Include="FluentResults" Version="3.15.2" />
+        <PackageReference Include="Microsoft.Azure.Cosmos" Version="3.32.3" />
+        <PackageReference Include="Microsoft.Extensions.Caching.Memory" Version="7.0.0" />
+        <PackageReference Include="Microsoft.Extensions.Configuration" Version="7.0.0" />
+        <PackageReference Include="Microsoft.Extensions.Options" Version="7.0.1" />
     </ItemGroup>
 
     <ItemGroup>
-        <ProjectReference Include="../LocationGuesser.Core.Domain/LocationGuesser.Core.Domain.csproj"/>
+        <ProjectReference Include="../LocationGuesser.Core.Domain/LocationGuesser.Core.Domain.csproj" />
     </ItemGroup>
 </Project>
