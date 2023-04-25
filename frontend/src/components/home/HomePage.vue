@@ -37,6 +37,11 @@ onMounted(() => {
       <template v-if="state.isLoading">
         <div class="text-2xl font-bold mt-8">Loading...</div>
       </template>
+      <template v-else-if="state.isError">
+        <div class="text-2xl font-bold mt-8">
+          Something went wrong. Please try again...
+        </div>
+      </template>
       <template v-else>
         <div class="w-full grid grid-cols-3 gap-4">
           <template v-for="imageSet in state.imageSets">
