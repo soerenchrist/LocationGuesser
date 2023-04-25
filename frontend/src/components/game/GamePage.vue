@@ -18,6 +18,7 @@ type State = {
   selectedYear: number,
   showResult: boolean,
   distance: number,
+  isFinished: boolean,
   points: {
     yearPoints: number,
     distancePoints: number
@@ -38,6 +39,7 @@ const state = reactive<State>({
   currentIndex: 0,
   selectedYear: 0,
   distance: 0,
+  isFinished: false,
   points: {
     yearPoints: 0,
     distancePoints: 0
@@ -48,6 +50,8 @@ const state = reactive<State>({
 const onNext = () => {
   if (state.currentIndex < state.images.length - 1) {
     state.currentIndex++;
+  } else {
+    state.isFinished = true;
   }
   state.showResult = false;
   state.selectedYear = Math.round((state.imageSet!.upperYearRange + state.imageSet!.lowerYearRange) / 2);
@@ -119,6 +123,12 @@ onMounted(() => {
   </div>
   <div v-else-if="state.isError">
     <h1 class="text-5xl">Something went wrong...</h1>
+  </div>
+  <div v-else-if="state.isFinished" class="pt-12 flex gap-4 flex-col align-middle h-full justify-center items-center">
+    <h1 class="text-5xl">Finished!</h1>
+    <h2 class="text-3xl">Total points: {{ state.totalPoints }}</h2>
+    <button class="bg-teal-400 hover:bg-teal-500 py-2 rounded w-96" @click="$router.push({ name: 'home' })">To Home
+      Screen</button>
   </div>
   <div v-else>
     <div class="grid grid-cols-2 gap-2">
