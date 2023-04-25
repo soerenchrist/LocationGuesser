@@ -1,0 +1,8 @@
+{
+    "description": "Historic People in historic moments",
+    "title": "Historic People",
+    "slug": "historic-people",
+    "tags": "easy,famous",
+    "lowerYearRange": 1900,
+    "upperYearRange": 2023
+}
