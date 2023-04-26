@@ -36,8 +36,7 @@ builder.Services.AddCors(options =>
 
 builder.Services.AddValidatorsFromAssemblyContaining<Program>();
 builder.Services.AddMediatR(config => config.RegisterServicesFromAssemblyContaining<Program>());
-var useInMemory = builder.Configuration.GetValue("UseInMemory", false);
-builder.Services.AddCoreDependencies(useInMemory);
+builder.Services.AddCoreDependencies();
 
 var applicationInsightsConnection = builder.Configuration.GetConnectionString("APPLICATIONINSIGHTS_CONNECTION_STRING");
 if (applicationInsightsConnection != null)

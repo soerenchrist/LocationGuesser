@@ -3,6 +3,7 @@ using LocationGuesser.Api.Extensions;
 using LocationGuesser.Api.Util;
 using LocationGuesser.Core.Contracts;
 using LocationGuesser.Core.Domain.Errors;
+using LocationGuesser.Core.Extensions;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.HttpResults;
 

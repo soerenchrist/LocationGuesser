@@ -6,6 +6,7 @@ using LocationGuesser.Core.Data.Cosmos;
 using LocationGuesser.Core.Data.Dtos;
 using LocationGuesser.Core.Domain;
 using LocationGuesser.Core.Domain.Errors;
+using LocationGuesser.Core.Extensions;
 using LocationGuesser.Tests.Utils;
 using Microsoft.Azure.Cosmos;
 

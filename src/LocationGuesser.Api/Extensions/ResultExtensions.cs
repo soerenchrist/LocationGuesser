@@ -2,6 +2,7 @@ using FluentResults;
 using LocationGuesser.Api.Util;
 using LocationGuesser.Core.Contracts;
 using LocationGuesser.Core.Domain.Errors;
+using LocationGuesser.Core.Extensions;
 
 namespace LocationGuesser.Api.Extensions;
 
@@ -45,13 +46,4 @@ public static class ResultExtensions
         return Results.BadRequest(errorResponse);
     }
 
-    public static bool IsNotFound(this ResultBase result)
-    {
-        return result.Errors.Any(x => x is NotFoundError);
-    }
-
-    private static bool IsValidationError(this ResultBase result)
-    {
-        return result.Errors.Any(x => x is ValidationError);
-    }
 }

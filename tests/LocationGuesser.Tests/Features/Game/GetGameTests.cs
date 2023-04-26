@@ -3,6 +3,7 @@ using LocationGuesser.Api.Extensions;
 using LocationGuesser.Api.Features.Game;
 using LocationGuesser.Core.Domain;
 using LocationGuesser.Core.Domain.Errors;
+using LocationGuesser.Core.Extensions;
 using LocationGuesser.Core.Services.Abstractions;
 using LocationGuesser.Tests.Utils;
 
