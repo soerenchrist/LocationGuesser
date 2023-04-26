@@ -25,13 +25,13 @@ builder.Services.AddOptions<CosmosDbOptions>()
 
 builder.Services.AddOutputCache(options =>
 {
-    options.AddBasePolicy(builder => builder.Expire(TimeSpan.FromMinutes(5)));
-    options.AddPolicy("NoCache", builder => builder.NoCache());
+    options.AddBasePolicy(cache => cache.Expire(TimeSpan.FromMinutes(5)));
+    options.AddPolicy("NoCache", cache => cache.NoCache());
 });
 
 builder.Services.AddCors(options =>
 {
-    options.AddPolicy("AllowAll", builder => builder.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader());
+    options.AddPolicy("AllowAll", cors => cors.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader());
 });
 
 builder.Services.AddValidatorsFromAssemblyContaining<Program>();

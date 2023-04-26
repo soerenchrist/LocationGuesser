@@ -13,6 +13,19 @@ public static class GameEndpoints
 {
     public static void MapGameEndpoints(this WebApplication app)
     {
+        app.MapGet("/api/games/daily", async (
+            [FromServices] IMediator mediator
+        ) =>
+        {
+            var query = new GetDailyChallengeQuery(DateTime.Today);
+
+            var result = await mediator.Send(query);
+            if (result.IsFailed) return result.ToErrorResponse();
+
+            var response = new GameContract(result.Value.ImageSet.ToContract(),
+                result.Value.Images.Select(x => x.ToContract()).ToList());
+            return Results.Ok(response);
+        }).CacheOutput("NoCache");
         app.MapGet("/api/games/{setSlug}", async (
             [FromRoute] string setSlug,
             [FromServices] IMediator mediator,
@@ -21,10 +34,10 @@ public static class GameEndpoints
         {
             var count = imageCount ?? 5;
             var command = new GetGameQuery(setSlug, count);
-            var imagesTask = mediator.Send<Result<List<Image>>>(command);
+            var imagesTask = mediator.Send(command);
 
             var query = new GetImageSetQuery(setSlug);
-            var imageSetTask = mediator.Send<Result<ImageSet>>(query);
+            var imageSetTask = mediator.Send(query);
 
             await Task.WhenAll(imagesTask, imageSetTask);
 
@@ -35,12 +48,13 @@ public static class GameEndpoints
             {
                 return images.ToErrorResponse();
             }
-            else if (imageSet.IsFailed)
+
+            if (imageSet.IsFailed)
             {
                 return imageSet.ToErrorResponse();
             }
 
-            var result = new GetGameResult(
+            var result = new GameContract(
                 imageSet.Value.ToContract(),
                 images.Value.Select(x => x.ToContract()).ToList()
             );
@@ -49,5 +63,3 @@ public static class GameEndpoints
         }).CacheOutput("NoCache");
     }
 }
-
-file record GetGameResult(ImageSetContract ImageSet, List<ImageContract> Images);
