@@ -34,7 +34,8 @@ public class DailyChallengeService : IDailyChallengeService
 
             var images = PickRandomImageIndices(imageSet.Value);
             var dailyChallenge = new DailyChallenge(imageSet.Value.Slug, images);
-            await _challengeRepository.AddDailyChallengeAsync(dailyChallenge, cancellationToken);
+            var addResult = await _challengeRepository.AddDailyChallengeAsync(dailyChallenge, cancellationToken);
+            if (addResult.IsFailed) return Result.Fail<DailyChallenge>(addResult.Errors);
             return dailyChallenge;
         }
 
@@ -46,7 +47,7 @@ public class DailyChallengeService : IDailyChallengeService
         var imageSets = await _imageSetRepository.ListImageSetsAsync(cancellationToken);
         if (imageSets.IsFailed) return Result.Fail<ImageSet>(imageSets.Errors);
 
-        var randomIndex = _random.Next(0, imageSets.Value.Count, new HashSet<int>());
+        var randomIndex = _random.Next(1, imageSets.Value.Count, new HashSet<int>());
         return imageSets.Value[randomIndex];
     }
 
@@ -55,7 +56,7 @@ public class DailyChallengeService : IDailyChallengeService
         var imageIndices = new HashSet<int>();
         while (imageIndices.Count < NumberOfImages)
         {
-            imageIndices.Add(_random.Next(0, imageSet.ImageCount, imageIndices));
+            imageIndices.Add(_random.Next(1, imageSet.ImageCount, imageIndices));
         }
 
         return imageIndices.ToList();

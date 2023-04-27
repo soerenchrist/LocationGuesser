@@ -4,7 +4,7 @@ namespace LocationGuesser.Core.Data.Dtos;
 
 public class CosmosDailyChallenge
 {
-    [JsonProperty("pk")] public string Pk => "DailyChallenge";
+    [JsonProperty("pk")] public string Pk => "DAILYCHALLENGES";
     [JsonProperty("id")] public string Id => Date.ToString("O");
     [JsonProperty("date")] public required DateTime Date { get; set; }
     [JsonProperty("setSlug")] public required string SetSlug { get; set; }

@@ -18,8 +18,8 @@ public class DailyChallengeServiceTests
 
     public DailyChallengeServiceTests()
     {
-        _random.Next(0, 5, Arg.Is<HashSet<int>>(x => !x.Any())).Returns(1);
-        _random.Next(0, 10, Arg.Any<HashSet<int>>())
+        _random.Next(1, 5, Arg.Is<HashSet<int>>(x => !x.Any())).Returns(1);
+        _random.Next(1, 10, Arg.Any<HashSet<int>>())
             .Returns(1, 2, 3, 4, 5);
         _imageSetRepository.ListImageSetsAsync(default)
             .Returns(CreateImageSets());

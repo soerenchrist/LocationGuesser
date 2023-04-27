@@ -23,6 +23,7 @@ public class CosmosDailyChallengeRepository : IDailyChallengeRepository
 
     public async Task<Result<DailyChallenge>> GetDailyChallengeAsync(DateTime date, CancellationToken cancellationToken)
     {
+        _logger.LogInformation("Reading daily challenge for date {Date}", date.ToString("O"));
         var partitionKey = new PartitionKey("DAILYCHALLENGES");
         try
         {
@@ -44,6 +45,7 @@ public class CosmosDailyChallengeRepository : IDailyChallengeRepository
     public async Task<Result<DailyChallenge>> AddDailyChallengeAsync(DailyChallenge dailyChallenge,
         CancellationToken cancellationToken)
     {
+        _logger.LogInformation("Adding daily challenge for date {Date}", DateTime.Today.ToString("O"));
         try
         {
             var item = new CosmosDailyChallenge
