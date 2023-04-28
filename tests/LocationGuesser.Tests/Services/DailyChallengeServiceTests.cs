@@ -55,6 +55,8 @@ public class DailyChallengeServiceTests
     {
         _challengeRepository.GetDailyChallengeAsync(_date, default)
             .Returns(Result.Fail<DailyChallenge>(new NotFoundError("Not found")));
+        _challengeRepository.AddDailyChallengeAsync(Arg.Any<DailyChallenge>(), default)
+            .Returns(CreateDailyChallenge());
 
         await _cut.GetDailyChallengeAsync(_date, default);
 
@@ -66,6 +68,8 @@ public class DailyChallengeServiceTests
     {
         _challengeRepository.GetDailyChallengeAsync(_date, default)
             .Returns(Result.Fail<DailyChallenge>(new NotFoundError("Not found")));
+        _challengeRepository.AddDailyChallengeAsync(Arg.Any<DailyChallenge>(), default)
+            .Returns(CreateDailyChallenge());
 
         await _cut.GetDailyChallengeAsync(_date, default);
 
@@ -80,6 +84,8 @@ public class DailyChallengeServiceTests
     {
         _challengeRepository.GetDailyChallengeAsync(_date, default)
             .Returns(Result.Fail<DailyChallenge>(new NotFoundError("Not found")));
+        _challengeRepository.AddDailyChallengeAsync(Arg.Any<DailyChallenge>(), default)
+            .Returns(CreateDailyChallenge());
 
         await _cut.GetDailyChallengeAsync(_date, default);
 
@@ -96,6 +102,8 @@ public class DailyChallengeServiceTests
             .Returns(Result.Fail<DailyChallenge>(new NotFoundError("Not found")));
         _imageSetRepository.ListImageSetsAsync(default)
             .Returns(Result.Fail<List<ImageSet>>("Something failed"));
+        _challengeRepository.AddDailyChallengeAsync(Arg.Any<DailyChallenge>(), default)
+            .Returns(CreateDailyChallenge());
 
         var result = await _cut.GetDailyChallengeAsync(_date, default);
 
@@ -107,6 +115,8 @@ public class DailyChallengeServiceTests
     {
         _challengeRepository.GetDailyChallengeAsync(_date, default)
             .Returns(Result.Fail<DailyChallenge>(new NotFoundError("Not found")));
+        _challengeRepository.AddDailyChallengeAsync(Arg.Any<DailyChallenge>(), default)
+            .Returns(CreateDailyChallenge());
 
         var result = await _cut.GetDailyChallengeAsync(_date, default);
 
